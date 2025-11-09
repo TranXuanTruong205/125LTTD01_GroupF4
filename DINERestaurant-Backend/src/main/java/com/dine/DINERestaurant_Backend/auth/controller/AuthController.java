@@ -1,7 +1,7 @@
-package com.dine.DINERestaurant_Backend.controller;
+package com.dine.DINERestaurant_Backend.auth.controller;
 
-import com.dine.DINERestaurant_Backend.entity.User;
-import com.dine.DINERestaurant_Backend.service.AuthService;
+import com.dine.DINERestaurant_Backend.auth.entity.User;
+import com.dine.DINERestaurant_Backend.auth.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

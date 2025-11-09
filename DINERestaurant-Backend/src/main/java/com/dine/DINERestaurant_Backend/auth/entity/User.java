@@ -1,4 +1,4 @@
-package com.dine.DINERestaurant_Backend.entity;
+package com.dine.DINERestaurant_Backend.auth.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
