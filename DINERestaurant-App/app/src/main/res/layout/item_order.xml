@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Phần trên: Food Image + Info + Status -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:orientation="horizontal">
+
+            <!-- Food Image -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp">
+
+                <ImageView
+                    android:id="@+id/iv_food"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@mipmap/ic_launcher" />
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- Order Info -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="16dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <!-- Order ID -->
+                <TextView
+                    android:id="@+id/tv_order_id"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Order ID : SP 0023900"
+                    android:textColor="#666666"
+                    android:textSize="12sp" />
+
+                <!-- Price -->
+                <TextView
+                    android:id="@+id/tv_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="£ 25.20"
+                    android:textColor="#FF6B35"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <!-- Rating Stars -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tv_star1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="⭐"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tv_star2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="⭐"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tv_star3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="⭐"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tv_star4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="⭐"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tv_star5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="⭐"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Status Badge -->
+            <TextView
+                android:id="@+id/tv_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|end"
+                android:background="@drawable/status_badge"
+                android:paddingStart="12dp"
+                android:paddingTop="6dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="6dp"
+                android:text="Active"
+                android:textColor="#FF6B35"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <!-- ORDER TRACKING STEPPER - NẰM TRONG ITEM -->
+        <LinearLayout
+            android:id="@+id/layout_stepper"
+            android:layout_width="362dp"
+            android:layout_height="31dp"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp">
+
+            <!-- Step 1: Order Placed -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/step1"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                app:cardBackgroundColor="#FF6B35"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="3dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+
+                    android:gravity="center"
+                    android:text="🏪"
+                    android:textSize="15sp" />
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- Progress Line 1 -->
+            <View
+                android:id="@+id/line1"
+                android:layout_width="0dp"
+                android:layout_height="3dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1"
+                android:background="#FF6B35" />
+
+            <!-- Step 2: Preparing -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/step2"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                app:cardBackgroundColor="#FF6B35"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="3dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="📦"
+                    android:textSize="15sp" />
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- Progress Line 2 -->
+            <View
+                android:id="@+id/line2"
+                android:layout_width="0dp"
+                android:layout_height="3dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1"
+                android:background="#E0E0E0" />
+
+            <!-- Step 3: Shipping -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/step3"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                app:cardBackgroundColor="#E0E0E0"
+                app:cardCornerRadius="15dp"
+                app:cardElevation="3dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="🚚"
+                    android:textSize="20sp" />
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- Progress Line 3 -->
+            <View
+                android:id="@+id/line3"
+                android:layout_width="0dp"
+                android:layout_height="3dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1"
+                android:background="#E0E0E0" />
+
+            <!-- Step 4: Delivered -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/step4"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                app:cardBackgroundColor="#E0E0E0"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="3dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="✓"
+                    android:textColor="#999999"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+        <!-- HẾT STEPPER -->
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
