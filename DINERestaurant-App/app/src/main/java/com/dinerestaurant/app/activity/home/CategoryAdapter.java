@@ -1,20 +1,28 @@
 package com.dinerestaurant.app.activity.home;
 
+import android.content.res.AssetManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.dinerestaurant.app.R;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHolder> {
 
     private List<CategoryItem> items;
+    private AssetManager assetManager;
 
-    public CategoryAdapter(List<CategoryItem> items) {
+    public CategoryAdapter(List<CategoryItem> items, AssetManager assetManager) {
         this.items = items;
+        this.assetManager = assetManager;
     }
 
     @NonNull
@@ -28,8 +36,19 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         CategoryItem item = items.get(position);
-        holder.tvCategoryIcon.setText(item.getIcon());
         holder.tvCategoryName.setText(item.getName());
+        
+        // Load ảnh từ assets
+        try {
+            InputStream is = assetManager.open(item.getImagePath());
+            Bitmap bitmap = BitmapFactory.decodeStream(is);
+            holder.ivCategoryIcon.setImageBitmap(bitmap);
+            is.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Nếu không load được ảnh, dùng icon mặc định
+            holder.ivCategoryIcon.setImageResource(android.R.drawable.ic_menu_gallery);
+        }
     }
 
     @Override
@@ -38,11 +57,12 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvCategoryIcon, tvCategoryName;
+        ImageView ivCategoryIcon;
+        TextView tvCategoryName;
 
         ViewHolder(View itemView) {
             super(itemView);
-            tvCategoryIcon = itemView.findViewById(R.id.tvCategoryIcon);
+            ivCategoryIcon = itemView.findViewById(R.id.ivCategoryIcon);
             tvCategoryName = itemView.findViewById(R.id.tvCategoryName);
         }
     }

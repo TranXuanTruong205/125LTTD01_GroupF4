@@ -1,5 +1,8 @@
 package com.dinerestaurant.app.activity.home;
 
+import android.content.res.AssetManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,14 +11,18 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.dinerestaurant.app.R;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 public class SpecialOfferAdapter extends RecyclerView.Adapter<SpecialOfferAdapter.ViewHolder> {
 
     private List<SpecialOfferItem> items;
+    private AssetManager assetManager;
 
-    public SpecialOfferAdapter(List<SpecialOfferItem> items) {
+    public SpecialOfferAdapter(List<SpecialOfferItem> items, AssetManager assetManager) {
         this.items = items;
+        this.assetManager = assetManager;
     }
 
     @NonNull
@@ -31,8 +38,22 @@ public class SpecialOfferAdapter extends RecyclerView.Adapter<SpecialOfferAdapte
         SpecialOfferItem item = items.get(position);
         holder.tvProductName.setText(item.getName());
         holder.tvRating.setText(String.valueOf(item.getRating()));
-        holder.tvOriginalPrice.setText("£ " + item.getOriginalPrice());
-        holder.tvDiscountPrice.setText("£ " + item.getDiscountPrice());
+        
+        if (item.getOriginalPrice() > 0) {
+            holder.tvOriginalPrice.setText("£ " + item.getOriginalPrice());
+            holder.tvDiscountPrice.setText("£ " + item.getDiscountPrice());
+        }
+        
+        // Load ảnh từ assets
+        try {
+            InputStream is = assetManager.open(item.getImagePath());
+            Bitmap bitmap = BitmapFactory.decodeStream(is);
+            holder.ivProductImage.setImageBitmap(bitmap);
+            is.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            holder.ivProductImage.setImageResource(android.R.drawable.ic_menu_gallery);
+        }
     }
 
     @Override

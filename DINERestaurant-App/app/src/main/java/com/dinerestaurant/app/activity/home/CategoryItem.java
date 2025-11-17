@@ -1,16 +1,16 @@
 package com.dinerestaurant.app.activity.home;
 
 public class CategoryItem {
-    private String icon;
+    private String imagePath; // Đường dẫn ảnh trong assets
     private String name;
 
-    public CategoryItem(String icon, String name) {
-        this.icon = icon;
+    public CategoryItem(String imagePath, String name) {
+        this.imagePath = imagePath;
         this.name = name;
     }
 
-    public String getIcon() {
-        return icon;
+    public String getImagePath() {
+        return imagePath;
     }
 
     public String getName() {

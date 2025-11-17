@@ -15,12 +15,13 @@
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
         android:background="@android:color/white"
-        android:elevation="2dp">
+        android:elevation="4dp">
 
         <ImageView
             android:id="@+id/ivBack"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:padding="4dp"
             android:src="@android:drawable/ic_menu_revert"
             app:tint="#333333"/>
 
@@ -35,8 +36,8 @@
             android:gravity="center"/>
 
         <View
-            android:layout_width="24dp"
-            android:layout_height="24dp"/>
+            android:layout_width="32dp"
+            android:layout_height="32dp"/>
     </LinearLayout>
 
     <!-- Categories Grid -->
@@ -45,7 +46,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:padding="16dp"
+        android:padding="12dp"
         android:clipToPadding="false"/>
 
 </LinearLayout>

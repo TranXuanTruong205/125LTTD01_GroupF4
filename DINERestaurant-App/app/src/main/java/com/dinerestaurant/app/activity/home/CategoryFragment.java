@@ -27,31 +27,31 @@ public class CategoryFragment extends Fragment {
         rvCategories = view.findViewById(R.id.rvCategories);
         rvCategories.setLayoutManager(new GridLayoutManager(getContext(), 4));
 
-        // Create categories data
+        // Create categories data với ảnh từ assets
         List<CategoryItem> items = new ArrayList<>();
-        items.add(new CategoryItem("🍔", "Burger"));
-        items.add(new CategoryItem("🌮", "Taco"));
-        items.add(new CategoryItem("🌯", "Burrito"));
-        items.add(new CategoryItem("🥤", "Drink"));
-        items.add(new CategoryItem("🍕", "Pizza"));
-        items.add(new CategoryItem("🍩", "Donut"));
-        items.add(new CategoryItem("🥗", "Salad"));
-        items.add(new CategoryItem("🍜", "Noodles"));
-        items.add(new CategoryItem("🥪", "Sandwich"));
-        items.add(new CategoryItem("🍝", "Pasta"));
-        items.add(new CategoryItem("🍦", "Ice Cream"));
-        items.add(new CategoryItem("🍚", "Rice"));
-        items.add(new CategoryItem("🍱", "Takoyaki"));
-        items.add(new CategoryItem("🍓", "Fruit"));
-        items.add(new CategoryItem("🌭", "Sausage"));
-        items.add(new CategoryItem("🌍", "Gỏi cuốn"));
-        items.add(new CategoryItem("🍪", "Cookie"));
-        items.add(new CategoryItem("🍮", "Pudding"));
-        items.add(new CategoryItem("🥖", "Bánh Mì"));
-        items.add(new CategoryItem("🥟", "Dumpling"));
+        items.add(new CategoryItem("images/categories/Cheese Burger.png", "Burger"));
+        items.add(new CategoryItem("images/categories/Taco.png", "Taco"));
+        items.add(new CategoryItem("images/categories/Burrito.png", "Burrito"));
+        items.add(new CategoryItem("images/categories/Drink.png", "Drink"));
+        items.add(new CategoryItem("images/categories/Pizza.png", "Pizza"));
+        items.add(new CategoryItem("images/categories/Donut 2.png", "Donut"));
+        items.add(new CategoryItem("images/categories/Salad.png", "Salad"));
+        items.add(new CategoryItem("images/categories/Noodle 2.png", "Noodles"));
+        items.add(new CategoryItem("images/categories/Sandwich.png", "Sandwich"));
+        items.add(new CategoryItem("images/categories/Pasta.png", "Pasta"));
+        items.add(new CategoryItem("images/categories/Ice cream.png", "Ice Cream"));
+        items.add(new CategoryItem("images/categories/fried-rice.png", "Rice"));
+        items.add(new CategoryItem("images/categories/takoyaki.png", "Takoyaki"));
+        items.add(new CategoryItem("images/categories/fruits.png", "Fruit"));
+        items.add(new CategoryItem("images/categories/sausage.png", "Sausage"));
+        items.add(new CategoryItem("images/categories/goi-cuon.png", "Gỏi cuốn"));
+        items.add(new CategoryItem("images/categories/christmas-cookie.png", "Cookie"));
+        items.add(new CategoryItem("images/categories/pudding.png", "Pudding"));
+        items.add(new CategoryItem("images/categories/banh-mi (1).png", "Bánh Mì"));
+        items.add(new CategoryItem("images/categories/mandu.png", "Dumpling"));
 
-        // Setup adapter
-        adapter = new CategoryAdapter(items);
+        // Setup adapter với AssetManager
+        adapter = new CategoryAdapter(items, requireContext().getAssets());
         rvCategories.setAdapter(adapter);
 
         // Back button

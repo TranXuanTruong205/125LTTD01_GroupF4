@@ -15,22 +15,23 @@
         <!-- Product Image with Heart Icon -->
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="140dp">
+            android:layout_height="160dp">
 
             <ImageView
                 android:id="@+id/ivProductImage"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
+                android:background="#F0F0F0"
                 android:src="@android:drawable/ic_menu_gallery"/>
 
             <ImageView
                 android:id="@+id/ivFavorite"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
                 android:layout_gravity="end|top"
-                android:layout_margin="8dp"
-                android:padding="6dp"
+                android:layout_margin="12dp"
+                android:padding="8dp"
                 android:src="@android:drawable/btn_star_big_off"
                 android:background="@android:drawable/dialog_holo_light_frame"
                 app:tint="#FF6B35"/>

@@ -1,5 +1,8 @@
 package com.dinerestaurant.app.activity.other;
 
+import android.content.res.AssetManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,14 +11,18 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.dinerestaurant.app.R;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 public class LikedProductAdapter extends RecyclerView.Adapter<LikedProductAdapter.ViewHolder> {
 
     private List<LikedProductItem> items;
+    private AssetManager assetManager;
 
-    public LikedProductAdapter(List<LikedProductItem> items) {
+    public LikedProductAdapter(List<LikedProductItem> items, AssetManager assetManager) {
         this.items = items;
+        this.assetManager = assetManager;
     }
 
     @NonNull
@@ -33,6 +40,17 @@ public class LikedProductAdapter extends RecyclerView.Adapter<LikedProductAdapte
         holder.tvRating.setText(String.valueOf(item.getRating()));
         holder.tvOriginalPrice.setText("£ " + item.getOriginalPrice());
         holder.tvDiscountPrice.setText("£ " + item.getDiscountPrice());
+        
+        // Load ảnh từ assets
+        try {
+            InputStream is = assetManager.open(item.getImagePath());
+            Bitmap bitmap = BitmapFactory.decodeStream(is);
+            holder.ivProductImage.setImageBitmap(bitmap);
+            is.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            holder.ivProductImage.setImageResource(android.R.drawable.ic_menu_gallery);
+        }
     }
 
     @Override

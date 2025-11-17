@@ -27,19 +27,27 @@ public class SpecialOffersFragment extends Fragment {
         rvSpecialOffers = view.findViewById(R.id.rvSpecialOffers);
         rvSpecialOffers.setLayoutManager(new GridLayoutManager(getContext(), 2));
 
-        // Create sample data
+        // Create special offers data với ảnh từ assets
         List<SpecialOfferItem> items = new ArrayList<>();
-        items.add(new SpecialOfferItem("Chicken Burger", 4.9, 10.00, 6.00));
-        items.add(new SpecialOfferItem("Beef Burger", 4.9, 12.00, 10.00));
-        items.add(new SpecialOfferItem("Ramen Noodles", 4.9, 22.00, 15.00));
-        items.add(new SpecialOfferItem("Pho Noodles", 4.9, 24.00, 20.00));
-        items.add(new SpecialOfferItem("Fresh Fruit Donuts", 4.9, 6.00, 5.00));
-        items.add(new SpecialOfferItem("Rotini", 4.9, 20.00, 18.00));
-        items.add(new SpecialOfferItem("Pizza Margherita", 4.8, 15.00, 12.00));
-        items.add(new SpecialOfferItem("Caesar Salad", 4.7, 8.00, 6.50));
+        items.add(new SpecialOfferItem("images/special_offers/Image Burger.png", 
+            "Chicken Burger", 4.9, 10.00, 6.00));
+        items.add(new SpecialOfferItem("images/special_offers/Image Burger-1.png", 
+            "Beef Burger", 4.9, 12.00, 10.00));
+        items.add(new SpecialOfferItem("images/special_offers/Image Ramen Noodles.png", 
+            "Ramen Noodles", 4.9, 22.00, 15.00));
+        items.add(new SpecialOfferItem("images/special_offers/Image Pho Noodles.png", 
+            "Pho Noodles", 4.9, 24.00, 20.00));
+        items.add(new SpecialOfferItem("images/special_offers/unsplash_V4MBq8kue3U.png", 
+            "Fresh Fruit Donuts", 4.9, 6.00, 5.00));
+        items.add(new SpecialOfferItem("images/special_offers/Image Rotini.png", 
+            "Rotini", 4.9, 20.00, 18.00));
+        items.add(new SpecialOfferItem("images/special_offers/Image Penne.png", 
+            "Penne Pasta", 4.8, 15.00, 12.00));
+        items.add(new SpecialOfferItem("images/special_offers/Image Farfalle.png", 
+            "Farfalle Pasta", 4.7, 18.00, 14.00));
 
-        // Setup adapter
-        adapter = new SpecialOfferAdapter(items);
+        // Setup adapter với AssetManager
+        adapter = new SpecialOfferAdapter(items, requireContext().getAssets());
         rvSpecialOffers.setAdapter(adapter);
 
         // Back button
