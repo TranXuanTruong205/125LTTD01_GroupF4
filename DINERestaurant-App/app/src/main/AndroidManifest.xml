@@ -12,14 +12,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DINERestaurantApp">
         <activity
-            android:name=".activity.MainActivity"
+            android:name=".activity.orders.OrderActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>
