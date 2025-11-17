@@ -19,8 +19,11 @@ public class HomeFragment extends Fragment {
         // Gán layout XML vào Fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        // Nếu muốn, ánh xạ view:
-        // TextView tvTitle = view.findViewById(R.id.tvTitleHome);
+        // Setup View All button to navigate to Special Offers
+        view.findViewById(R.id.tvViewAll).setOnClickListener(v -> {
+            androidx.navigation.Navigation.findNavController(view)
+                .navigate(R.id.specialOffersFragment);
+        });
 
         return view;
     }
