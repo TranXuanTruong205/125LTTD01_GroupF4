@@ -83,7 +83,7 @@
                     android:text="50.000đ"
                     android:textColor="#A0A0A0"
                     android:textSize="15sp"
-                    android:paintFlags="strikeThruText" />
+                     />
 
                 <TextView
                     android:layout_width="wrap_content"

@@ -15,10 +15,4 @@
 
     <corners android:radius="50dp" />
 
-    <shadow
-        android:shadowColor="#33000000"
-        android:shadowDx="0"
-        android:shadowDy="2dp"
-        android:shadowRadius="6dp" />
-
 </shape>
