@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.dinerestaurant.app.R;
 import com.dinerestaurant.app.model.home.CategoryProductItem;
+import com.dinerestaurant.app.model.home.SpecialOfferItem;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,10 +22,15 @@ public class CategoryProductAdapter extends RecyclerView.Adapter<CategoryProduct
 
     private List<CategoryProductItem> items;
     private AssetManager assetManager;
+    private CategoryProductAdapter.OnItemClickListener listener;
 
-    public CategoryProductAdapter(List<CategoryProductItem> items, AssetManager assetManager) {
+    public interface OnItemClickListener {
+        void onItemClick(CategoryProductItem item);
+    }
+    public CategoryProductAdapter(List<CategoryProductItem> items, AssetManager assetManager, OnItemClickListener listener) {
         this.items = items;
         this.assetManager = assetManager;
+        this.listener = listener;
     }
 
     @NonNull
@@ -53,6 +59,13 @@ public class CategoryProductAdapter extends RecyclerView.Adapter<CategoryProduct
             e.printStackTrace();
             holder.ivProductImage.setImageResource(android.R.drawable.ic_menu_gallery);
         }
+
+        // Xử lý click
+        holder.itemView.setOnClickListener(v -> {
+            if(listener != null){
+                listener.onItemClick(item);
+            }
+        });
     }
 
     @Override

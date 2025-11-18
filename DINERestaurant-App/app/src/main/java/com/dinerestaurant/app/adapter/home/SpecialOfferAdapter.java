@@ -22,9 +22,16 @@ public class SpecialOfferAdapter extends RecyclerView.Adapter<SpecialOfferAdapte
     private List<SpecialOfferItem> items;
     private AssetManager assetManager;
 
-    public SpecialOfferAdapter(List<SpecialOfferItem> items, AssetManager assetManager) {
+    private OnItemClickListener listener;
+
+    public interface OnItemClickListener {
+        void onItemClick(SpecialOfferItem item);
+    }
+
+    public SpecialOfferAdapter(List<SpecialOfferItem> items, AssetManager assetManager, OnItemClickListener listener) {
         this.items = items;
         this.assetManager = assetManager;
+        this.listener = listener; // Gán biến listener được truyền vào
     }
 
     @NonNull
@@ -40,12 +47,12 @@ public class SpecialOfferAdapter extends RecyclerView.Adapter<SpecialOfferAdapte
         SpecialOfferItem item = items.get(position);
         holder.tvProductName.setText(item.getName());
         holder.tvRating.setText(String.valueOf(item.getRating()));
-        
+
         if (item.getOriginalPrice() > 0) {
             holder.tvOriginalPrice.setText("£ " + item.getOriginalPrice());
             holder.tvDiscountPrice.setText("£ " + item.getDiscountPrice());
         }
-        
+
         // Load ảnh từ assets
         try {
             InputStream is = assetManager.open(item.getImagePath());
@@ -56,6 +63,13 @@ public class SpecialOfferAdapter extends RecyclerView.Adapter<SpecialOfferAdapte
             e.printStackTrace();
             holder.ivProductImage.setImageResource(android.R.drawable.ic_menu_gallery);
         }
+
+        // Xử lý click
+        holder.itemView.setOnClickListener(v -> {
+            if(listener != null){
+                listener.onItemClick(item);
+            }
+        });
     }
 
     @Override

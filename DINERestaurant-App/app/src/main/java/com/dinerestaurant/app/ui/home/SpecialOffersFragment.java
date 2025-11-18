@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.dinerestaurant.app.R;
@@ -50,7 +51,21 @@ public class SpecialOffersFragment extends Fragment {
             "Farfalle Pasta", 4.7, 18.00, 14.00));
 
         // Setup adapter với AssetManager
-        adapter = new SpecialOfferAdapter(items, requireContext().getAssets());
+        adapter = new SpecialOfferAdapter(items, requireContext().getAssets(),item->{
+            // Xử lý khi click vào sản phẩm
+            try {
+                // 1. Nếu muốn truyền dữ liệu (tên món) sang màn hình kia thì dùng Bundle
+                // Bundle bundle = new Bundle();
+                // bundle.putString("product_name", item.getName());
+
+                // 2. Chuyển màn hình
+                Navigation.findNavController(view).navigate(
+                        R.id.action_specialOffersFragment_to_productDetailFragment
+                );
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
         rvSpecialOffers.setAdapter(adapter);
 
         // Back button
