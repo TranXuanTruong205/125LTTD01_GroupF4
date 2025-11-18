@@ -10,18 +10,18 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 import com.dinerestaurant.app.R;
-import com.dinerestaurant.app.ui.orders.Order;
+import com.dinerestaurant.app.model.orders.OrderItem;
 
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHolder> {
 
-    private List<Order> orderList;
+    private List<OrderItem> orderList;
     private OnOrderClickListener listener;
 
     public interface OnOrderClickListener {
-        void onOrderClick(Order order);
+        void onOrderClick(OrderItem order);
     }
 
-    public OrderAdapter(List<Order> orderList, OnOrderClickListener listener) {
+    public OrderAdapter(List<OrderItem> orderList, OnOrderClickListener listener) {
         this.orderList = orderList;
         this.listener = listener;
     }
@@ -36,7 +36,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
 
     @Override
     public void onBindViewHolder(@NonNull OrderViewHolder holder, int position) {
-        Order order = orderList.get(position);
+        OrderItem order = orderList.get(position);
 
         holder.tvOrderId.setText("Order ID : " + order.getOrderId());
         holder.tvPrice.setText(order.getFormattedPrice());

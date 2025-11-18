@@ -1,6 +1,6 @@
-package com.dinerestaurant.app.ui.orders;
+package com.dinerestaurant.app.model.orders;
 
-public class Order {
+public class OrderItem {
     private String orderId;
     private String foodName;
     private double price;
@@ -9,7 +9,7 @@ public class Order {
     private int foodImage; // Resource ID cho avatar
     private boolean showStepper; // Có hiển thị stepper không
 
-    public Order(String orderId, String foodName, double price, int rating, String status, int foodImage) {
+    public OrderItem(String orderId, String foodName, double price, int rating, String status, int foodImage) {
         this.orderId = orderId;
         this.foodName = foodName;
         this.price = price;
@@ -20,7 +20,7 @@ public class Order {
     }
 
     // Constructor với showStepper
-    public Order(String orderId, String foodName, double price, int rating, String status, int foodImage, boolean showStepper) {
+    public OrderItem(String orderId, String foodName, double price, int rating, String status, int foodImage, boolean showStepper) {
         this.orderId = orderId;
         this.foodName = foodName;
         this.price = price;

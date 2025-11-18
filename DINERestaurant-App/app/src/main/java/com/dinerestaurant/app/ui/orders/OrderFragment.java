@@ -14,13 +14,14 @@ import java.util.ArrayList;
 import java.util.List;
 import com.dinerestaurant.app.R;
 import com.dinerestaurant.app.adapter.orders.OrderAdapter;
+import com.dinerestaurant.app.model.orders.OrderItem;
 
 public class OrderFragment extends Fragment implements OrderAdapter.OnOrderClickListener {
 
     private RecyclerView recyclerView;
     private OrderAdapter adapter;
-    private List<Order> orderList;
-    private List<Order> allOrders; // Lưu tất cả orders
+    private List<OrderItem> orderList;
+    private List<OrderItem> allOrders; // Lưu tất cả orders
     private String currentFilter = "All"; // Bộ lọc hiện tại
 
     @Nullable
@@ -51,16 +52,16 @@ public class OrderFragment extends Fragment implements OrderAdapter.OnOrderClick
         allOrders = new ArrayList<>();
 
         // Thêm 10 orders DEMO
-        allOrders.add(new Order("SP0023900", "Grilled Salmon", 25.20, 4, "Active", R.drawable.nhieumon,true));
-        allOrders.add(new Order("SP0023512", "Burger Deluxe", 40.00, 5, "Completed", R.drawable.nhieuthu,false));
-        allOrders.add(new Order("SP0023502", "Caesar Salad", 85.00, 4, "Completed", R.drawable.hambogo,false));
-        allOrders.add(new Order("SP0023450", "Pasta Carbonara", 20.50, 4, "Cancelled", R.drawable.cake,false));
-        allOrders.add(new Order("SP0023401", "Pizza Margherita", 35.00, 5, "Active", R.drawable.comtrung,false));
-        allOrders.add(new Order("SP0023302", "Chicken Wings", 18.50, 3, "Completed", R.mipmap.ic_launcher,false));
-        allOrders.add(new Order("SP0023201", "Sushi Combo", 55.00, 5, "Active", R.mipmap.ic_launcher,false));
-        allOrders.add(new Order("SP0023100", "Steak Medium", 75.00, 4, "Completed", R.mipmap.ic_launcher,false));
-        allOrders.add(new Order("SP0023050", "Vegetable Curry", 22.00, 3, "Cancelled", R.mipmap.ic_launcher,false));
-        allOrders.add(new Order("SP0023001", "Fish & Chips", 30.00, 4, "Active", R.mipmap.ic_launcher,false));
+        allOrders.add(new OrderItem("SP0023900", "Grilled Salmon", 25.20, 4, "Active", R.drawable.nhieumon,true));
+        allOrders.add(new OrderItem("SP0023512", "Burger Deluxe", 40.00, 5, "Completed", R.drawable.nhieuthu,false));
+        allOrders.add(new OrderItem("SP0023502", "Caesar Salad", 85.00, 4, "Completed", R.drawable.hambogo,false));
+        allOrders.add(new OrderItem("SP0023450", "Pasta Carbonara", 20.50, 4, "Cancelled", R.drawable.cake,false));
+        allOrders.add(new OrderItem("SP0023401", "Pizza Margherita", 35.00, 5, "Active", R.drawable.comtrung,false));
+        allOrders.add(new OrderItem("SP0023302", "Chicken Wings", 18.50, 3, "Completed", R.mipmap.ic_launcher,false));
+        allOrders.add(new OrderItem("SP0023201", "Sushi Combo", 55.00, 5, "Active", R.mipmap.ic_launcher,false));
+        allOrders.add(new OrderItem("SP0023100", "Steak Medium", 75.00, 4, "Completed", R.mipmap.ic_launcher,false));
+        allOrders.add(new OrderItem("SP0023050", "Vegetable Curry", 22.00, 3, "Cancelled", R.mipmap.ic_launcher,false));
+        allOrders.add(new OrderItem("SP0023001", "Fish & Chips", 30.00, 4, "Active", R.mipmap.ic_launcher,false));
     }
 
     private void setupFilterButtons(View view) {
@@ -77,7 +78,7 @@ public class OrderFragment extends Fragment implements OrderAdapter.OnOrderClick
         if (status.equals("All")) {
             orderList.addAll(allOrders);
         } else {
-            for (Order order : allOrders) {
+            for (OrderItem order : allOrders) {
                 if (order.getStatus().equals(status)) {
                     orderList.add(order);
                 }
@@ -89,7 +90,7 @@ public class OrderFragment extends Fragment implements OrderAdapter.OnOrderClick
     }
 
     @Override
-    public void onOrderClick(Order order) {
+    public void onOrderClick(OrderItem order) {
         Toast.makeText(getContext(),
                 "Order: " + order.getOrderId() + "\n" +
                         "Price: " + order.getFormattedPrice() + "\n" +

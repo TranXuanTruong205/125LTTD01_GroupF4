@@ -59,10 +59,11 @@
 
             <ImageView
                 android:id="@+id/ivCart"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@android:drawable/ic_menu_sort_by_size"
-                android:padding="4dp"/>
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:background="@drawable/bg_circle_white"
+                android:src="@drawable/ic_cart"
+                android:padding="8dp"/>
         </LinearLayout>
 
         <!-- Banner ViewPager -->
@@ -112,7 +113,7 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:orientation="horizontal"
-            android:background="@android:color/white"
+            android:background="@drawable/rounded_bg"
             android:gravity="center_vertical"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
@@ -141,7 +142,7 @@
                 android:id="@+id/ivFilter"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@android:drawable/ic_menu_manage"
+                android:src="@drawable/ic_filter"
                 app:tint="#333333"/>
         </LinearLayout>
 
