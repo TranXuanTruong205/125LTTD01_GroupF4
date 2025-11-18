@@ -2,6 +2,7 @@ package com.dinerestaurant.app.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentManager;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -125,31 +126,35 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupClicks() {
         tabHome.setOnClickListener(v -> {
+            clearSubScreensBackStack();
             selectTab(tabHome);
             nav.navigate(R.id.homeFragment);
         });
 
         tabOrder.setOnClickListener(v -> {
+            clearSubScreensBackStack();
             selectTab(tabOrder);
             nav.navigate(R.id.orderFragment);
         });
 
         tabScan.setOnClickListener(v -> {
+            clearSubScreensBackStack();
             selectTab(tabScan);
             nav.navigate(R.id.scanQRFragment);
         });
 
         tabNotify.setOnClickListener(v -> {
+            clearSubScreensBackStack();
             selectTab(tabNotify);
             nav.navigate(R.id.notificationFragment);
         });
 
         tabProfile.setOnClickListener(v -> {
+            clearSubScreensBackStack();
             selectTab(tabProfile);
             nav.navigate(R.id.profileFragment);
         });
     }
-
     private void selectTab(View selected) {
 
         // Reset icon về màu xám
@@ -225,6 +230,14 @@ public class MainActivity extends AppCompatActivity {
 
     private int dpToPx(int dp) {
         return Math.round(dp * getResources().getDisplayMetrics().density);
+    }
+    private void clearSubScreensBackStack() {
+        FragmentManager fm = getSupportFragmentManager();
+
+        // Lệnh này sẽ xóa tất cả các giao dịch trong Back Stack
+        // cho đến khi gặp thẻ "PROFILE_SUB_SCREEN".
+        // FLAG POP_BACK_STACK_INCLUSIVE đảm bảo cả giao dịch có thẻ đó cũng bị xóa.
+        fm.popBackStack("PROFILE_SUB_SCREEN", FragmentManager.POP_BACK_STACK_INCLUSIVE);
     }
 
 
