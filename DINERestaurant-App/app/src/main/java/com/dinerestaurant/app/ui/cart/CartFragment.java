@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -66,11 +67,17 @@ public class CartFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_cart, container, false);
 
         initViews(view);
+
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
         setupListeners();
         observeResults();
         updatePrices();
-
-        return view;
     }
 
     private void initViews(View view) {
@@ -211,20 +218,26 @@ public class CartFragment extends Fragment {
             tvAddress.setText(selectedAddress);
         });
 
-        // === PAYMENT METHOD ===
+        // === PAYMENT METHOD - ĐÃ THÊM NAVIGATION ===
         btnEditPayment.setOnClickListener(v -> {
-            // Navigate to PaymentFragment
             NavController navController = Navigation.findNavController(v);
-            // navController.navigate(R.id.action_cartFragment_to_paymentFragment);
-            Toast.makeText(requireContext(), "Opening payment methods...", Toast.LENGTH_SHORT).show();
+            try {
+                // SỬ DỤNG ID ACTION THỰC TẾ TRONG NAV GRAPH CỦA BẠN
+                navController.navigate(R.id.action_cartFragment_to_paymentFragment);
+            } catch (IllegalArgumentException e) {
+                Toast.makeText(requireContext(), "Lỗi: Không tìm thấy action Payment trong Nav Graph.", Toast.LENGTH_LONG).show();
+            }
         });
 
-        // === PROMOTIONS ===
+        // === PROMOTIONS - ĐÃ THÊM NAVIGATION ===
         btnEditPromotions.setOnClickListener(v -> {
-            // Navigate to PromotionsFragment
             NavController navController = Navigation.findNavController(v);
-            // navController.navigate(R.id.action_cartFragment_to_promotionsFragment);
-            Toast.makeText(requireContext(), "Opening promotions...", Toast.LENGTH_SHORT).show();
+            try {
+                // SỬ DỤNG ID ACTION THỰC TẾ TRONG NAV GRAPH CỦA BẠN
+                navController.navigate(R.id.action_cartFragment_to_promotionsFragment);
+            } catch (IllegalArgumentException e) {
+                Toast.makeText(requireContext(), "Lỗi: Không tìm thấy action Promotions trong Nav Graph.", Toast.LENGTH_LONG).show();
+            }
         });
 
         // === PLACE ORDER BUTTON ===
@@ -283,15 +296,15 @@ public class CartFragment extends Fragment {
 
         if (deliveryFee == 0) {
             tvDeliveryValue.setText("FREE");
-            tvDeliveryValue.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+            tvDeliveryValue.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_green_dark));
         } else {
             tvDeliveryValue.setText("£ " + df.format(deliveryFee));
-            tvDeliveryValue.setTextColor(getResources().getColor(android.R.color.black));
+            tvDeliveryValue.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.black));
         }
 
         if (discount > 0) {
             tvDiscountValue.setText("- £ " + df.format(discount));
-            tvDiscountValue.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+            tvDiscountValue.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_red_dark));
         } else {
             tvDiscountValue.setText("__");
         }

@@ -59,11 +59,20 @@ public class OrderDetailFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_order_detail, container, false);
 
         initViews(view);
+        // LOẠI BỎ: setupData();, setupListeners();, updateStepper();
+        // Sẽ được gọi trong onViewCreated
+
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // GỌI CÁC PHƯƠNG THỨC TƯƠNG TÁC VỚI VIEW TẠI ĐÂY ĐỂ TRÁNH LỖI IllegalStateException
         setupData();
         setupListeners();
         updateStepper();
-
-        return view;
     }
 
     private void initViews(View view) {
@@ -119,6 +128,7 @@ public class OrderDetailFragment extends Fragment {
         tvOrderId.setText(orderId);
 
         // Set payment method từ PaymentFragment nếu có
+        // Lệnh gọi requireView() ở đây giờ đã an toàn vì nó nằm trong onViewCreated()
         NavController navController = Navigation.findNavController(requireView());
         navController.getCurrentBackStackEntry()
                 .getSavedStateHandle()
@@ -143,6 +153,7 @@ public class OrderDetailFragment extends Fragment {
         });
 
         // Click vào card Payment để thay đổi phương thức thanh toán
+        // Lệnh gọi requireView() ở đây giờ đã an toàn
         View paymentCard = (View) requireView().findViewById(R.id.tv_payment_method2).getParent().getParent();
         paymentCard.setOnClickListener(v -> {
             // Navigate đến PaymentFragment

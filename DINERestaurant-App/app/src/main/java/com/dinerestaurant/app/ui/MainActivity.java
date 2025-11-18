@@ -12,16 +12,29 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 
 public class MainActivity extends AppCompatActivity {
 
     private NavController nav;
+    private LinearLayout bottomNavBar;
 
     ImageView homeIcon, orderIcon, scanIcon, notifyIcon, profileIcon;
     TextView homeLabel, orderLabel, scanLabel, notifyLabel, profileLabel;
     FrameLayout homeIconContainer, orderIconContainer, scanIconContainer, notifyIconContainer, profileIconContainer;
     LinearLayout tabHome, tabOrder, tabScan, tabNotify, tabProfile;
+
+    // SỬA LỖI: Định nghĩa và khởi tạo tập hợp các Fragment ID chính cần hiển thị Navbar
+    private final Set<Integer> mainNavFragments = new HashSet<>(Arrays.asList(
+            R.id.homeFragment,
+            R.id.orderFragment,
+            R.id.scanQRFragment,
+            R.id.notificationFragment,
+            R.id.profileFragment
+    ));
 
 
     @Override
@@ -29,19 +42,44 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // **LOẠI BỎ logic khởi tạo `mainNavFragments` ở đây vì đã khởi tạo ở trên**
+
         NavHostFragment navHostFragment =
                 (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
 
         nav = navHostFragment.getNavController();
 
         setupViews();
+        setupNavigationVisibility();
         setupClicks();
 
-        selectTab(tabHome);
-        nav.navigate(R.id.homeFragment);
+        // Ẩn/hiện nav bar cho Fragment khởi động
+        int startDestinationId = nav.getGraph().getStartDestinationId();
+
+        // HÀM selectTab() cần được gọi sau khi nav controller đã khởi động
+        // để đảm bảo tab đầu tiên được highlight đúng.
+        selectInitialTab(startDestinationId);
     }
 
+    // Tạo hàm mới để xử lý việc chọn tab khởi động
+    private void selectInitialTab(int destinationId) {
+        if (destinationId == R.id.homeFragment) {
+            selectTab(tabHome);
+        } else if (destinationId == R.id.orderFragment) {
+            selectTab(tabOrder);
+        } else if (destinationId == R.id.scanQRFragment) {
+            selectTab(tabScan);
+        } else if (destinationId == R.id.notificationFragment) {
+            selectTab(tabNotify);
+        } else if (destinationId == R.id.profileFragment) {
+            selectTab(tabProfile);
+        }
+    }
+
+
     private void setupViews() {
+        // Lấy toàn bộ Layout của thanh điều hướng (Giả sử ID là R.id.customBottomBar)
+        bottomNavBar = findViewById(R.id.customBottomBar);
 
         tabHome = findViewById(R.id.tabHome);
         tabOrder = findViewById(R.id.tabOrder);
@@ -67,6 +105,22 @@ public class MainActivity extends AppCompatActivity {
         notifyIcon = findViewById(R.id.notifyIcon);
         profileIcon = findViewById(R.id.profileIcon);
     }
+
+    // --- LOGIC ẨN/HIỆN NAVIGATION BAR ---
+    private void setupNavigationVisibility() {
+        nav.addOnDestinationChangedListener((controller, destination, arguments) -> {
+
+            // Kiểm tra xem Fragment đích có nằm trong danh sách 5 Fragment chính không
+            if (mainNavFragments.contains(destination.getId())) {
+                // HIỆN thanh Navigation Bar
+                bottomNavBar.setVisibility(View.VISIBLE);
+            } else {
+                // ẨN thanh Navigation Bar ở các Fragment khác
+                bottomNavBar.setVisibility(View.GONE);
+            }
+        });
+    }
+    // ------------------------------------
 
 
     private void setupClicks() {

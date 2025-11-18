@@ -55,9 +55,11 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
         } else {
             holder.stepperLayout.setVisibility(View.GONE);
         }
-        // Click listener
+
+        // Click listener - Đã thêm logic ngăn click nếu đơn hàng bị Hủy
         holder.itemView.setOnClickListener(v -> {
-            if (listener != null) {
+            // Chỉ cho phép click nếu đơn hàng không bị hủy (Cancelled)
+            if (listener != null && !order.getStatus().equals("Cancelled")) {
                 listener.onOrderClick(order);
             }
         });

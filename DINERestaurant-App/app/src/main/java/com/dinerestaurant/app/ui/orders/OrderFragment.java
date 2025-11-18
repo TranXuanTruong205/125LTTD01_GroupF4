@@ -8,6 +8,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
@@ -91,10 +93,24 @@ public class OrderFragment extends Fragment implements OrderAdapter.OnOrderClick
 
     @Override
     public void onOrderClick(OrderItem order) {
-        Toast.makeText(getContext(),
-                "Order: " + order.getOrderId() + "\n" +
-                        "Price: " + order.getFormattedPrice() + "\n" +
-                        "Status: " + order.getStatus(),
-                Toast.LENGTH_LONG).show();
+        // Đã sửa: Điều hướng đến OrderDetailFragment
+
+        NavController navController = Navigation.findNavController(requireView());
+
+        // 2. Tạo Bundle để truyền dữ liệu (Order ID)
+        Bundle bundle = new Bundle();
+        bundle.putString("order_id", order.getOrderId());
+
+        // (Tùy chọn) Truyền currentStep nếu có trong OrderItem
+        // bundle.putInt("current_step", order.getCurrentStep());
+
+        try {
+            // Thay thế R.id.action_X_to_Y bằng ID action thực tế trong nav graph của bạn
+            navController.navigate(R.id.action_orderFragment_to_orderDetailFragment, bundle);
+        } catch (IllegalArgumentException e) {
+            Toast.makeText(getContext(),
+                    "Navigation Error. Check R.id.action_orderFragment_to_orderDetailFragment in nav graph.",
+                    Toast.LENGTH_LONG).show();
+        }
     }
 }
