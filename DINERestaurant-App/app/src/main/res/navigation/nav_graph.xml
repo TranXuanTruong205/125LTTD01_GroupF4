@@ -10,7 +10,20 @@
         android:id="@+id/homeFragment"
         android:name="com.dinerestaurant.app.ui.home.HomeFragment"
         android:label="Home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home">
+        <action
+         android:id="@+id/action_homeFragment_to_categoryFragment"
+            app:destination="@id/categoryFragment" />
+
+        <action
+          android:id="@+id/action_homeFragment_to_specialOffersFragment"
+            app:destination="@id/specialOffersFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_categoryProductsFragment"
+            app:destination="@id/categoryProductsFragment" />
+
+    </fragment>
+
 
     <fragment
         android:id="@+id/orderFragment"
@@ -42,19 +55,32 @@
         android:id="@+id/categoryFragment"
         android:name="com.dinerestaurant.app.ui.home.CategoryFragment"
         android:label="Categories"
-        tools:layout="@layout/fragment_category" />
+        tools:layout="@layout/fragment_category">
+        <action
+            android:id="@+id/action_categoryFragment_to_categoryProductsFragment"
+            app:destination="@id/categoryProductsFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/categoryProductsFragment"
         android:name="com.dinerestaurant.app.ui.home.CategoryProductsFragment"
         android:label="Category Products"
-        tools:layout="@layout/fragment_category_products" />
+        tools:layout="@layout/fragment_category_products">
+    <action
+        android:id="@+id/action_categoryProductsFragment_to_productDetailFragment"
+        app:destination="@id/productDetailFragment"/>
+
+    </fragment>
 
     <fragment
         android:id="@+id/productDetailFragment"
         android:name="com.dinerestaurant.app.ui.home.ProductDetailFragment"
         android:label="Product Detail"
-        tools:layout="@layout/fragment_product_detail" />
+        tools:layout="@layout/fragment_product_detail" >
+        <action
+            android:id="@+id/action_productDetailFragment_to_reviewListFragment"
+            app:destination="@id/reviewListFragment"/>
+    </fragment>
 
     <fragment
         android:id="@+id/reviewListFragment"
@@ -66,7 +92,11 @@
         android:id="@+id/specialOffersFragment"
         android:name="com.dinerestaurant.app.ui.home.SpecialOffersFragment"
         android:label="Special Offers"
-        tools:layout="@layout/fragment_special_offers" />
+        tools:layout="@layout/fragment_special_offers">
+        <action
+          android:id="@+id/action_specialOffersFragment_to_productDetailFragment"
+            app:destination="@id/productDetailFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/myLocationsFragment"

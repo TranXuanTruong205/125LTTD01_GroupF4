@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.dinerestaurant.app.R;
@@ -56,7 +57,15 @@ public class CategoryProductsFragment extends Fragment {
             "Vegetarian Burger", 4.9, "50.000", "50.000"));
 
         // Setup adapter với AssetManager
-        adapter = new CategoryProductAdapter(items, requireContext().getAssets());
+        adapter = new CategoryProductAdapter(items, requireContext().getAssets(), item->{
+            try {
+                Navigation.findNavController(view).navigate(
+                        R.id.action_categoryProductsFragment_to_productDetailFragment
+                );
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
         rvCategoryProducts.setAdapter(adapter);
 
         // Back button

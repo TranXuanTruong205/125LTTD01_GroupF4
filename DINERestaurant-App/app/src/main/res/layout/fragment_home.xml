@@ -58,6 +58,15 @@
             </LinearLayout>
 
             <ImageView
+                android:id="@+id/ivChat"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:background="@drawable/bg_circle_white"
+                android:src="@drawable/ic_chat"
+                android:padding="8dp"
+                android:layout_marginRight="40dp"/>
+
+            <ImageView
                 android:id="@+id/ivCart"
                 android:layout_width="42dp"
                 android:layout_height="42dp"

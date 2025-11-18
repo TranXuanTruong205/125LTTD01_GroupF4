@@ -22,6 +22,19 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
     private List<CategoryItem> items;
     private AssetManager assetManager;
 
+    // 1. Khai báo Interface lắng nghe sự kiện
+    private OnItemClickListener listener;
+
+    public interface OnItemClickListener {
+        void onItemClick(CategoryItem item);
+    }
+
+    // 2. Cập nhật Constructor để nhận thêm Listener
+    public CategoryAdapter(List<CategoryItem> items, AssetManager assetManager, OnItemClickListener listener) {
+        this.items = items;
+        this.assetManager = assetManager;
+        this.listener = listener;
+    }
     public CategoryAdapter(List<CategoryItem> items, AssetManager assetManager) {
         this.items = items;
         this.assetManager = assetManager;
@@ -51,6 +64,13 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
             // Nếu không load được ảnh, dùng icon mặc định
             holder.ivCategoryIcon.setImageResource(android.R.drawable.ic_menu_gallery);
         }
+
+        //Gắn sự kiện Click vào item
+        holder.itemView.setOnClickListener(v->{
+            if(listener!=null){
+                listener.onItemClick(item);
+            }
+        });
     }
 
     @Override
