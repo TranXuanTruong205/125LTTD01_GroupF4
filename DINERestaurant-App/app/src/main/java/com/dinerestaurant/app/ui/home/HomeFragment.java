@@ -1,14 +1,20 @@
 package com.dinerestaurant.app.ui.home;
 
+import android.content.Intent; // Thêm import cho Intent
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ImageButton;
+import android.widget.Toast;
 
-import androidx.annotation.NonNull; // Thêm cái này
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -21,6 +27,11 @@ import com.dinerestaurant.app.adapter.home.SpecialOfferAdapter;
 import com.dinerestaurant.app.model.home.CategoryItem;
 import com.dinerestaurant.app.model.home.SpecialOfferItem;
 
+// Mặc dù MessageFragment được import, chúng ta sẽ không dùng nó trực tiếp ở đây
+// mà dùng ID của nó trong Nav Graph.
+import com.dinerestaurant.app.ui.other.MessageFragment;
+
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +42,8 @@ public class HomeFragment extends Fragment {
     private RecyclerView rvSpecialOffers;
     private CategoryAdapter categoryAdapter;
     private SpecialOfferAdapter specialOfferAdapter;
+    private ImageView btnCart;
+    private ImageView btnChat;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -49,6 +62,8 @@ public class HomeFragment extends Fragment {
         layoutIndicator = view.findViewById(R.id.layoutIndicator);
         rvCategories = view.findViewById(R.id.rvCategories);
         rvSpecialOffers = view.findViewById(R.id.rvSpecialOffers);
+        btnCart = view.findViewById(R.id.ivCart);
+        btnChat = view.findViewById(R.id.ivChat);
 
         // 3. Setup Categories RecyclerView
         setupCategories();
@@ -56,13 +71,19 @@ public class HomeFragment extends Fragment {
         // 4. Setup Banner ViewPager
         setupBanner();
 
-        // 5. Setup Special Offers RecyclerView (Đưa code bị rơi rớt vào lại đây)
-        setupSpecialOffers(view); // Truyền view vào để xử lý nút bấm
+        // 5. Setup Special Offers RecyclerView
+        setupSpecialOffers(view);
+
+        // 6. BỔ SUNG SỰ KIỆN CLICK CHO btnCart
+        setupCartButton(view);
+
+        // 7. BỔ SUNG SỰ KIỆN CLICK CHO btnChat
+        setupChatButton(view); // <-- Cần truyền view để lấy NavController
 
         return view;
     }
 
-    // --- CÁC HÀM SETUP (Được tách ra cho gọn) ---
+    // --- CÁC HÀM SETUP (Giữ nguyên các hàm không liên quan) ---
 
     private void setupCategories() {
         rvCategories.setLayoutManager(new GridLayoutManager(getContext(), 4));
@@ -157,7 +178,37 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    // --- CÁC HÀM HỖ TRỢ UI (Đã di chuyển ra ngoài onCreateView) ---
+    // HÀM SETUP CART BUTTON
+    private void setupCartButton(View view) {
+        if (btnCart != null) {
+            btnCart.setOnClickListener(v -> {
+                try {
+                    // SỬ DỤNG Navigation Component để chuyển đến CartFragment
+                    androidx.navigation.Navigation.findNavController(view).navigate(R.id.cartFragment);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+    }
+
+    // 🚀 HÀM SETUP CHAT BUTTON ĐÃ SỬA LẠI (Sử dụng Navigation Component)
+    private void setupChatButton(View view) {
+        if (btnChat != null) {
+            btnChat.setOnClickListener(v -> {
+                NavController navController = Navigation.findNavController(v);
+                try {
+                    // SỬ DỤNG ID ACTION THỰC TẾ TRONG NAV GRAPH CỦA BẠN
+                    navController.navigate(R.id.action_homeFragment_to_messageFragment);
+                } catch (IllegalArgumentException e) {
+                    Toast.makeText(requireContext(), "Lỗi: Không tìm thấy action Promotions trong Nav Graph.", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+    }
+
+
+    // --- CÁC HÀM HỖ TRỢ UI ---
 
     // Hàm cập nhật màu sắc/kích thước Indicator
     private void updateIndicators(int position) {

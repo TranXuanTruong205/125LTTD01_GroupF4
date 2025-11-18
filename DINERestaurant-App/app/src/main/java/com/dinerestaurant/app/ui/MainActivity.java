@@ -17,7 +17,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-
 public class MainActivity extends AppCompatActivity {
 
     private NavController nav;
@@ -28,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
     FrameLayout homeIconContainer, orderIconContainer, scanIconContainer, notifyIconContainer, profileIconContainer;
     LinearLayout tabHome, tabOrder, tabScan, tabNotify, tabProfile;
 
-    // SỬA LỖI: Định nghĩa và khởi tạo tập hợp các Fragment ID chính cần hiển thị Navbar
+    // Danh sách các Fragment ID sẽ hiển thị Bottom Bar
     private final Set<Integer> mainNavFragments = new HashSet<>(Arrays.asList(
             R.id.homeFragment,
             R.id.orderFragment,
@@ -37,49 +36,36 @@ public class MainActivity extends AppCompatActivity {
             R.id.profileFragment
     ));
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // **LOẠI BỎ logic khởi tạo `mainNavFragments` ở đây vì đã khởi tạo ở trên**
-
         NavHostFragment navHostFragment =
                 (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
 
-        nav = navHostFragment.getNavController();
+        if (navHostFragment != null) {
+            nav = navHostFragment.getNavController();
 
-        setupViews();
-        setupNavigationVisibility();
-        setupClicks();
+            setupViews();
+            setupNavigationVisibility();
+            setupClicks();
 
-        // Ẩn/hiện nav bar cho Fragment khởi động
-        int startDestinationId = nav.getGraph().getStartDestinationId();
-
-        // HÀM selectTab() cần được gọi sau khi nav controller đã khởi động
-        // để đảm bảo tab đầu tiên được highlight đúng.
-        selectInitialTab(startDestinationId);
-    }
-
-    // Tạo hàm mới để xử lý việc chọn tab khởi động
-    private void selectInitialTab(int destinationId) {
-        if (destinationId == R.id.homeFragment) {
-            selectTab(tabHome);
-        } else if (destinationId == R.id.orderFragment) {
-            selectTab(tabOrder);
-        } else if (destinationId == R.id.scanQRFragment) {
-            selectTab(tabScan);
-        } else if (destinationId == R.id.notificationFragment) {
-            selectTab(tabNotify);
-        } else if (destinationId == R.id.profileFragment) {
-            selectTab(tabProfile);
+            // Highlight tab tương ứng với màn hình khởi động (thường là homeFragment)
+            int startDestinationId = nav.getGraph().getStartDestinationId();
+            selectInitialTab(startDestinationId);
         }
     }
 
+    private void selectInitialTab(int destinationId) {
+        if (destinationId == R.id.homeFragment) selectTab(tabHome);
+        else if (destinationId == R.id.orderFragment) selectTab(tabOrder);
+        else if (destinationId == R.id.scanQRFragment) selectTab(tabScan);
+        else if (destinationId == R.id.notificationFragment) selectTab(tabNotify);
+        else if (destinationId == R.id.profileFragment) selectTab(tabProfile);
+    }
 
     private void setupViews() {
-        // Lấy toàn bộ Layout của thanh điều hướng (Giả sử ID là R.id.customBottomBar)
         bottomNavBar = findViewById(R.id.customBottomBar);
 
         tabHome = findViewById(R.id.tabHome);
@@ -107,22 +93,15 @@ public class MainActivity extends AppCompatActivity {
         profileIcon = findViewById(R.id.profileIcon);
     }
 
-    // --- LOGIC ẨN/HIỆN NAVIGATION BAR ---
     private void setupNavigationVisibility() {
         nav.addOnDestinationChangedListener((controller, destination, arguments) -> {
-
-            // Kiểm tra xem Fragment đích có nằm trong danh sách 5 Fragment chính không
             if (mainNavFragments.contains(destination.getId())) {
-                // HIỆN thanh Navigation Bar
                 bottomNavBar.setVisibility(View.VISIBLE);
             } else {
-                // ẨN thanh Navigation Bar ở các Fragment khác
                 bottomNavBar.setVisibility(View.GONE);
             }
         });
     }
-    // ------------------------------------
-
 
     private void setupClicks() {
         tabHome.setOnClickListener(v -> {
@@ -155,9 +134,10 @@ public class MainActivity extends AppCompatActivity {
             nav.navigate(R.id.profileFragment);
         });
     }
-    private void selectTab(View selected) {
 
-        // Reset icon về màu xám
+    private void selectTab(View selected) {
+        // Reset màu icon về xám
+        int inactiveColor = ContextCompat.getColor(this, R.color.icon_inactive);
         homeIcon.setImageTintList(ContextCompat.getColorStateList(this, R.color.icon_inactive));
         orderIcon.setImageTintList(ContextCompat.getColorStateList(this, R.color.icon_inactive));
         scanIcon.setImageTintList(ContextCompat.getColorStateList(this, R.color.icon_inactive));
@@ -171,39 +151,25 @@ public class MainActivity extends AppCompatActivity {
         notifyIconContainer.setBackground(null);
         profileIconContainer.setBackground(null);
 
-        // ẨN TẤT CẢ TEXT
+        // ẨN TEXT
         homeLabel.setVisibility(View.GONE);
         orderLabel.setVisibility(View.GONE);
         scanLabel.setVisibility(View.GONE);
         notifyLabel.setVisibility(View.GONE);
         profileLabel.setVisibility(View.GONE);
 
-        // ĐẨY ICON LÊN LẠI (default)
         resetIconPosition();
 
-        // --- ACTIVE TAB ---
-        if (selected == tabHome) {
-            activateTab(homeIconContainer, homeIcon, homeLabel);
-
-        } else if (selected == tabOrder) {
-            activateTab(orderIconContainer, orderIcon, orderLabel);
-
-        } else if (selected == tabScan) {
-            activateTab(scanIconContainer, scanIcon, scanLabel);
-
-        } else if (selected == tabNotify) {
-            activateTab(notifyIconContainer, notifyIcon, notifyLabel);
-
-        } else if (selected == tabProfile) {
-            activateTab(profileIconContainer, profileIcon, profileLabel);
-        }
+        // Kích hoạt tab được chọn
+        if (selected == tabHome) activateTab(homeIconContainer, homeIcon, homeLabel);
+        else if (selected == tabOrder) activateTab(orderIconContainer, orderIcon, orderLabel);
+        else if (selected == tabScan) activateTab(scanIconContainer, scanIcon, scanLabel);
+        else if (selected == tabNotify) activateTab(notifyIconContainer, notifyIcon, notifyLabel);
+        else if (selected == tabProfile) activateTab(profileIconContainer, profileIcon, profileLabel);
     }
 
-
-    // --- Tạo hàm hỗ trợ ---
     private void resetIconPosition() {
         int defaultMargin = dpToPx(12);
-
         setMargin(homeIconContainer, defaultMargin);
         setMargin(orderIconContainer, defaultMargin);
         setMargin(scanIconContainer, defaultMargin);
@@ -212,13 +178,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void activateTab(FrameLayout iconContainer, ImageView icon, TextView label) {
-
         iconContainer.setBackgroundResource(R.drawable.nav_active_circle);
         icon.setImageTintList(ContextCompat.getColorStateList(this, R.color.icon_active));
-
         label.setVisibility(View.VISIBLE);
-
-        // icon bị đẩy xuống để nhường chỗ cho text
         setMargin(iconContainer, 0);
     }
 
@@ -231,14 +193,8 @@ public class MainActivity extends AppCompatActivity {
     private int dpToPx(int dp) {
         return Math.round(dp * getResources().getDisplayMetrics().density);
     }
+
     private void clearSubScreensBackStack() {
-        FragmentManager fm = getSupportFragmentManager();
-
-        // Lệnh này sẽ xóa tất cả các giao dịch trong Back Stack
-        // cho đến khi gặp thẻ "PROFILE_SUB_SCREEN".
-        // FLAG POP_BACK_STACK_INCLUSIVE đảm bảo cả giao dịch có thẻ đó cũng bị xóa.
-        fm.popBackStack("PROFILE_SUB_SCREEN", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        getSupportFragmentManager().popBackStack("PROFILE_SUB_SCREEN", FragmentManager.POP_BACK_STACK_INCLUSIVE);
     }
-
-
 }

@@ -1,6 +1,8 @@
 package com.dinerestaurant.app.ui.other;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.graphics.Color; // Thêm import Color
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -14,8 +16,9 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment; // Đổi từ AppCompatActivity sang Fragment
 
 import com.dinerestaurant.app.R;
 import com.dinerestaurant.app.model.other.ChatMessage;
@@ -26,7 +29,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class MessageFragment extends AppCompatActivity {
+// Lớp này đã được đổi thành kế thừa từ Fragment
+public class MessageFragment extends Fragment {
 
     private LinearLayout chatContainer;
     private ScrollView scrollView;
@@ -35,42 +39,55 @@ public class MessageFragment extends AppCompatActivity {
 
     private List<ChatMessage> messageList;
 
+    // Sử dụng onCreateView để khởi tạo Fragment
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_message);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
 
-        // Init views
-        chatContainer = findViewById(R.id.chatContainer);
-        scrollView = findViewById(R.id.scrollView);
-        edtMessage = findViewById(R.id.edtMessage);
-        btnSend = findViewById(R.id.btnSend);
-        btnBack = findViewById(R.id.btnBack);
-        btnAdd = findViewById(R.id.btnAdd);
+        // 1. Inflate layout
+        View view = inflater.inflate(R.layout.fragment_message, container, false);
 
-        // Init message list
+        // 2. Init views (Sử dụng view.findViewById)
+        chatContainer = view.findViewById(R.id.chatContainer);
+        scrollView = view.findViewById(R.id.scrollView);
+        edtMessage = view.findViewById(R.id.edtMessage);
+        btnSend = view.findViewById(R.id.btnSend);
+        btnBack = view.findViewById(R.id.btnBack);
+        btnAdd = view.findViewById(R.id.btnAdd);
+
+        // 3. Init message list
         messageList = new ArrayList<>();
 
         // Xóa tin nhắn mẫu trong XML
         chatContainer.removeAllViews();
 
-        // Load tin nhắn mẫu
+        // 4. Load tin nhắn mẫu
         loadSampleMessages();
 
-        // Back button
-        btnBack.setOnClickListener(v -> finish());
-
-        // Add button (có thể thêm chức năng đính kèm file, ảnh)
-        btnAdd.setOnClickListener(v -> {
-            Toast.makeText(this, "Attach file feature", Toast.LENGTH_SHORT).show();
+        // 5. Back button
+        btnBack.setOnClickListener(v -> {
+            // Khi ở Fragment, nhấn Back tương đương với pop back stack
+            if (getActivity() != null) {
+                getActivity().onBackPressed();
+            }
         });
 
-        // Send button
+        // 6. Add button
+        btnAdd.setOnClickListener(v -> {
+            Toast.makeText(requireContext(), "Attach file feature", Toast.LENGTH_SHORT).show();
+        });
+
+        // 7. Send button
         btnSend.setOnClickListener(v -> sendMessage());
 
-        // Focus vào EditText để mở bàn phím
+        // 8. Focus vào EditText để mở bàn phím
         edtMessage.requestFocus();
+
+        return view;
     }
+
+    // Tất cả các phương thức hỗ trợ phải được cập nhật để sử dụng Context/Resources đúng cách
 
     private void loadSampleMessages() {
         // Tin nhắn từ admin
@@ -82,10 +99,12 @@ public class MessageFragment extends AppCompatActivity {
     }
 
     private void sendMessage() {
+        if (getContext() == null) return;
+
         String messageText = edtMessage.getText().toString().trim();
 
         if (messageText.isEmpty()) {
-            Toast.makeText(this, "Please enter a message", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Please enter a message", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -108,9 +127,15 @@ public class MessageFragment extends AppCompatActivity {
         // TODO: Gửi tin nhắn lên server ở đây
     }
 
+    @SuppressLint("ResourceType")
     private void addMessageToUI(ChatMessage message) {
+        if (getContext() == null) return;
+
+        // Sử dụng requireContext() hoặc getContext()
+        Context context = requireContext();
+
         // Tạo container cho tin nhắn
-        LinearLayout messageContainer = new LinearLayout(this);
+        LinearLayout messageContainer = new LinearLayout(context);
         messageContainer.setOrientation(LinearLayout.VERTICAL);
         messageContainer.setPadding(dpToPx(12), dpToPx(12), dpToPx(12), dpToPx(12));
 
@@ -122,20 +147,21 @@ public class MessageFragment extends AppCompatActivity {
 
         if (message.isSentByMe()) {
             // Tin nhắn của mình (bên phải)
-            containerParams.gravity = android.view.Gravity.END;
+            containerParams.gravity = Gravity.END; // Đã đổi thành Gravity.END
             messageContainer.setBackgroundResource(R.drawable.bg_msg_right);
         } else {
             // Tin nhắn của người khác (bên trái)
-            containerParams.gravity = android.view.Gravity.START;
+            containerParams.gravity = Gravity.START; // Đã đổi thành Gravity.START
             messageContainer.setBackgroundResource(R.drawable.bg_msg_left);
         }
 
         messageContainer.setLayoutParams(containerParams);
 
         // TextView cho nội dung tin nhắn
-        TextView tvMessage = new TextView(this);
+        TextView tvMessage = new TextView(context);
         tvMessage.setText(message.getMessage());
         tvMessage.setTextSize(16);
+        // Lấy màu từ Resources (sử dụng getResources() của Fragment)
         tvMessage.setTextColor(getResources().getColor(
                 message.isSentByMe() ? R.color.white : R.color.black
         ));
@@ -148,7 +174,7 @@ public class MessageFragment extends AppCompatActivity {
         tvMessage.setLayoutParams(messageParams);
 
         // TextView cho thời gian
-        TextView tvTime = new TextView(this);
+        TextView tvTime = new TextView(context);
         String timeText = message.getTime();
         if (message.isSentByMe()) {
             timeText += message.isRead() ? " ✓✓" : " ✓";
@@ -168,6 +194,7 @@ public class MessageFragment extends AppCompatActivity {
     }
 
     private int dpToPx(int dp) {
+        if (getResources() == null) return 0;
         float density = getResources().getDisplayMetrics().density;
         return Math.round(dp * density);
     }

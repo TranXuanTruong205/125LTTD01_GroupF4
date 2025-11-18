@@ -12,15 +12,18 @@
         android:label="Home"
         tools:layout="@layout/fragment_home">
         <action
-         android:id="@+id/action_homeFragment_to_categoryFragment"
+            android:id="@+id/action_homeFragment_to_categoryFragment"
             app:destination="@id/categoryFragment" />
 
         <action
-          android:id="@+id/action_homeFragment_to_specialOffersFragment"
+            android:id="@+id/action_homeFragment_to_specialOffersFragment"
             app:destination="@id/specialOffersFragment" />
         <action
             android:id="@+id/action_homeFragment_to_categoryProductsFragment"
             app:destination="@id/categoryProductsFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_messageFragment"
+            app:destination="@id/messageFragment" />
 
     </fragment>
 
@@ -52,7 +55,11 @@
         android:id="@+id/profileFragment"
         android:name="com.dinerestaurant.app.ui.profile.ProfileFragment"
         android:label="Profile"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_profileFragment_to_messageFragment"
+            app:destination="@id/messageFragment" />
+    </fragment>
 
 
     <fragment
@@ -70,9 +77,9 @@
         android:name="com.dinerestaurant.app.ui.home.CategoryProductsFragment"
         android:label="Category Products"
         tools:layout="@layout/fragment_category_products">
-    <action
-        android:id="@+id/action_categoryProductsFragment_to_productDetailFragment"
-        app:destination="@id/productDetailFragment"/>
+        <action
+            android:id="@+id/action_categoryProductsFragment_to_productDetailFragment"
+            app:destination="@id/productDetailFragment"/>
 
     </fragment>
 
@@ -98,7 +105,7 @@
         android:label="Special Offers"
         tools:layout="@layout/fragment_special_offers">
         <action
-          android:id="@+id/action_specialOffersFragment_to_productDetailFragment"
+            android:id="@+id/action_specialOffersFragment_to_productDetailFragment"
             app:destination="@id/productDetailFragment" />
     </fragment>
 
@@ -129,12 +136,18 @@
             app:destination="@id/promotionsFragment" />
     </fragment>
 
+    <!-- ĐÃ SỬA LỖI TYPO 'PromotionsFragement' và class name -->
+    <fragment
+        android:id="@+id/promotionsFragment"
+        android:name="com.dinerestaurant.app.ui.cart.PromotionsFragement"
+        android:label="Promotions"
+        tools:layout="@layout/fragment_promotions" />
+
     <fragment
         android:id="@+id/paymentFragment"
         android:name="com.dinerestaurant.app.ui.cart.PaymentFragment"
         android:label="Payment"
         tools:layout="@layout/fragment_payment" />
-
 
 
     <fragment
@@ -143,12 +156,18 @@
         android:label="Liked"
         tools:layout="@layout/fragment_liked" />
 
-
-
+    <!-- ĐÃ SỬA LỖI CLASS NAME VÀ LABEL -->
     <fragment
         android:id="@+id/userProfileFragment"
         android:name="com.dinerestaurant.app.ui.profile.UserProfile"
         android:label="User Profile"
         tools:layout="@layout/fragment_user_profile" />
+
+    <!-- ĐÃ SỬA LỖI CLASS NAME VÀ LABEL -->
+    <fragment
+        android:id="@+id/messageFragment"
+        android:name="com.dinerestaurant.app.ui.other.MessageFragment"
+        android:label="Messages"
+        tools:layout="@layout/fragment_message" />
 
 </navigation>

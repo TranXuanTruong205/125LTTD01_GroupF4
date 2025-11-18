@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -11,9 +12,9 @@ import android.widget.*;
 
 import com.dinerestaurant.app.R;
 import com.dinerestaurant.app.data.StaticData;
+import com.dinerestaurant.app.ui.MainActivity;
 
 import java.util.Calendar;
-
 
 public class ProfileSetupActivity extends AppCompatActivity {
 
@@ -36,10 +37,12 @@ public class ProfileSetupActivity extends AppCompatActivity {
         edtGender = findViewById(R.id.edtGender);
         btnContinue = findViewById(R.id.btnContinue);
 
-        // Gán dữ liệu ban đầu
-        edtPhone.setText(StaticData.tempUser.getPhone());
-        edtEmail.setText(StaticData.tempUser.getEmail());
-        edtFullName.setText(StaticData.tempUser.getFullName());
+        // Gán dữ liệu ban đầu (kiểm tra null để tránh lỗi crash)
+        if (StaticData.tempUser != null) {
+            edtPhone.setText(StaticData.tempUser.getPhone());
+            edtEmail.setText(StaticData.tempUser.getEmail());
+            edtFullName.setText(StaticData.tempUser.getFullName());
+        }
 
         // Mặc định: nút xám (disabled)
         btnContinue.setEnabled(false);
@@ -63,9 +66,11 @@ public class ProfileSetupActivity extends AppCompatActivity {
 
         edtFullName.addTextChangedListener(watcher);
         edtLocation.addTextChangedListener(watcher);
+        // Lưu ý: edtDob và edtGender không cần TextWatcher vì chúng được set text từ Dialog
 
         // Nút Continue
         btnContinue.setOnClickListener(v -> {
+            // Lưu thông tin vào currentUser
             StaticData.currentUser.setPhone(edtPhone.getText().toString());
             StaticData.currentUser.setEmail(edtEmail.getText().toString());
             StaticData.currentUser.setFullName(edtFullName.getText().toString());
@@ -74,6 +79,14 @@ public class ProfileSetupActivity extends AppCompatActivity {
             StaticData.currentUser.setLocation(edtLocation.getText().toString());
 
             Toast.makeText(this, "Profile Completed!", Toast.LENGTH_SHORT).show();
+
+            Intent intent = new Intent(this, MainActivity.class);
+            // Xóa back stack để ngăn người dùng quay lại màn hình setup
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+
+            // Đóng Activity hiện tại
+            finish();
         });
     }
 
@@ -90,7 +103,7 @@ public class ProfileSetupActivity extends AppCompatActivity {
                 this,
                 (view, year, month, dayOfMonth) -> {
                     edtDob.setText(dayOfMonth + "/" + (month + 1) + "/" + year);
-                    validateInputs();
+                    validateInputs(); // Kiểm tra ngay sau khi chọn
                 },
                 y, m, d
         );
@@ -107,7 +120,7 @@ public class ProfileSetupActivity extends AppCompatActivity {
         builder.setTitle("Select Gender");
         builder.setItems(genders, (dialog, which) -> {
             edtGender.setText(genders[which]);
-            validateInputs();
+            validateInputs(); // Kiểm tra ngay sau khi chọn
         });
         builder.show();
     }

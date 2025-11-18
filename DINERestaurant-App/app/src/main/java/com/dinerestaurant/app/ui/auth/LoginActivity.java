@@ -12,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.dinerestaurant.app.R;
 import com.dinerestaurant.app.data.StaticData;
-import com.google.android.material.button.MaterialButton;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -30,7 +29,7 @@ public class LoginActivity extends AppCompatActivity {
         // Mặc định: xám, không click được
         btnSignIn.setEnabled(false);
         btnSignIn.setBackgroundResource(R.drawable.bg_btn_signin);
-        btnSignIn.setAlpha(1f);   // tránh MaterialButton tự làm mờ
+        btnSignIn.setAlpha(1f);
 
         // Lắng nghe nhập số điện thoại
         edtPhone.addTextChangedListener(new TextWatcher() {
@@ -40,18 +39,17 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 String phone = s.toString().trim();
-
-                // 👉 Vì bạn đã có (+84) riêng, nên ở đây chỉ kiểm tra 9 số
+                // Kiểm tra 9 số (do đã có +84)
                 boolean valid = phone.length() == 9;
 
                 if (valid) {
                     btnSignIn.setEnabled(true);
                     btnSignIn.setAlpha(1f);
-                    btnSignIn.setBackgroundResource(R.drawable.gb_btn_enable);   // màu cam đậm
+                    btnSignIn.setBackgroundResource(R.drawable.gb_btn_enable); // màu cam đậm
                 } else {
                     btnSignIn.setEnabled(false);
                     btnSignIn.setAlpha(1f);
-                    btnSignIn.setBackgroundResource(R.drawable.bg_btn_signin);   // màu cam/xám nhạt
+                    btnSignIn.setBackgroundResource(R.drawable.bg_btn_signin); // màu xám
                 }
             }
 
@@ -68,10 +66,11 @@ public class LoginActivity extends AppCompatActivity {
                 return;
             }
 
-            // lưu phone vào dữ liệu tĩnh
+            // Lưu phone vào dữ liệu tĩnh
             StaticData.tempUser.setPhone(phone);
             StaticData.isRegisterFlow = false;
 
+            // Chuyển sang màn hình xác thực OTP
             startActivity(new Intent(this, VerificationActivity.class));
         });
 

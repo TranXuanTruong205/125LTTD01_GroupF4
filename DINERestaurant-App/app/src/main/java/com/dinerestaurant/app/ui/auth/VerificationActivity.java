@@ -3,21 +3,18 @@ package com.dinerestaurant.app.ui.auth;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dinerestaurant.app.R;
 import com.dinerestaurant.app.data.StaticData;
+import com.dinerestaurant.app.ui.MainActivity;
 
-public class VerificationActivity extends  AppCompatActivity {
+public class VerificationActivity extends AppCompatActivity {
 
     EditText otp1, otp2, otp3, otp4;
     Button btnVerify;
@@ -70,23 +67,28 @@ public class VerificationActivity extends  AppCompatActivity {
             }
 
             if (StaticData.isRegisterFlow) {
+                // Tiếp tục luồng đăng ký
                 startActivity(new Intent(this, ProfileSetupActivity.class));
+                finish(); // Đóng VerificationActivity
             } else {
+                // Đăng nhập thành công -> Chuyển sang MainActivity
                 Toast.makeText(this, "Login Success!", Toast.LENGTH_SHORT).show();
+
+                Intent intent = new Intent(this, MainActivity.class);
+                // Cờ quan trọng: Xóa back stack để không quay lại được màn hình Login/Verification
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+
+                finish(); // Đóng Activity hiện tại ngay lập tức
             }
         });
 
-        // quay về login
+        // Quay về login/back
         findViewById(R.id.tvSignIn).setOnClickListener(v -> finish());
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
     }
 
-
-    // --------------------------------------------------------
-    // CHECK OTP (khi đủ 4 số → bật nút Verify)
-    // --------------------------------------------------------
     private void checkOtpInputs() {
-
         String o1 = otp1.getText().toString();
         String o2 = otp2.getText().toString();
         String o3 = otp3.getText().toString();
@@ -100,11 +102,11 @@ public class VerificationActivity extends  AppCompatActivity {
         if (valid) {
             btnVerify.setEnabled(true);
             btnVerify.setAlpha(1f);
-            btnVerify.setBackgroundResource(R.drawable.gb_btn_enable);  // cam đậm
+            btnVerify.setBackgroundResource(R.drawable.gb_btn_enable); // cam đậm
         } else {
             btnVerify.setEnabled(false);
             btnVerify.setAlpha(1f);
-            btnVerify.setBackgroundResource(R.drawable.bg_btn_signin);  // xám
+            btnVerify.setBackgroundResource(R.drawable.bg_btn_signin); // xám
         }
     }
 }
