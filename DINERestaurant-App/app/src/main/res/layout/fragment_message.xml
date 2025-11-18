@@ -67,7 +67,8 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:padding="12dp"
-        android:background="@color/dine_bg_gray">
+        android:background="@color/dine_bg_gray"
+        android:fillViewport="true">
 
         <LinearLayout
             android:id="@+id/chatContainer"
@@ -75,99 +76,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Incoming message -->
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_msg_left"
-                android:padding="12dp"
-                android:layout_marginTop="10dp">
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:text="Hello!"
-                        android:textColor="@color/black"
-                        android:textSize="16sp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="6dp"/>
-
-                    <TextView
-                        android:text="10:10"
-                        android:textColor="#999"
-                        android:textSize="12sp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-                </LinearLayout>
-            </LinearLayout>
-
-
-            <!-- Outgoing message -->
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_msg_right"
-                android:padding="12dp"
-                android:layout_gravity="end"
-                android:layout_marginTop="16dp">
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:text="Hi!"
-                        android:textColor="@color/white"
-                        android:textSize="16sp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="6dp"/>
-
-                    <TextView
-                        android:text="10:10 ✓✓"
-                        android:textColor="#FFE7E7"
-                        android:textSize="12sp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-                </LinearLayout>
-            </LinearLayout>
-
-
-            <!-- Outgoing long message -->
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_msg_right"
-                android:padding="12dp"
-                android:layout_gravity="end"
-                android:layout_marginTop="10dp">
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:text="Great! 😊"
-                        android:textColor="@color/white"
-                        android:textSize="16sp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="6dp"/>
-
-                    <TextView
-                        android:text="10:12 ✓✓"
-                        android:textColor="#FFE7E7"
-                        android:textSize="12sp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-                </LinearLayout>
-            </LinearLayout>
+            <!-- Tin nhắn sẽ được thêm động ở đây -->
 
         </LinearLayout>
 
@@ -199,9 +108,13 @@
             android:layout_marginStart="12dp"
             android:background="@drawable/bg_input"
             android:paddingStart="14dp"
+            android:paddingEnd="14dp"
             android:hint="Type a message ..."
             android:textColor="@color/black"
-            android:textSize="16sp"/>
+            android:textSize="16sp"
+            android:maxLines="3"
+            android:inputType="textMultiLine|textCapSentences"
+            android:imeOptions="actionSend"/>
 
         <ImageView
             android:id="@+id/btnSend"

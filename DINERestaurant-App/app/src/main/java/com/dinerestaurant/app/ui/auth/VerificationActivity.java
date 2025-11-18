@@ -15,133 +15,96 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dinerestaurant.app.R;
+import com.dinerestaurant.app.data.StaticData;
 
-public class VerificationActivity extends AppCompatActivity {
+public class VerificationActivity extends  AppCompatActivity {
 
     EditText otp1, otp2, otp3, otp4;
-    TextView tvTimer, tvResend, tvSignIn, tvDescription;
     Button btnVerify;
-    ImageView btnBack;
-
-    CountDownTimer timer;
-    int timeLeft = 45;   // 45s countdown
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_verification);
 
-        initViews();
-        setupOtpAutoMove();
-        startCountdown();
-        setupEvents();
-    }
-
-    private void initViews() {
         otp1 = findViewById(R.id.otp1);
         otp2 = findViewById(R.id.otp2);
         otp3 = findViewById(R.id.otp3);
         otp4 = findViewById(R.id.otp4);
-
-        tvTimer = findViewById(R.id.tvTimer);
-        tvResend = findViewById(R.id.tvResend);
-        tvSignIn = findViewById(R.id.tvSignIn);
-        tvDescription = findViewById(R.id.tvDescription);
-
         btnVerify = findViewById(R.id.btnVerify);
-        btnBack = findViewById(R.id.btnBack);
-    }
 
-    private void setupEvents() {
+        // Mặc định: disable + màu xám
+        btnVerify.setEnabled(false);
+        btnVerify.setBackgroundResource(R.drawable.bg_btn_signin);
+        btnVerify.setAlpha(1f);
 
-        // BACK
-        btnBack.setOnClickListener(v -> finish());
+        // Watcher để kiểm tra OTP
+        TextWatcher otpWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
-        // VERIFY
-        btnVerify.setOnClickListener(v -> verifyOtp());
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                checkOtpInputs();
+            }
 
-        // RESEND
-        tvResend.setOnClickListener(v -> {
-            if (timeLeft == 0) {
-                Toast.makeText(this, "Code resent!", Toast.LENGTH_SHORT).show();
-                resetCountdown();
+            @Override
+            public void afterTextChanged(Editable s) {}
+        };
+
+        otp1.addTextChangedListener(otpWatcher);
+        otp2.addTextChangedListener(otpWatcher);
+        otp3.addTextChangedListener(otpWatcher);
+        otp4.addTextChangedListener(otpWatcher);
+
+        // Nhấn VERIFY
+        btnVerify.setOnClickListener(v -> {
+            String code = otp1.getText().toString()
+                    + otp2.getText().toString()
+                    + otp3.getText().toString()
+                    + otp4.getText().toString();
+
+            if (!code.equals(StaticData.STATIC_OTP)) {
+                Toast.makeText(this, "Incorrect OTP!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (StaticData.isRegisterFlow) {
+                startActivity(new Intent(this, ProfileSetupActivity.class));
+            } else {
+                Toast.makeText(this, "Login Success!", Toast.LENGTH_SHORT).show();
             }
         });
 
-        // BACK TO SIGN IN
-        tvSignIn.setOnClickListener(v -> {
-            Intent intent = new Intent(VerificationActivity.this, LoginActivity.class);
-            startActivity(intent);
-            finish();
-        });
+        // quay về login
+        findViewById(R.id.tvSignIn).setOnClickListener(v -> finish());
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
     }
 
-    private void setupOtpAutoMove() {
 
-        TextWatcher watcher = new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+    // --------------------------------------------------------
+    // CHECK OTP (khi đủ 4 số → bật nút Verify)
+    // --------------------------------------------------------
+    private void checkOtpInputs() {
 
-            @Override
-            public void afterTextChanged(Editable s) {
+        String o1 = otp1.getText().toString();
+        String o2 = otp2.getText().toString();
+        String o3 = otp3.getText().toString();
+        String o4 = otp4.getText().toString();
 
-                if (otp1.getText().length() == 1) otp2.requestFocus();
-                if (otp2.getText().length() == 1) otp3.requestFocus();
-                if (otp3.getText().length() == 1) otp4.requestFocus();
-            }
-        };
+        boolean valid = o1.length() == 1
+                && o2.length() == 1
+                && o3.length() == 1
+                && o4.length() == 1;
 
-        otp1.addTextChangedListener(watcher);
-        otp2.addTextChangedListener(watcher);
-        otp3.addTextChangedListener(watcher);
-        otp4.addTextChangedListener(watcher);
-    }
-
-    private void startCountdown() {
-        tvResend.setTextColor(Color.parseColor("#B5B5B5")); // Gray (disabled)
-
-        timer = new CountDownTimer(45000, 1000) { // 45 seconds
-            @Override
-            public void onTick(long millisUntilFinished) {
-                timeLeft = (int) (millisUntilFinished / 1000);
-                tvTimer.setText(String.format("00 : %02d", timeLeft));
-            }
-
-            @Override
-            public void onFinish() {
-                timeLeft = 0;
-                tvTimer.setText("00 : 00");
-                tvResend.setTextColor(Color.parseColor("#FF6B4A")); // Orange = active
-            }
-        };
-        timer.start();
-    }
-
-    private void resetCountdown() {
-        if (timer != null) timer.cancel();
-        timeLeft = 45;
-        startCountdown();
-    }
-
-    private void verifyOtp() {
-        String code = otp1.getText().toString().trim() +
-                otp2.getText().toString().trim() +
-                otp3.getText().toString().trim() +
-                otp4.getText().toString().trim();
-
-        if (code.length() != 4) {
-            Toast.makeText(this, "Please enter full OTP code!", Toast.LENGTH_SHORT).show();
-            return;
+        if (valid) {
+            btnVerify.setEnabled(true);
+            btnVerify.setAlpha(1f);
+            btnVerify.setBackgroundResource(R.drawable.gb_btn_enable);  // cam đậm
+        } else {
+            btnVerify.setEnabled(false);
+            btnVerify.setAlpha(1f);
+            btnVerify.setBackgroundResource(R.drawable.bg_btn_signin);  // xám
         }
-
-        // TODO: Gửi code lên API để verify OTP
-
-        Toast.makeText(this, "Verifying...", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (timer != null) timer.cancel();
     }
 }
