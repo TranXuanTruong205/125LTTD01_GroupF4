@@ -23,7 +23,7 @@ public class PromotionsFragement extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_promotions);
+        setContentView(R.layout.fragment_payment);
 
         // Initialize views
         btnBack = findViewById(R.id.btn_back);
