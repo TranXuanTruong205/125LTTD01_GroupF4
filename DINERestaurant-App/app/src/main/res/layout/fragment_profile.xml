@@ -143,6 +143,7 @@
 
             <!-- My Locations -->
             <LinearLayout
+                android:id="@+id/llMyLocations"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:gravity="center_vertical"
@@ -251,6 +252,7 @@
 
             <!-- Liked -->
             <LinearLayout
+                android:id="@+id/llLiked"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:gravity="center_vertical"

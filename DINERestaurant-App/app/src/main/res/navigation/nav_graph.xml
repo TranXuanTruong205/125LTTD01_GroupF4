@@ -94,12 +94,6 @@
         android:label="Payment"
         tools:layout="@layout/fragment_payment" />
 
-    <fragment
-        android:id="@+id/promotionsFragment"
-        android:name="com.dinerestaurant.app.ui.cart.PromotionsFragement"
-        android:label="Promotions"
-        tools:layout="@layout/fragment_promotions" />
-
 
     <fragment
         android:id="@+id/likedFragment"
