@@ -32,26 +32,26 @@ public class CategoryFragment extends Fragment {
 
         // Create categories data với ảnh từ assets
         List<CategoryItem> items = new ArrayList<>();
-        items.add(new CategoryItem("images/categories/Cheese Burger.png", "Burger"));
-        items.add(new CategoryItem("images/categories/Taco.png", "Taco"));
-        items.add(new CategoryItem("images/categories/Burrito.png", "Burrito"));
-        items.add(new CategoryItem("images/categories/Drink.png", "Drink"));
-        items.add(new CategoryItem("images/categories/Pizza.png", "Pizza"));
-        items.add(new CategoryItem("images/categories/Donut 2.png", "Donut"));
-        items.add(new CategoryItem("images/categories/Salad.png", "Salad"));
-        items.add(new CategoryItem("images/categories/Noodle 2.png", "Noodles"));
-        items.add(new CategoryItem("images/categories/Sandwich.png", "Sandwich"));
-        items.add(new CategoryItem("images/categories/Pasta.png", "Pasta"));
-        items.add(new CategoryItem("images/categories/Ice cream.png", "Ice Cream"));
-        items.add(new CategoryItem("images/categories/fried-rice.png", "Rice"));
-        items.add(new CategoryItem("images/categories/takoyaki.png", "Takoyaki"));
-        items.add(new CategoryItem("images/categories/fruits.png", "Fruit"));
-        items.add(new CategoryItem("images/categories/sausage.png", "Sausage"));
-        items.add(new CategoryItem("images/categories/goi-cuon.png", "Gỏi cuốn"));
-        items.add(new CategoryItem("images/categories/christmas-cookie.png", "Cookie"));
-        items.add(new CategoryItem("images/categories/pudding.png", "Pudding"));
-        items.add(new CategoryItem("images/categories/banh-mi (1).png", "Bánh Mì"));
-        items.add(new CategoryItem("images/categories/mandu.png", "Dumpling"));
+        items.add(new CategoryItem("images/categories/ic_burger.png", "Burger"));
+        items.add(new CategoryItem("images/categories/ic_taco.png", "Taco"));
+        items.add(new CategoryItem("images/categories/ic_burrito.png", "Burrito"));
+        items.add(new CategoryItem("images/categories/ic_drink.png", "Drink"));
+        items.add(new CategoryItem("images/categories/ic_pizza.png", "Pizza"));
+        items.add(new CategoryItem("images/categories/ic_donut.png", "Donut"));
+        items.add(new CategoryItem("images/categories/ic_salad.png", "Salad"));
+        items.add(new CategoryItem("images/categories/ic_noodles.png", "Noodles"));
+        items.add(new CategoryItem("images/categories/ic-Sandwich.png", "Sandwich"));
+        items.add(new CategoryItem("images/categories/ic_Pasta.png", "Pasta"));
+        items.add(new CategoryItem("images/categories/ic_iceCream.png", "Ice Cream"));
+        items.add(new CategoryItem("images/categories/ic_fried-rice.png", "Rice"));
+        items.add(new CategoryItem("images/categories/ic_takoyaki.png", "Takoyaki"));
+        items.add(new CategoryItem("images/categories/ic_fruits.png", "Fruit"));
+        items.add(new CategoryItem("images/categories/ic_sausage.png", "Sausage"));
+        items.add(new CategoryItem("images/categories/ic_goi-cuon.png", "Gỏi cuốn"));
+        items.add(new CategoryItem("images/categories/ic_christmas-cookie.png", "Cookie"));
+        items.add(new CategoryItem("images/categories/ic_pudding.png", "Pudding"));
+        items.add(new CategoryItem("images/categories/ic_banhMi.png", "Bánh Mì"));
+        items.add(new CategoryItem("images/categories/ic_dumpling.png", "Dumpling"));
 
         // Setup adapter với AssetManager
         adapter = new CategoryAdapter(items, requireContext().getAssets(), item -> {

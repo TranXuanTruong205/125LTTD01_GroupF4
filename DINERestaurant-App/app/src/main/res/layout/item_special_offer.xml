@@ -32,8 +32,8 @@
                 android:layout_gravity="end|top"
                 android:layout_margin="12dp"
                 android:padding="8dp"
-                android:src="@android:drawable/btn_star_big_off"
-                android:background="@android:drawable/dialog_holo_light_frame"
+                android:src="@drawable/ic_heart"
+                android:background="@drawable/bg_circle_white"
                 app:tint="#FF6B35"/>
         </FrameLayout>
 

@@ -89,18 +89,18 @@ public class HomeFragment extends Fragment {
         rvCategories.setLayoutManager(new GridLayoutManager(getContext(), 4));
 
         List<CategoryItem> categories = new ArrayList<>();
-        categories.add(new CategoryItem("images/home_categories/Cheese Burger.png", "Burger"));
-        categories.add(new CategoryItem("images/home_categories/Taco.png", "Taco"));
-        categories.add(new CategoryItem("images/home_categories/Burrito.png", "Burrito"));
-        categories.add(new CategoryItem("images/home_categories/Drink.png", "Drink"));
-        categories.add(new CategoryItem("images/home_categories/Pizza.png", "Pizza"));
-        categories.add(new CategoryItem("images/home_categories/Donut 2.png", "Donut"));
-        categories.add(new CategoryItem("images/home_categories/Salad.png", "Salad"));
-        categories.add(new CategoryItem("images/home_categories/Noodle 2.png", "Noodles"));
-        categories.add(new CategoryItem("images/home_categories/Sandwich.png", "Sandwich"));
-        categories.add(new CategoryItem("images/home_categories/Pasta.png", "Pasta"));
-        categories.add(new CategoryItem("images/home_categories/Ice cream.png", "Ice Cream"));
-        categories.add(new CategoryItem("images/home_categories/More 1.png", "More"));
+        categories.add(new CategoryItem("images/categories/ic_burger.png", "Burger"));
+        categories.add(new CategoryItem("images/categories/ic_taco.png", "Taco"));
+        categories.add(new CategoryItem("images/categories/ic_burrito.png", "Burrito"));
+        categories.add(new CategoryItem("images/categories/ic_drink.png", "Drink"));
+        categories.add(new CategoryItem("images/categories/ic_pizza.png", "Pizza"));
+        categories.add(new CategoryItem("images/categories/ic_donut.png", "Donut"));
+        categories.add(new CategoryItem("images/categories/ic_salad.png", "Salad"));
+        categories.add(new CategoryItem("images/categories/ic_noodles.png", "Noodles"));
+        categories.add(new CategoryItem("images/categories/ic-Sandwich.png", "Sandwich"));
+        categories.add(new CategoryItem("images/categories/ic_Pasta.png", "Pasta"));
+        categories.add(new CategoryItem("images/categories/ic_iceCream.png", "Ice Cream"));
+        categories.add(new CategoryItem("images/categories/ic_more.png", "More"));
 
         categoryAdapter = new CategoryAdapter(categories, requireContext().getAssets(),item -> {
             // Kiểm tra xem người dùng có bấm vào nút "More" không
