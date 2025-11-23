@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="24dp">
 
         <!-- HEADER -->
         <LinearLayout
@@ -22,7 +22,7 @@
                 android:src="@drawable/ic_arrow_back"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:background="@android:color/transparent" />
+                android:background="@drawable/bg_circle_white" />
 
             <TextView
                 android:layout_width="0dp"
@@ -35,11 +35,10 @@
 
             <ImageButton
                 android:src="@drawable/ic_more"
-
-
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:background="@drawable/fno_bg_circle_shadow"/>
+                android:padding="10dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_circle_white"/>
 
         </LinearLayout>
 

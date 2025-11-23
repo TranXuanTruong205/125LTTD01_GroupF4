@@ -5,10 +5,13 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.dinerestaurant.app.R;
 import com.dinerestaurant.app.ui.other.LikedFragment;
@@ -25,7 +28,7 @@ public class ProfileFragment extends Fragment {
     private static final int CONTAINER_ID = R.id.nav_host_fragment;
     // Thẻ (Tag) dùng để dọn dẹp Back Stack khi chuyển tab chính
     private static final String BACK_STACK_TAG = "PROFILE_SUB_SCREEN";
-
+    private ImageButton btnback;
     public ProfileFragment() { }
 
     @Override
@@ -39,6 +42,8 @@ public class ProfileFragment extends Fragment {
 
         // 1.5. Ánh xạ btnmessages
         btnMessages = view.findViewById(R.id.btnmessages);
+
+        btnback = view.findViewById(R.id.btnBack);
 
         // 2. Thiết lập OnClickListener cho My Locations
         llMyLocations.setOnClickListener(v -> {
@@ -55,16 +60,22 @@ public class ProfileFragment extends Fragment {
         // 4. Thiết lập OnClickListener cho Messages (Đã sửa logic)
         setupMessagesButton();
 
+        setupBackButton();
         return view;
     }
 
-    // 🚀 HÀM SETUP MESSAGES BUTTON ĐÃ SỬA
     private void setupMessagesButton() {
         if (btnMessages != null) {
             btnMessages.setOnClickListener(v -> {
-                // SỬ DỤNG PHƯƠNG THỨC CHUYỂN FRAGMENT ĐÃ CÓ
-                MessageFragment messageFragment = new MessageFragment();
-                replaceFragment(messageFragment);
+                NavController navController = Navigation.findNavController(v); // Lấy NavController
+                try {
+                    // SỬ DỤNG Navigation Component để chuyển màn hình
+                    // ID này phải được định nghĩa trong Nav Graph của bạn (ví dụ: chuyển từ Home sang Message)
+                    navController.navigate(R.id.action_profileFragment_to_messageFragment);
+                } catch (Exception e) {
+                    // Xử lý lỗi nếu không tìm thấy action
+                    e.printStackTrace();
+                }
             });
         }
     }
@@ -81,5 +92,15 @@ public class ProfileFragment extends Fragment {
         transaction.addToBackStack(BACK_STACK_TAG);
 
         transaction.commit();
+    }
+
+    private void setupBackButton() {
+        if (btnback != null) {
+            btnback.setOnClickListener(v -> {
+                // Lấy NavController và thực hiện quay lại
+                NavController navController = Navigation.findNavController(v);
+                navController.navigateUp();
+            });
+        }
     }
 }

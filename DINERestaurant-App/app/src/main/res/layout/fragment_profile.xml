@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="24dp">
 
         <!-- HEADER -->
         <LinearLayout
@@ -20,10 +20,11 @@
             android:orientation="horizontal">
 
             <ImageButton
+                android:id="@+id/btnBack"
                 android:src="@drawable/ic_arrow_back"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:padding="12dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:padding="10dp"
                 android:background="@drawable/fp_bg_circle_shadow"
                 android:contentDescription="Go back" />
 
@@ -39,9 +40,9 @@
 
             <ImageButton
                 android:src="@drawable/ic_more"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:padding="12dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:padding="10dp"
                 android:background="@drawable/fp_bg_circle_shadow"
                 android:contentDescription="More options" />
 
@@ -262,7 +263,8 @@
                 <ImageView
                     android:layout_width="28dp"
                     android:layout_height="28dp"
-                    android:src="@drawable/ic_heart" />
+                    android:src="@drawable/ic_heart"
+                    app:tint="@color/black"/>
 
                 <TextView
                     android:layout_width="0dp"
@@ -369,24 +371,31 @@
 
 
         <Switch
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
             android:text="Push Notification"
-            android:layout_width="match_parent"
-            android:layout_marginTop="20dp"
-            android:layout_height="wrap_content"/>
+            android:textSize="16sp" />
 
         <Switch
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
             android:text="Dark Mode"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:textSize="16sp" />
 
         <Switch
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
             android:text="Sound"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:textSize="16sp" />
 
         <Switch
-            android:text="Automatically Updated"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="Automatically Updated"
+            android:textSize="16sp" />
     </LinearLayout>
 </ScrollView>

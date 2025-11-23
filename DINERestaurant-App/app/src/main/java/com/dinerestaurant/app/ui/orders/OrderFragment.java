@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,6 +26,7 @@ public class OrderFragment extends Fragment implements OrderAdapter.OnOrderClick
     private List<OrderItem> orderList;
     private List<OrderItem> allOrders; // Lưu tất cả orders
     private String currentFilter = "All"; // Bộ lọc hiện tại
+    private ImageButton btnBack;
 
     @Nullable
     @Override
@@ -46,6 +48,9 @@ public class OrderFragment extends Fragment implements OrderAdapter.OnOrderClick
 
         // Setup filter buttons
         setupFilterButtons(view);
+
+        btnBack = view.findViewById(R.id.imageButton3);
+        setupBackButton();
 
         return view;
     }
@@ -111,6 +116,15 @@ public class OrderFragment extends Fragment implements OrderAdapter.OnOrderClick
             Toast.makeText(getContext(),
                     "Navigation Error. Check R.id.action_orderFragment_to_orderDetailFragment in nav graph.",
                     Toast.LENGTH_LONG).show();
+        }
+    }
+    private void setupBackButton() {
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> {
+                // Lấy NavController và thực hiện quay lại
+                NavController navController = Navigation.findNavController(v);
+                navController.navigateUp();
+            });
         }
     }
 }

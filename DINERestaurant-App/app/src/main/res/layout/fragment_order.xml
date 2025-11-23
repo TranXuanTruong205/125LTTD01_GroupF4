@@ -25,23 +25,26 @@
 
             <ImageButton
                 android:id="@+id/imageButton3"
-                android:layout_width="94dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="#FFFFFF"
-                app:srcCompat="@drawable/arrow_left" />
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_circle_white"
+                android:src="@drawable/ic_arrow_back"
+                android:layout_gravity="center"/>
 
             <TextView
                 android:id="@+id/textView2"
-                android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_width="0dp"
                 android:layout_weight="1"
-                android:paddingTop="15px"
-                android:paddingRight="40dp"
                 android:text="Orders"
                 android:textAlignment="center"
                 android:textSize="60px"
+                android:gravity="center"
                 android:textStyle="bold" />
+            <TextView
+                android:layout_width="40dp"
+                android:layout_height="match_parent">
+            </TextView>
 
         </LinearLayout>
 

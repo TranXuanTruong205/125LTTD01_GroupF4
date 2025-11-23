@@ -18,7 +18,7 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <!-- TOP BAR -->
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="47dp"
             android:layout_marginStart="20dp"
@@ -28,22 +28,23 @@
 
             <ImageButton
                 android:id="@+id/imageButton3"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:background="#FFFFFF"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_circle_white"
                 app:srcCompat="@drawable/arrow_left" />
 
             <TextView
                 android:id="@+id/textView2"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="My Basket"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="8dp" />
 
-        </LinearLayout>
+        </RelativeLayout>
 
         <!-- ORDER SUMMARY + BADGE -->
         <LinearLayout

@@ -97,12 +97,26 @@ public class MainActivity extends AppCompatActivity {
         nav.addOnDestinationChangedListener((controller, destination, arguments) -> {
             if (mainNavFragments.contains(destination.getId())) {
                 bottomNavBar.setVisibility(View.VISIBLE);
+                syncTabSelection(destination.getId());
             } else {
                 bottomNavBar.setVisibility(View.GONE);
             }
         });
     }
-
+    private void syncTabSelection(int destinationId) {
+        // Dựa vào ID của màn hình đang hiển thị, chọn Tab tương ứng
+        if (destinationId == R.id.homeFragment) {
+            selectTab(tabHome);
+        } else if (destinationId == R.id.orderFragment) {
+            selectTab(tabOrder);
+        } else if (destinationId == R.id.scanQRFragment) {
+            selectTab(tabScan);
+        } else if (destinationId == R.id.notificationFragment) {
+            selectTab(tabNotify);
+        } else if (destinationId == R.id.profileFragment) {
+            selectTab(tabProfile);
+        }
+    }
     private void setupClicks() {
         tabHome.setOnClickListener(v -> {
             clearSubScreensBackStack();
