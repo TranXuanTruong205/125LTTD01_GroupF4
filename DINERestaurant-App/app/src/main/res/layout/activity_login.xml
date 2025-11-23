@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:gravity="center_horizontal">
+
+        <!-- TITLE -->
+        <TextView
+            android:id="@+id/tvLoginTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Login"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="@color/orange"
+            android:layout_marginTop="40dp" />
+
+        <!-- PHONE INPUT BOX -->
+        <LinearLayout
+            android:id="@+id/phoneContainer"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_input"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:layout_marginTop="40dp">
+
+            <!-- FLAG ICON -->
+            <ImageView
+                android:layout_width="28dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_vietnam_flag"
+                android:layout_marginEnd="10dp"/>
+
+            <!-- DROPDOWN -->
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_arrow_down"
+                android:layout_marginEnd="10dp"/>
+
+            <!-- COUNTRY CODE -->
+            <TextView
+                android:id="@+id/tvCountryCode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="(+84)"
+                android:textSize="16sp"
+                android:textColor="#A6A6A6"
+                android:layout_marginEnd="12dp" />
+
+            <!-- PHONE INPUT -->
+            <EditText
+                android:id="@+id/edtPhone"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:hint="000 000 000"
+                android:textColor="#000"
+                android:textSize="16sp"
+                android:background="@android:color/transparent"
+                android:inputType="phone"/>
+
+        </LinearLayout>
+
+        <!-- REMEMBER ME -->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="20dp">
+
+            <CheckBox
+                android:id="@+id/checkboxRemember"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Remember me"
+                android:textSize="16sp"
+                android:layout_marginStart="8dp"/>
+        </LinearLayout>
+
+        <!-- SIGN IN BUTTON -->
+        <Button
+            android:id="@+id/btnSignIn"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginTop="160dp"
+            android:background="@drawable/bg_btn_signin"
+            android:text="Sign in"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            app:cornerRadius="40dp" />
+
+
+        <!-- DIVIDER WITH TEXT -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="30dp">
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:background="#D0D0D0"
+                android:layout_weight="1"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Or sign in with"
+                android:textSize="14sp"
+                android:textColor="#888"
+                android:padding="8dp"/>
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:background="#D0D0D0"
+                android:layout_weight="1"/>
+        </LinearLayout>
+
+        <!-- SOCIAL LOGIN ICONS -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="20dp">
+
+            <ImageView
+                android:id="@+id/btnGoogle"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:padding="8dp"
+                android:background="@drawable/bg_circle_white"
+                android:src="@drawable/ic_google"
+                android:layout_marginEnd="20dp"/>
+
+            <ImageView
+                android:id="@+id/btnFacebook"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:padding="8dp"
+                android:background="@drawable/bg_circle_white"
+                android:src="@drawable/ic_facebook"/>
+        </LinearLayout>
+
+        <!-- REGISTER -->
+        <!-- REGISTER -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:layout_marginTop="30dp">
+
+            <TextView
+                android:id="@+id/tvRegister"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Don’t have an account?"
+                android:textColor="@color/black"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/tvRegister2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="5dp"
+                android:text="Register"
+                android:textColor="@color/orange"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</ScrollView>

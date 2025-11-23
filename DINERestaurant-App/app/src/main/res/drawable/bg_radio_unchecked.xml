@@ -1,0 +1,6 @@
+<!-- bg_radio_unchecked.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="oval">
+    <size android:width="22dp" android:height="22dp"/>
+    <stroke android:width="2dp" android:color="#D3D3D3"/>
+    <solid android:color="@android:color/transparent"/>
+</shape>

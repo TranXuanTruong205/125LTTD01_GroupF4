@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#5A5A5A">
+
+    <!-- Top Toolbar -->
+    <LinearLayout
+        android:id="@+id/topToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#3E3E3E"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingVertical="16dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/btnGallery"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginHorizontal="24dp"
+            android:contentDescription="Gallery"
+            android:padding="12dp"
+            android:src="@drawable/ic_gallery"
+            app:tint="@android:color/white" />
+
+        <ImageView
+            android:id="@+id/btnFlash"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginHorizontal="24dp"
+            android:contentDescription="Flash"
+            android:padding="12dp"
+            android:src="@drawable/ic_flash"
+            app:tint="@android:color/white" />
+
+        <ImageView
+            android:id="@+id/btnRotate"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginHorizontal="24dp"
+            android:contentDescription="Rotate Camera"
+            android:padding="12dp"
+            android:src="@drawable/ic_rotate"
+            app:tint="@android:color/white" />
+    </LinearLayout>
+
+    <!-- Camera Preview Container -->
+    <FrameLayout
+        android:id="@+id/cameraPreview"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/zoomSlider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topToolbar">
+
+        <!-- QR Code Scanner Frame -->
+        <androidx.camera.view.PreviewView
+            android:id="@+id/previewView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+        <FrameLayout
+            android:layout_width="280dp"
+            android:layout_height="280dp"
+            android:layout_gravity="center">
+
+            <!-- Scanner Border Frame -->
+
+            <!-- Scan Line Animation -->
+            <View
+                android:id="@+id/scanLine"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_gravity="center_vertical"
+                android:background="#FF6B6B" />
+
+            <!-- Corner Indicators -->
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/ic_scanqr" />
+        </FrameLayout>
+    </FrameLayout>
+
+    <!-- Zoom Slider -->
+    <LinearLayout
+        android:id="@+id/zoomSlider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="24dp"
+        android:paddingVertical="32dp"
+        app:layout_constraintBottom_toTopOf="@id/bottomNav">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:contentDescription="Zoom Out"
+            android:src="@drawable/ic_minus"
+            app:tint="@android:color/white" />
+
+        <SeekBar
+            android:id="@+id/seekBarZoom"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_weight="1"
+            android:max="100"
+            android:progress="0"
+            android:progressTint="#FFC107"
+            android:thumbTint="#FFC107" />
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:contentDescription="Zoom In"
+            android:src="@drawable/ic_plus"
+            app:tint="@android:color/white" />
+    </LinearLayout>
+
+    <!-- Bottom Navigation -->
+    <LinearLayout
+        android:id="@+id/bottomNav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingVertical="12dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+
+        <!-- Scan QR Button (Elevated) -->
+
+
+
+
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.dinerestaurant.app.ui.home.HomeFragment"
+        android:label="Home"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_homeFragment_to_categoryFragment"
+            app:destination="@id/categoryFragment" />
+
+        <action
+            android:id="@+id/action_homeFragment_to_specialOffersFragment"
+            app:destination="@id/specialOffersFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_categoryProductsFragment"
+            app:destination="@id/categoryProductsFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_messageFragment"
+            app:destination="@id/messageFragment" />
+
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/orderFragment"
+        android:name="com.dinerestaurant.app.ui.orders.OrderFragment"
+        android:label="Orders"
+        tools:layout="@layout/fragment_order" >
+        <action
+            android:id="@+id/action_orderFragment_to_orderDetailFragment"
+            app:destination="@id/orderDetailFragment" />
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/scanQRFragment"
+        android:name="com.dinerestaurant.app.ui.other.ScanQRFragment"
+        android:label="Scan QR"
+        tools:layout="@layout/fragment_scan_qr" />
+
+    <fragment
+        android:id="@+id/notificationFragment"
+        android:name="com.dinerestaurant.app.ui.other.NotificationFragement"
+        android:label="Notification"
+        tools:layout="@layout/fragment_notification" />
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.dinerestaurant.app.ui.profile.ProfileFragment"
+        android:label="Profile"
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_profileFragment_to_messageFragment"
+            app:destination="@id/messageFragment" />
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/categoryFragment"
+        android:name="com.dinerestaurant.app.ui.home.CategoryFragment"
+        android:label="Categories"
+        tools:layout="@layout/fragment_category">
+        <action
+            android:id="@+id/action_categoryFragment_to_categoryProductsFragment"
+            app:destination="@id/categoryProductsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/categoryProductsFragment"
+        android:name="com.dinerestaurant.app.ui.home.CategoryProductsFragment"
+        android:label="Category Products"
+        tools:layout="@layout/fragment_category_products">
+        <action
+            android:id="@+id/action_categoryProductsFragment_to_productDetailFragment"
+            app:destination="@id/productDetailFragment"/>
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/productDetailFragment"
+        android:name="com.dinerestaurant.app.ui.home.ProductDetailFragment"
+        android:label="Product Detail"
+        tools:layout="@layout/fragment_product_detail" >
+        <action
+            android:id="@+id/action_productDetailFragment_to_reviewListFragment"
+            app:destination="@id/reviewListFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/reviewListFragment"
+        android:name="com.dinerestaurant.app.ui.home.ReviewListFragment"
+        android:label="Review List"
+        tools:layout="@layout/fragment_review_list" />
+
+    <fragment
+        android:id="@+id/specialOffersFragment"
+        android:name="com.dinerestaurant.app.ui.home.SpecialOffersFragment"
+        android:label="Special Offers"
+        tools:layout="@layout/fragment_special_offers">
+        <action
+            android:id="@+id/action_specialOffersFragment_to_productDetailFragment"
+            app:destination="@id/productDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/myLocationsFragment"
+        android:name="com.dinerestaurant.app.ui.profile.MyLocationsFragment"
+        android:label="My Locations"
+        tools:layout="@layout/fragment_my_locations" />
+
+
+    <fragment
+        android:id="@+id/orderDetailFragment"
+        android:name="com.dinerestaurant.app.ui.orders.OrderDetailFragment"
+        android:label="Order Detail"
+        tools:layout="@layout/fragment_order_detail" />
+
+
+    <fragment
+        android:id="@+id/cartFragment"
+        android:name="com.dinerestaurant.app.ui.cart.CartFragment"
+        android:label="Cart"
+        tools:layout="@layout/fragment_cart" >
+        <action
+            android:id="@+id/action_cartFragment_to_paymentFragment"
+            app:destination="@id/paymentFragment" />
+        <action
+            android:id="@+id/action_cartFragment_to_promotionsFragment"
+            app:destination="@id/promotionsFragment" />
+    </fragment>
+
+    <!-- ĐÃ SỬA LỖI TYPO 'PromotionsFragement' và class name -->
+    <fragment
+        android:id="@+id/promotionsFragment"
+        android:name="com.dinerestaurant.app.ui.cart.PromotionsFragement"
+        android:label="Promotions"
+        tools:layout="@layout/fragment_promotions" />
+
+    <fragment
+        android:id="@+id/paymentFragment"
+        android:name="com.dinerestaurant.app.ui.cart.PaymentFragment"
+        android:label="Payment"
+        tools:layout="@layout/fragment_payment" />
+
+
+    <fragment
+        android:id="@+id/likedFragment"
+        android:name="com.dinerestaurant.app.ui.other.LikedFragment"
+        android:label="Liked"
+        tools:layout="@layout/fragment_liked" />
+
+    <!-- ĐÃ SỬA LỖI CLASS NAME VÀ LABEL -->
+    <fragment
+        android:id="@+id/userProfileFragment"
+        android:name="com.dinerestaurant.app.ui.profile.UserProfile"
+        android:label="User Profile"
+        tools:layout="@layout/fragment_user_profile" />
+
+    <!-- ĐÃ SỬA LỖI CLASS NAME VÀ LABEL -->
+    <fragment
+        android:id="@+id/messageFragment"
+        android:name="com.dinerestaurant.app.ui.other.MessageFragment"
+        android:label="Messages"
+        tools:layout="@layout/fragment_message" />
+
+</navigation>
