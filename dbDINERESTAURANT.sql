@@ -1,4 +1,4 @@
-﻿-- ============================================
+-- ============================================
 -- DATABASE SCHEMA - ỨNG DỤNG ĐẶT MÓN ĂN
 -- ============================================
 
@@ -35,7 +35,18 @@ CREATE TABLE users (
     last_login DATETIME
 );
 GO
-
+-- BẢNG ĐỊA CHỈ GIAO HÀNG (cho phép user có nhiều địa chỉ)
+CREATE TABLE user_addresses (
+    address_id INT PRIMARY KEY IDENTITY(1,1),
+    user_id INT NOT NULL,
+    label NVARCHAR(50) NOT NULL,
+    address_text NVARCHAR(MAX) NOT NULL,
+    latitude DECIMAL(10, 6),
+    longitude DECIMAL(10, 6),
+    is_default BIT DEFAULT 0,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+GO
 -- ============================================
 -- BẢNG XÁC THỰC OTP (cho đăng nhập không mật khẩu)
 -- ============================================
@@ -99,7 +110,7 @@ GO
 -- 5. BẢNG BÀN
 -- ============================================
 
-CREATE TABLE tables (
+CREATE TABLE restaurant_tables (
     table_id INT PRIMARY KEY IDENTITY(1,1),
     table_number NVARCHAR(10) NOT NULL UNIQUE,
     capacity INT NOT NULL,
@@ -122,7 +133,7 @@ CREATE TABLE reservations (
     status NVARCHAR(20) CHECK (status IN (N'Chờ xác nhận', N'Đã xác nhận', N'Đã hủy', N'Hoàn thành')) DEFAULT N'Chờ xác nhận',
     created_at DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (user_id) REFERENCES users(user_id),
-    FOREIGN KEY (table_id) REFERENCES tables(table_id)
+    FOREIGN KEY (table_id) REFERENCES restaurant_tables(table_id)
 );
 GO
 
@@ -135,7 +146,7 @@ CREATE TABLE orders (
     user_id INT NOT NULL,
     order_type NVARCHAR(20) CHECK (order_type IN (N'Tại chỗ', N'Giao hàng', N'Mang về')) NOT NULL,
     table_id INT,
-    delivery_address NVARCHAR(MAX),
+	address_id INT NULL,
     total_amount DECIMAL(10, 2) NOT NULL,
     delivery_fee DECIMAL(10, 2) DEFAULT 0,
     payment_method NVARCHAR(20) CHECK (payment_method IN (N'Tiền mặt', N'Chuyển khoản')) DEFAULT N'Tiền mặt',
@@ -143,7 +154,8 @@ CREATE TABLE orders (
     note NVARCHAR(MAX),
     created_at DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (user_id) REFERENCES users(user_id),
-    FOREIGN KEY (table_id) REFERENCES tables(table_id)
+    FOREIGN KEY (table_id) REFERENCES restaurant_tables(table_id),
+	FOREIGN KEY (address_id) REFERENCES user_addresses(address_id)
 );
 GO
 
@@ -187,6 +199,7 @@ CREATE TABLE reviews (
     order_id INT,
     rating INT NOT NULL CHECK (rating >= 1 AND rating <= 5),
     comment NVARCHAR(MAX),
+	is_verified_purchase BIT DEFAULT 0,
     created_at DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (item_id) REFERENCES menu_items(item_id),
@@ -277,6 +290,13 @@ INSERT INTO users (phone_number, email, full_name, gender, address, role) VALUES
 (N'+84912345678', N'tranthib@gmail.com', N'Trần Thị B', N'Nữ', N'456 Trần Phú, Đà Nẵng', 'customer');
 GO
 
+-- Thêm địa chỉ mẫu cho user
+INSERT INTO user_addresses (user_id, label, address_text, latitude, longitude, is_default) VALUES
+(2, N'Nhà riêng', N'Số 28 Cao Thắng, Tp Đà Nẵng', 16.06778, 108.22082, 1),
+(3, N'Nhà riêng', N'123 Lê Duẩn, Tp Đà Nẵng', 16.06752, 108.21412, 1),
+(4, N'Nhà riêng', N'456 Trần Phú, Tp Đà Nẵng', 16.06010, 108.21900, 1);
+GO
+
 -- 2. Thêm danh mục món ăn
 INSERT INTO categories (category_name, icon, display_order) VALUES
 (N'Burger', N'burger_icon.png', 1),
@@ -341,7 +361,7 @@ INSERT INTO item_options (item_id, option_name, extra_price) VALUES
 GO
 
 -- 5. Thêm bàn
-INSERT INTO tables (table_number, capacity, status) VALUES
+INSERT INTO restaurant_tables (table_number, capacity, status) VALUES
 (N'Table 01', 4, N'Trống'),
 (N'Table 02', 2, N'Trống'),
 (N'Table 03', 6, N'Đang sử dụng'),
@@ -360,11 +380,11 @@ INSERT INTO reservations (user_id, table_id, reservation_date, reservation_time,
 GO
 
 -- 7. Thêm đơn hàng mẫu
-INSERT INTO orders (user_id, order_type, table_id, delivery_address, total_amount, delivery_fee, payment_method, order_status, note) VALUES
+INSERT INTO orders (user_id, order_type, table_id, address_id, total_amount, delivery_fee, payment_method, order_status, note) VALUES
 (2, N'Tại chỗ', 3, NULL, 155000, 0, N'Tiền mặt', N'Hoàn thành', NULL),
-(3, N'Giao hàng', NULL, N'123 Lê Duẩn, Đà Nẵng', 280000, 20000, N'Chuyển khoản', N'Đang giao', N'Gọi trước khi giao'),
+(3, N'Giao hàng', NULL,2, 280000, 20000, N'Chuyển khoản', N'Đang giao', N'Gọi trước khi giao'),
 (4, N'Mang về', NULL, NULL, 85000, 0, N'Tiền mặt', N'Đã xác nhận', NULL),
-(2, N'Giao hàng', NULL, N'Số 28 Cao Thắng, Tp Đà Nẵng', 120000, 15000, N'Tiền mặt', N'Đã đặt', NULL);
+(2, N'Giao hàng', NULL, 1, 120000, 15000, N'Tiền mặt', N'Đã đặt', NULL);
 GO
 
 -- 8. Thêm chi tiết đơn hàng
