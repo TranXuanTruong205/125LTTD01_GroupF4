@@ -120,14 +120,12 @@
                     android:padding="16dp">
 
                     <!-- Ticket Icon -->
-                    <TextView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:background="@drawable/ticket_bg"
-                        android:gravity="center"
-                        android:text="🎫"
-                        android:textSize="20sp" />
-
+                    <ImageView
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:background="@drawable/fno_circle_yellow"
+                        android:padding="10dp"
+                        android:src="@drawable/ic_coupon" />
                     <!-- Promo Info -->
                     <LinearLayout
                         android:layout_width="0dp"
@@ -135,6 +133,8 @@
                         android:layout_marginStart="12dp"
                         android:layout_weight="1"
                         android:orientation="horizontal">
+
+
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -184,13 +184,12 @@
                     android:orientation="horizontal"
                     android:padding="16dp">
 
-                    <TextView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:background="@drawable/ticket_bg"
-                        android:gravity="center"
-                        android:text="🎫"
-                        android:textSize="20sp" />
+                    <ImageView
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:background="@drawable/fno_circle_yellow"
+                        android:padding="10dp"
+                        android:src="@drawable/ic_coupon" />
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -257,13 +256,12 @@
                     android:orientation="horizontal"
                     android:padding="16dp">
 
-                    <TextView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:background="@drawable/ticket_bg"
-                        android:gravity="center"
-                        android:text="🎫"
-                        android:textSize="20sp" />
+                    <ImageView
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:background="@drawable/fno_circle_yellow"
+                        android:padding="10dp"
+                        android:src="@drawable/ic_coupon" />
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -319,13 +317,12 @@
                     android:orientation="horizontal"
                     android:padding="16dp">
 
-                    <TextView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:background="@drawable/ticket_bg"
-                        android:gravity="center"
-                        android:text="🎫"
-                        android:textSize="20sp" />
+                    <ImageView
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:background="@drawable/fno_circle_yellow"
+                        android:padding="10dp"
+                        android:src="@drawable/ic_coupon" />
 
                     <LinearLayout
                         android:layout_width="0dp"
