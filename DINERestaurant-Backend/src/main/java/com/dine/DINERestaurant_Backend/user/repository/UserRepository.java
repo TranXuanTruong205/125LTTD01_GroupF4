@@ -1,6 +1,6 @@
-package com.dine.DINERestaurant_Backend.auth.repository;
+package com.dine.DINERestaurant_Backend.user.repository;
 
-import com.dine.DINERestaurant_Backend.auth.entity.User;
+import com.dine.DINERestaurant_Backend.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 

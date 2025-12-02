@@ -1,7 +1,7 @@
 package com.dine.DINERestaurant_Backend.auth.service;
 
-import com.dine.DINERestaurant_Backend.auth.entity.User;
-import com.dine.DINERestaurant_Backend.auth.repository.UserRepository;
+import com.dine.DINERestaurant_Backend.user.entity.User;
+import com.dine.DINERestaurant_Backend.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

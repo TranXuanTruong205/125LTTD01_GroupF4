@@ -1,6 +1,8 @@
 package com.dine.DINERestaurant_Backend.auth.controller;
 
-import com.dine.DINERestaurant_Backend.auth.entity.User;
+import com.dine.DINERestaurant_Backend.auth.dto.LoginResponse;
+import com.dine.DINERestaurant_Backend.auth.jwt.JwtUtil;
+import com.dine.DINERestaurant_Backend.user.entity.User;
 import com.dine.DINERestaurant_Backend.auth.service.AuthService;
 import com.dine.DINERestaurant_Backend.auth.service.OtpService;
 import com.dine.DINERestaurant_Backend.auth.service.SmsService;
@@ -25,6 +27,8 @@ public class AuthController {
     @Autowired
     private SmsService smsService;
 
+    @Autowired
+    private JwtUtil jwtUtil;
 
     // ================= REGISTER STEP 1: SEND OTP =================
     @PostMapping("/register/request")
@@ -99,15 +103,21 @@ public class AuthController {
             return Map.of("error", "OTP không hợp lệ hoặc đã hết hạn!");
         }
 
-        Optional<User> user = authService.login(phone);
-        if (user.isEmpty()) {
+        Optional<User> userOpt = authService.login(phone);
+        if (userOpt.isEmpty()) {
             return Map.of("error", "Không tìm thấy tài khoản!");
         }
 
-        user.get().setLastLogin(LocalDateTime.now());
-        authService.saveUser(user.get());
+        User user = userOpt.get();
+        user.setLastLogin(LocalDateTime.now());
+        authService.saveUser(user);
 
-        return user.get();
+        // 🔥 Tạo JWT token từ phoneNumber
+        String token = jwtUtil.generateToken(user.getPhoneNumber());
+
+        // Trả về token + user
+        return new LoginResponse(token, user);
     }
+
 
 }
