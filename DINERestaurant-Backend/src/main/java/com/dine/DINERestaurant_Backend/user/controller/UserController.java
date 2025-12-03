@@ -35,9 +35,9 @@ public class UserController {
             return Map.of("error", "Token không hợp lệ hoặc đã hết hạn");
         }
 
-        String phoneNumber = jwtUtil.extractPhoneNumber(token);
+        String userId = jwtUtil.extractUserId(token);
 
-        Optional<User> user = userService.getUserByPhone(phoneNumber);
+        Optional<User> user = userService.getUserById(userId);
         if (user.isEmpty()) {
             return Map.of("error", "User không tồn tại");
         }
@@ -64,8 +64,8 @@ public class UserController {
             return Map.of("error", "Token không hợp lệ hoặc đã hết hạn");
         }
 
-        String phoneNumber = jwtUtil.extractPhoneNumber(token);
-        Optional<User> userOpt = userService.getUserByPhone(phoneNumber);
+        String userId = jwtUtil.extractUserId(token);
+        Optional<User> userOpt = userService.getUserById(userId);
 
         if (userOpt.isEmpty()) {
             return Map.of("error", "User không tồn tại");

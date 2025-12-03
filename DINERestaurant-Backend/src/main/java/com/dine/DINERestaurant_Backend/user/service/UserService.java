@@ -18,6 +18,10 @@ public class UserService {
         return userRepository.findByPhoneNumber(phone);
     }
 
+    public Optional <User> getUserById(String id) {
+        return userRepository.findByUserId(Integer.valueOf(id));
+    }
+
     public User updateUser(User user) {
         return userRepository.save(user);
     }

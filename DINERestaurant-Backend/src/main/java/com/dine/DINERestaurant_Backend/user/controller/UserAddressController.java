@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/user/addresses")
@@ -22,8 +21,8 @@ public class UserAddressController {
 
     private User getCurrentUser(String authHeader) {
         String token = authHeader.substring(7);
-        String phone = jwtUtil.extractPhoneNumber(token);
-        return userService.getUserByPhone(phone).orElseThrow();
+        String userId = jwtUtil.extractUserId(token);
+        return userService.getUserById(userId).orElseThrow();
     }
 
     // GET /users/addresses
@@ -31,6 +30,31 @@ public class UserAddressController {
     public Object getAll(@RequestHeader("Authorization") String authHeader) {
         User user = getCurrentUser(authHeader);
         return addressService.getAllByUser(user);
+    }
+
+    // GET /users/addresses/{id}
+    @GetMapping("/{id}")
+    public Object getById(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable Integer id) {
+        User user = getCurrentUser(authHeader);
+        UserAddress address = addressService.getById(id);
+        if (!address.getUser().getUserId().equals(user.getUserId())) {
+            return Map.of("error", "Địa chỉ không thuộc về người dùng");
+        }
+        return address;
+    }
+
+    //Get /users/addresses/default
+    @GetMapping("/default")
+    public Object getDefaultAddress(
+            @RequestHeader("Authorization") String authHeader) {
+        User user = getCurrentUser(authHeader);
+        UserAddress defaultAddress = addressService.getByDefaultAddress(user);
+        if (defaultAddress == null) {
+            return Map.of("message", "Chưa có địa chỉ mặc định");
+        }
+        return defaultAddress;
     }
 
     // POST /users/addresses
@@ -68,8 +92,8 @@ public class UserAddressController {
         return Map.of("message", "Xóa địa chỉ thành công!");
     }
 
-    // PUT /users/addresses/{id}/default
-    @PutMapping("/{id}/default")
+    // PUT /users/addresses/default/{id}
+    @PutMapping("/default/{id}")
     public Object setDefault(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable Integer id) {
