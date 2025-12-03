@@ -113,7 +113,7 @@ public class AuthController {
         authService.saveUser(user);
 
         // 🔥 Tạo JWT token từ phoneNumber
-        String token = jwtUtil.generateToken(user.getPhoneNumber());
+        String token = jwtUtil.generateToken(user);
 
         // Trả về token + user
         return new LoginResponse(token, user);
