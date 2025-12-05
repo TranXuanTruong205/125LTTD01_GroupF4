@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class OrderService {
@@ -100,15 +101,28 @@ public class OrderService {
     }
 
     @Transactional
-    public boolean cancelOrder(Integer orderId) {
-        Order order = getOrderById(orderId);
-        if (order != null && !"Hoàn thành".equals(order.getOrderStatus()) && !"Đã hủy".equals(order.getOrderStatus())) {
-            order.setOrderStatus("Đã hủy");
-            orderRepository.save(order);
-            return true;
+    public boolean cancelOrder(Integer orderId, Integer userId) {
+        Optional<Order> opt = orderRepository.findById(orderId);
+
+        if (opt.isEmpty()) return false;
+
+        Order order = opt.get();
+
+        // Kiểm tra quyền sở hữu đơn hàng
+        if (!order.getUserId().equals(userId)) {
+            return false; // user khác → không được hủy
         }
-        return false;
+
+        // Nếu trạng thái không thể hủy
+        if (order.getOrderStatus().equals("Hoàn thành")) {
+            return false;
+        }
+
+        order.setOrderStatus("Đã hủy");
+        orderRepository.save(order);
+        return true;
     }
+
 
     public List<Order> getOrdersByStatus(String status) {
         if (status == null || status.isEmpty()) {
