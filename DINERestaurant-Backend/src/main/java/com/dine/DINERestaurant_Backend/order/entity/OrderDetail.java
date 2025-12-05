@@ -1,4 +1,4 @@
-package com.dine.DINERestaurant_Backend.auth.entity;
+package com.dine.DINERestaurant_Backend.order.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;

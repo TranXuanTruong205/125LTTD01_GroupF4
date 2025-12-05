@@ -1,17 +1,13 @@
-package com.dine.DINERestaurant_Backend.auth.entity;
+package com.dine.DINERestaurant_Backend.reservation.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-
 // ============ TABLE ENTITY ============
 @Entity
-@Table(name = "tables")
+@Table(name = "restaurant_tables")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

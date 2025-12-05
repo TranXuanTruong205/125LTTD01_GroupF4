@@ -1,4 +1,5 @@
-package com.dine.DINERestaurant_Backend.auth.entity;
+package com.dine.DINERestaurant_Backend.reservation.entity;
+import com.dine.DINERestaurant_Backend.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
