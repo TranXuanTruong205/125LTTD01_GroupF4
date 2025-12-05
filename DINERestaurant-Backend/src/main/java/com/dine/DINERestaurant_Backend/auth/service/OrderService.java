@@ -1,9 +1,9 @@
-package com.dine.DINERestaurant_Backend.service;
+package com.dine.DINERestaurant_Backend.auth.service;
 
-import com.dine.DINERestaurant_Backend.dto.OrderRequest;
-import com.dine.DINERestaurant_Backend.entity.Order;
-import com.dine.DINERestaurant_Backend.entity.OrderDetail;
-import com.dine.DINERestaurant_Backend.repository.OrderRepository;
+import com.dine.DINERestaurant_Backend.auth.dto.OrderRequest;
+import com.dine.DINERestaurant_Backend.auth.entity.Order;
+import com.dine.DINERestaurant_Backend.auth.entity.OrderDetail;
+import com.dine.DINERestaurant_Backend.auth.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
