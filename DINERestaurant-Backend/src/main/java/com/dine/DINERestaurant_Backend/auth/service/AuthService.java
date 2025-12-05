@@ -1,7 +1,7 @@
 package com.dine.DINERestaurant_Backend.auth.service;
 
-import com.dine.DINERestaurant_Backend.auth.entity.User;
-import com.dine.DINERestaurant_Backend.auth.repository.UserRepository;
+import com.dine.DINERestaurant_Backend.user.entity.User;
+import com.dine.DINERestaurant_Backend.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,16 +14,20 @@ public class AuthService {
     @Autowired
     private UserRepository userRepository;
 
-    public String register(User user) {
-        if (userRepository.existsByPhoneNumber(user.getPhoneNumber())) {
-            return "Số điện thoại đã được sử dụng.";
-        }
-        user.setCreatedAt(LocalDateTime.now());
+    public boolean checkExist(String phoneNumber) {
+        return userRepository.existsByPhoneNumber(phoneNumber);
+    }
+
+    public void saveUser(User user) {
         userRepository.save(user);
-        return "Đăng ký thành công!";
     }
 
     public Optional<User> login(String phoneNumber) {
         return userRepository.findByPhoneNumber(phoneNumber);
+    }
+
+    public void updateLastLogin(User user) {
+        user.setLastLogin(LocalDateTime.now());
+        userRepository.save(user);
     }
 }
