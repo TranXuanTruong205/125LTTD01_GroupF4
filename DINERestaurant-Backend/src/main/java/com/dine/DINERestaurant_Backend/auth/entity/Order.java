@@ -1,5 +1,6 @@
-package com.dine.DINERestaurant_Backend.entity;
+package com.dine.DINERestaurant_Backend.auth.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -55,6 +56,7 @@ public class Order {
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private User user;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("order")  // Ngăn không cho serialize field "order" trong OrderDetail
     private List<OrderDetail> orderDetails;
 }

@@ -1,5 +1,6 @@
-package com.dine.DINERestaurant_Backend.entity;
+package com.dine.DINERestaurant_Backend.auth.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -34,11 +35,10 @@ public class OrderDetail {
     @Column(name = "subtotal", nullable = false, precision = 10, scale = 2)
     private BigDecimal subtotal;
 
+    // OrderDetail.java – Chỉnh ngay dòng này
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", insertable = false, updatable = false)
+    @JsonIgnore  // Thêm dòng này
     private Order order;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "item_id", insertable = false, updatable = false)
-    private MenuItem menuItem;
 }

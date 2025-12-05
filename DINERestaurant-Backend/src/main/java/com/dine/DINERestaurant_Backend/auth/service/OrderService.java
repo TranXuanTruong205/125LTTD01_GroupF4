@@ -1,6 +1,5 @@
 package com.dine.DINERestaurant_Backend.auth.service;
 
-import com.dine.DINERestaurant_Backend.auth.dto.OrderRequest;
 import com.dine.DINERestaurant_Backend.auth.entity.Order;
 import com.dine.DINERestaurant_Backend.auth.entity.OrderDetail;
 import com.dine.DINERestaurant_Backend.auth.repository.OrderRepository;
@@ -12,6 +11,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class OrderService {
@@ -19,139 +19,79 @@ public class OrderService {
     @Autowired
     private OrderRepository orderRepository;
 
-    /**
-     * Đặt đơn tại bàn (Onsite)
-     */
+    // Hàm chung tạo đơn hàng - nhận Map từ Controller
     @Transactional
-    public Order createOnsiteOrder(OrderRequest request) {
-        validateOnsiteOrder(request);
-
-        Order order = buildOrder(request);
-        order.setOrderType("Tại chỗ");
-        order.setDeliveryFee(BigDecimal.ZERO);
-
-        return saveOrder(order, request);
-    }
-
-    /**
-     * Đặt đơn giao hàng (Delivery)
-     */
-    @Transactional
-    public Order createDeliveryOrder(OrderRequest request) {
-        validateDeliveryOrder(request);
-
-        Order order = buildOrder(request);
-        order.setOrderType("Giao hàng");
-
-        // Tính phí giao hàng (có thể dựa vào khoảng cách)
-        if (request.getDeliveryFee() == null) {
-            order.setDeliveryFee(BigDecimal.valueOf(15000)); // Phí mặc định
-        }
-
-        return saveOrder(order, request);
-    }
-
-    /**
-     * Đặt đơn mang về (Pickup)
-     */
-    @Transactional
-    public Order createPickupOrder(OrderRequest request) {
-        validatePickupOrder(request);
-
-        Order order = buildOrder(request);
-        order.setOrderType("Mang về");
-        order.setDeliveryFee(BigDecimal.ZERO);
-
-        return saveOrder(order, request);
-    }
-
-    /**
-     * Build order object
-     */
-    private Order buildOrder(OrderRequest request) {
+    public Order createOrder(Map<String, Object> request, String orderType) {
         Order order = new Order();
-        order.setUserId(request.getUserId());
-        order.setTableId(request.getTableId());
-        order.setDeliveryAddress(request.getDeliveryAddress());
-        order.setTotalAmount(request.getTotalAmount());
-        order.setDeliveryFee(request.getDeliveryFee());
-        order.setPaymentMethod(request.getPaymentMethod());
-        order.setNote(request.getNote());
+        order.setUserId((Integer) request.get("userId"));
+        order.setTableId(request.get("tableId") != null ? (Integer) request.get("tableId") : null);
+        order.setDeliveryAddress((String) request.get("deliveryAddress"));
+        order.setPaymentMethod((String) request.get("paymentMethod"));
+        order.setNote((String) request.get("note"));
         order.setOrderStatus("Đã đặt");
+        order.setOrderType(orderType);
         order.setCreatedAt(LocalDateTime.now());
 
-        return order;
-    }
+        // Tính tổng tiền từ items
+        List<Map<String, Object>> items = (List<Map<String, Object>>) request.get("items");
+        BigDecimal totalAmount = BigDecimal.ZERO;
+        List<OrderDetail> orderDetails = new ArrayList<>();
 
-    /**
-     * Save order with details
-     */
-    private Order saveOrder(Order order, OrderRequest request) {
+        for (Map<String, Object> item : items) {
+            Integer itemId = (Integer) item.get("itemId");
+            Integer quantity = (Integer) item.get("quantity");
+            BigDecimal unitPrice = new BigDecimal(item.get("unitPrice").toString());
+
+            BigDecimal subtotal = unitPrice.multiply(BigDecimal.valueOf(quantity));
+            totalAmount = totalAmount.add(subtotal);
+
+            OrderDetail detail = new OrderDetail();
+            detail.setItemId(itemId);
+            detail.setQuantity(quantity);
+            detail.setUnitPrice(unitPrice);
+            detail.setSubtotal(subtotal);
+            orderDetails.add(detail);
+        }
+
+        order.setTotalAmount(totalAmount);
+
+        // Xử lý phí ship
+        if ("Giao hàng".equals(orderType)) {
+            order.setDeliveryFee(request.get("deliveryFee") != null ?
+                    new BigDecimal(request.get("deliveryFee").toString()) : BigDecimal.valueOf(15000));
+        } else {
+            order.setDeliveryFee(BigDecimal.ZERO);
+        }
+
+        // Save order trước để có ID
         Order savedOrder = orderRepository.save(order);
 
-        // Tạo order details
-        List<OrderDetail> orderDetails = new ArrayList<>();
-        request.getItems().forEach(item -> {
-            OrderDetail detail = new OrderDetail();
+        // Gán orderId cho các detail
+        for (OrderDetail detail : orderDetails) {
             detail.setOrderId(savedOrder.getOrderId());
-            detail.setItemId(item.getItemId());
-            detail.setQuantity(item.getQuantity());
-            detail.setUnitPrice(item.getUnitPrice());
-            detail.setSubtotal(item.getUnitPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
-            orderDetails.add(detail);
-        });
-
+        }
         savedOrder.setOrderDetails(orderDetails);
-        return orderRepository.save(savedOrder);
+
+        return orderRepository.save(savedOrder); // save lại lần 2 có detail
     }
 
-    /**
-     * Validation methods
-     */
-    private void validateOnsiteOrder(OrderRequest request) {
-        if (request.getTableId() == null) {
-            throw new RuntimeException("Table ID is required for onsite orders");
-        }
-    }
-
-    private void validateDeliveryOrder(OrderRequest request) {
-        if (request.getDeliveryAddress() == null || request.getDeliveryAddress().isEmpty()) {
-            throw new RuntimeException("Delivery address is required");
-        }
-    }
-
-    private void validatePickupOrder(OrderRequest request) {
-        // Pickup không cần validate đặc biệt
-    }
-
-    /**
-     * Lịch sử đơn hàng của user
-     */
+    // Các hàm còn lại giữ nguyên (không cần thay đổi)
     public List<Order> getUserOrders(Integer userId) {
         return orderRepository.findUserOrdersDesc(userId);
     }
 
-    /**
-     * Chi tiết đơn hàng
-     */
     public Order getOrderById(Integer orderId) {
         return orderRepository.findById(orderId).orElse(null);
     }
 
-    /**
-     * Theo dõi trạng thái đơn hàng
-     */
     public String getOrderStatus(Integer orderId) {
-        Order order = orderRepository.findById(orderId).orElse(null);
+        Order order = getOrderById(orderId);
         return order != null ? order.getOrderStatus() : null;
     }
 
-    /**
-     * Cập nhật trạng thái đơn hàng
-     */
     @Transactional
     public Order updateOrderStatus(Integer orderId, String newStatus) {
-        Order order = orderRepository.findById(orderId).orElse(null);
+        Order order = getOrderById(orderId);
         if (order != null) {
             order.setOrderStatus(newStatus);
             return orderRepository.save(order);
@@ -159,13 +99,10 @@ public class OrderService {
         return null;
     }
 
-    /**
-     * Hủy đơn hàng
-     */
     @Transactional
     public boolean cancelOrder(Integer orderId) {
-        Order order = orderRepository.findById(orderId).orElse(null);
-        if (order != null && !order.getOrderStatus().equals("Hoàn thành")) {
+        Order order = getOrderById(orderId);
+        if (order != null && !"Hoàn thành".equals(order.getOrderStatus()) && !"Đã hủy".equals(order.getOrderStatus())) {
             order.setOrderStatus("Đã hủy");
             orderRepository.save(order);
             return true;
@@ -173,9 +110,6 @@ public class OrderService {
         return false;
     }
 
-    /**
-     * Lấy đơn hàng theo trạng thái
-     */
     public List<Order> getOrdersByStatus(String status) {
         if (status == null || status.isEmpty()) {
             return orderRepository.findAll();
@@ -183,10 +117,7 @@ public class OrderService {
         return orderRepository.findByOrderStatus(status);
     }
 
-    /**
-     * Tạo mã đơn hàng
-     */
     public String generateOrderNumber(Integer orderId) {
-        return "SP " + String.format("%07d", orderId);
+        return "SP" + String.format("%07d", orderId);
     }
 }

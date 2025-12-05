@@ -1,6 +1,6 @@
-package com.dine.DINERestaurant_Backend.repository;
+package com.dine.DINERestaurant_Backend.auth.repository;
 
-import com.dine.DINERestaurant_Backend.entity.Order;
+import com.dine.DINERestaurant_Backend.auth.entity.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
