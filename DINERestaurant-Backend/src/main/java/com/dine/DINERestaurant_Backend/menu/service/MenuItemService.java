@@ -29,4 +29,12 @@ public class MenuItemService {
     public void deleteMenuItem(Integer id) {
         menuItemRepository.deleteById(id);
     }
+    // Tìm kiếm món ăn
+    public List<MenuItem> searchMenuItems(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return menuItemRepository.findAll();
+        }
+        return menuItemRepository
+                .findByItemNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(keyword, keyword);
+    }
 }

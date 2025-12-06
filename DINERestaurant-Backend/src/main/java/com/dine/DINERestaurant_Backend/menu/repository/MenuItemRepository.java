@@ -5,6 +5,10 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 @Repository
 public interface MenuItemRepository extends JpaRepository<MenuItem, Integer> {
-    // Tìm món ăn theo Category ID
     List<MenuItem> findByCategory_CategoryId(Integer categoryId);
+    // Tìm kiếm theo tên + mô tả
+    List<MenuItem> findByItemNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+            String nameKeyword,
+            String descriptionKeyword
+    );
 }
