@@ -4,7 +4,6 @@ import com.dine.DINERestaurant_Backend.cart.entity.Cart;
 import com.dine.DINERestaurant_Backend.cart.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
