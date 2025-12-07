@@ -10,7 +10,6 @@ import com.dine.DINERestaurant_Backend.auth.service.SmsService;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -224,8 +223,4 @@ public class AuthController {
                 "requirePhoneNumber", true
         );
     }
-
-
-
-
 }
