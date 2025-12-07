@@ -11,6 +11,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
@@ -39,41 +40,96 @@ public class AuthController {
     // ================= REGISTER STEP 1: SEND OTP =================
     @PostMapping("/register/request")
     public Object requestRegister(@RequestBody Map<String, String> payload) {
-        String phone = payload.get("phoneNumber");
 
+        String phone = payload.get("phoneNumber");
+        String email = payload.get("email");
+        String fullName = payload.get("fullName");
+
+        if (phone == null || phone.isBlank() ||
+                email == null || email.isBlank() ||
+                fullName == null || fullName.isBlank()) {
+            return Map.of("error", "Vui lòng nhập đầy đủ SĐT, Email và Họ tên");
+        }
+
+        // Check số điện thoại đã tồn tại
         if (authService.checkExist(phone)) {
-            return Map.of("error", "Số điện thoại đã tồn tại!");
+            return Map.of("error", "Số điện thoại đã đăng ký tài khoản khác!");
+        }
+
+        // Check email đã tồn tại
+        if (authService.getByEmail(email).isPresent()) {
+            return Map.of("error", "Email đã tồn tại trong hệ thống!");
         }
 
         String fullPhone = "+" + phone;
         String otp = otpService.generateOtp(fullPhone);
         smsService.sendOtpSms(fullPhone, otp);
 
-        return Map.of("message", "OTP đã được gửi đến " + phone);
+        return Map.of(
+                "message", "OTP đã được gửi",
+                "phoneNumber", phone,
+                "email", email,
+                "fullName", fullName
+        );
     }
+
 
 
     // ================= REGISTER STEP 2: VERIFY OTP & CREATE USER =================
     @PostMapping("/register/verify")
     public Object verifyRegister(@RequestBody Map<String, String> payload) {
+
         String phone = payload.get("phoneNumber");
         String otp = payload.get("otp");
+        String email = payload.get("email");
+        String fullName = payload.get("fullName");
 
-        boolean verified = otpService.verifyOtp("+" + phone, otp);
+        if (phone == null || otp == null || email == null || fullName == null) {
+            return Map.of("error", "Thiếu dữ liệu xác minh!");
+        }
+
+        String fullPhone = "+" + phone;
+
+        boolean verified = otpService.verifyOtp(fullPhone, otp);
         if (!verified) {
             return Map.of("error", "OTP không hợp lệ hoặc đã hết hạn!");
         }
 
-        // Create new user with phone only
+        if (authService.checkExist(phone)) {
+            return Map.of("error", "Số điện thoại đã tồn tại!");
+        }
+        if (authService.getByEmail(email).isPresent()) {
+            return Map.of("error", "Email đã tồn tại!");
+        }
+
         User newUser = new User();
         newUser.setPhoneNumber(phone);
+        newUser.setEmail(email);
+        newUser.setFullName(fullName);
         newUser.setIsActive(true);
         newUser.setRole("customer");
         newUser.setCreatedAt(LocalDateTime.now());
+        newUser.setLastLogin(LocalDateTime.now());
+
+        newUser.setGender(payload.get("gender"));
+        newUser.setAddress(payload.get("address"));
+        if (payload.get("dateOfBirth") != null) {
+            newUser.setDateOfBirth(LocalDate.parse(payload.get("dateOfBirth")));
+        }
+        newUser.setProfilePicture(payload.get("picture"));
+
         authService.saveUser(newUser);
 
-        return Map.of("message", "Tạo tài khoản thành công!");
+        // Tạo token đăng nhập
+        String token = jwtUtil.generateToken(newUser);
+
+        return Map.of(
+                "message", "Tạo tài khoản thành công!",
+                "token", token,
+                "user", newUser
+        );
     }
+
 
 
     // ================= LOGIN STEP 1: SEND OTP =================
@@ -140,6 +196,7 @@ public class AuthController {
 
         String email = tokenPayload.getEmail();
         String fullName = (String) tokenPayload.get("name");
+        String picture = (String) tokenPayload.get("picture");
 
         // Kiểm tra user theo email
         Optional<User> userOpt = authService.getByEmail(email);
@@ -163,9 +220,12 @@ public class AuthController {
         return Map.of(
                 "email", email,
                 "fullName", fullName,
+                "profilePicture", picture,
                 "requirePhoneNumber", true
         );
     }
+
+
 
 
 }
