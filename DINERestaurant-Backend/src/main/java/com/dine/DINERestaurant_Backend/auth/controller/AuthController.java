@@ -2,10 +2,12 @@ package com.dine.DINERestaurant_Backend.auth.controller;
 
 import com.dine.DINERestaurant_Backend.auth.dto.LoginResponse;
 import com.dine.DINERestaurant_Backend.auth.jwt.JwtUtil;
+import com.dine.DINERestaurant_Backend.auth.service.GoogleAuthService;
 import com.dine.DINERestaurant_Backend.user.entity.User;
 import com.dine.DINERestaurant_Backend.auth.service.AuthService;
 import com.dine.DINERestaurant_Backend.auth.service.OtpService;
 import com.dine.DINERestaurant_Backend.auth.service.SmsService;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +31,10 @@ public class AuthController {
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    private GoogleAuthService googleAuthService;
+
 
     // ================= REGISTER STEP 1: SEND OTP =================
     @PostMapping("/register/request")
@@ -112,11 +118,53 @@ public class AuthController {
         user.setLastLogin(LocalDateTime.now());
         authService.saveUser(user);
 
-        // 🔥 Tạo JWT token từ phoneNumber
         String token = jwtUtil.generateToken(user);
 
         // Trả về token + user
         return new LoginResponse(token, user);
+    }
+
+    // ================= LOGIN GOOGLE =================
+    @PostMapping("/login/google")
+    public Object googleLogin(@RequestBody Map<String, String> payload) {
+
+        String idToken = payload.get("idToken");
+        if (idToken == null || idToken.isBlank()) {
+            return Map.of("error", "Thiếu idToken");
+        }
+
+        GoogleIdToken.Payload tokenPayload = googleAuthService.verifyIdToken(idToken);
+        if (tokenPayload == null) {
+            return Map.of("error", "Google token không hợp lệ");
+        }
+
+        String email = tokenPayload.getEmail();
+        String fullName = (String) tokenPayload.get("name");
+
+        // Kiểm tra user theo email
+        Optional<User> userOpt = authService.getByEmail(email);
+
+        if (userOpt.isPresent()) {
+            // ĐÃ CÓ TÀI KHOẢN -> Đăng nhập luôn
+            User user = userOpt.get();
+
+            String token = jwtUtil.generateToken(user);
+
+            user.setLastLogin(LocalDateTime.now());
+            authService.saveUser(user);
+
+            return Map.of(
+                    "token", token,
+                    "user", user
+            );
+        }
+
+        // CHƯA CÓ TÀI KHOẢN -> YÊU CẦU NHẬP SĐT
+        return Map.of(
+                "email", email,
+                "fullName", fullName,
+                "requirePhoneNumber", true
+        );
     }
 
 

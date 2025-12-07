@@ -26,8 +26,9 @@ public class AuthService {
         return userRepository.findByPhoneNumber(phoneNumber);
     }
 
-    public void updateLastLogin(User user) {
-        user.setLastLogin(LocalDateTime.now());
-        userRepository.save(user);
+    public Optional<User> getByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
+
+
 }
