@@ -8,7 +8,6 @@ import com.dine.DINERestaurant_Backend.menu.repository.MenuItemRepository;
 import com.dine.DINERestaurant_Backend.order.entity.Order;
 import com.dine.DINERestaurant_Backend.order.entity.OrderDetail;
 import com.dine.DINERestaurant_Backend.order.repository.OrderRepository;
-import com.dine.DINERestaurant_Backend.order.repository.UserAddressRepository;
 import com.dine.DINERestaurant_Backend.user.entity.UserAddress;
 import com.dine.DINERestaurant_Backend.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +29,7 @@ public class OrderService {
     @Autowired
     private CartService cartService;
     @Autowired
-    private UserAddressRepository userAddressRepository;
+    private com.dine.DINERestaurant_Backend.user.repository.UserAddressRepository userAddressRepository;
     @Autowired
     private UserRepository userRepository;
 
