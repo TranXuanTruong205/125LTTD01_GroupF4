@@ -29,15 +29,10 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
         void onItemClick(CategoryItem item);
     }
 
-    // 2. Cập nhật Constructor để nhận thêm Listener
     public CategoryAdapter(List<CategoryItem> items, AssetManager assetManager, OnItemClickListener listener) {
         this.items = items;
         this.assetManager = assetManager;
         this.listener = listener;
-    }
-    public CategoryAdapter(List<CategoryItem> items, AssetManager assetManager) {
-        this.items = items;
-        this.assetManager = assetManager;
     }
 
     @NonNull
