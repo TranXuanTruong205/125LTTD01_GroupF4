@@ -44,13 +44,11 @@ public class HomeFragment extends Fragment {
     private SpecialOfferAdapter specialOfferAdapter;
     private ImageView btnCart;
     private ImageView btnChat;
-
     private ApiService apiService;
-
+    private List<CategoryItem> categoryItems = new ArrayList<>();
     public HomeFragment() {
         // Required empty public constructor
     }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -66,29 +64,35 @@ public class HomeFragment extends Fragment {
         rvSpecialOffers = view.findViewById(R.id.rvSpecialOffers);
         btnCart = view.findViewById(R.id.ivCart);
         btnChat = view.findViewById(R.id.ivChat);
-
-        // 3. Setup Categories RecyclerView
-        setupCategories();
-
+        apiService = ApiClient.getClient().create(ApiService.class);
+        setupCategoriesRecycler();  // chỉ set layout + adapter
+        loadCategories();           // gọi API + thêm "More"
         // 4. Setup Banner ViewPager
         setupBanner();
-
         // 5. Setup Special Offers RecyclerView
         setupSpecialOffers(view);
-
         // 6. BỔ SUNG SỰ KIỆN CLICK CHO btnCart
         setupCartButton(view);
-
         // 7. BỔ SUNG SỰ KIỆN CLICK CHO btnChat
         setupChatButton(view); // <-- Cần truyền view để lấy NavController
-
         return view;
     }
-
-    private void setupCategories() {
+    private void setupCategoriesRecycler() {
         rvCategories.setLayoutManager(new GridLayoutManager(getContext(), 4));
-
-        // Gọi API lấy categories
+        categoryAdapter = new CategoryAdapter(categoryItems, requireContext().getAssets(), item -> {
+            if ("More".equals(item.getName())) {
+                // Click vào ô More -> sang màn CategoryFragment
+                Navigation.findNavController(requireView())
+                        .navigate(R.id.action_homeFragment_to_categoryFragment);
+            } else {
+                // Click vào category bình thường -> sang Product list
+                Navigation.findNavController(requireView())
+                        .navigate(R.id.action_homeFragment_to_categoryProductsFragment);
+            }
+        });
+        rvCategories.setAdapter(categoryAdapter);
+    }
+    private void loadCategories() {
         apiService.getCategories().enqueue(new Callback<List<CategoryDto>>() {
             @Override
             public void onResponse(Call<List<CategoryDto>> call, Response<List<CategoryDto>> response) {
@@ -97,59 +101,30 @@ public class HomeFragment extends Fragment {
                     return;
                 }
 
-                List<CategoryDto> dtoList = response.body();
-                List<CategoryItem> categories = new ArrayList<>();
+                List<CategoryItem> list = new ArrayList<>();
 
-                int index = 0;
-                for (CategoryDto dto : dtoList) {
-                    // TẠM THỜI: map icon → asset theo index hoặc để null
-                    String imagePath = null;
-                    // Nếu bạn về sau lưu icon giống tên file assets, có thể làm:
-                    // imagePath = "images/categories/" + dto.getIcon();
-
-                    categories.add(new CategoryItem(
-                            dto.getCategoryId(),
-                            imagePath,
+                for (CategoryDto dto : response.body()) {
+                    // map BE -> CategoryItem (icon tuỳ bạn dùng)
+                    list.add(new CategoryItem(
+                            dto.getIcon(),          // ví dụ: "images/categories/ic_burger.png"
                             dto.getCategoryName()
                     ));
-                    index++;
                 }
 
-                categoryAdapter = new CategoryAdapter(
-                        categories,
-                        requireContext().getAssets(),
-                        item -> {
-                            if (item.getName().equals("More")) {
-                                // Nếu vẫn muốn giữ logic More thì xử lý riêng,
-                                // còn hiện tại data từ BE thường không có "More"
-                                try {
-                                    Navigation.findNavController(requireView())
-                                            .navigate(R.id.action_homeFragment_to_categoryFragment);
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            } else {
-                                // Chuyển sang CategoryProductsFragment kèm categoryId + name
-                                Bundle bundle = new Bundle();
-                                bundle.putInt("categoryId", item.getId());
-                                bundle.putString("categoryName", item.getName());
-                                Navigation.findNavController(requireView())
-                                        .navigate(R.id.action_homeFragment_to_categoryProductsFragment, bundle);
-                            }
-                        }
-                );
-                rvCategories.setAdapter(categoryAdapter);
-            }
+                // 🔥 Thêm 1 item "More" GIẢ LẬP Ở CUỐI
+                list.add(new CategoryItem(
+                        "images/categories/ic_more.png",
+                        "More"
+                ));
 
+                categoryAdapter.setItems(list);
+            }
             @Override
             public void onFailure(Call<List<CategoryDto>> call, Throwable t) {
                 Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                t.printStackTrace();
             }
         });
     }
-
-
     private void setupBanner() {
         List<String> bannerList = new ArrayList<>();
         bannerList.add("images/home_banner/Banner.png");
