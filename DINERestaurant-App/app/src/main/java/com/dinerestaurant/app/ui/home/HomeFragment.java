@@ -21,6 +21,13 @@ import com.dinerestaurant.app.R;
 import com.dinerestaurant.app.model.CategoryItem;
 import com.dinerestaurant.app.model.SpecialOfferItem;
 
+import com.dinerestaurant.app.data.remote.api.ApiClient;
+import com.dinerestaurant.app.data.remote.api.ApiService;
+import com.dinerestaurant.app.data.remote.dto.CategoryDto;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 // Mặc dù MessageFragment được import, chúng ta sẽ không dùng nó trực tiếp ở đây
 // mà dùng ID của nó trong Nav Graph.
 
@@ -37,6 +44,8 @@ public class HomeFragment extends Fragment {
     private SpecialOfferAdapter specialOfferAdapter;
     private ImageView btnCart;
     private ImageView btnChat;
+
+    private ApiService apiService;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -76,43 +85,70 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
-    // --- CÁC HÀM SETUP (Giữ nguyên các hàm không liên quan) ---
-
     private void setupCategories() {
         rvCategories.setLayoutManager(new GridLayoutManager(getContext(), 4));
 
-        List<CategoryItem> categories = new ArrayList<>();
-        categories.add(new CategoryItem("images/categories/ic_burger.png", "Burger"));
-        categories.add(new CategoryItem("images/categories/ic_taco.png", "Taco"));
-        categories.add(new CategoryItem("images/categories/ic_burrito.png", "Burrito"));
-        categories.add(new CategoryItem("images/categories/ic_drink.png", "Drink"));
-        categories.add(new CategoryItem("images/categories/ic_pizza.png", "Pizza"));
-        categories.add(new CategoryItem("images/categories/ic_donut.png", "Donut"));
-        categories.add(new CategoryItem("images/categories/ic_salad.png", "Salad"));
-        categories.add(new CategoryItem("images/categories/ic_noodles.png", "Noodles"));
-        categories.add(new CategoryItem("images/categories/ic-Sandwich.png", "Sandwich"));
-        categories.add(new CategoryItem("images/categories/ic_Pasta.png", "Pasta"));
-        categories.add(new CategoryItem("images/categories/ic_iceCream.png", "Ice Cream"));
-        categories.add(new CategoryItem("images/categories/ic_more.png", "More"));
-
-        categoryAdapter = new CategoryAdapter(categories, requireContext().getAssets(),item -> {
-            // Kiểm tra xem người dùng có bấm vào nút "More" không
-            if (item.getName().equals("More")) {
-                // Chuyển sang CategoryFragment
-                try {
-                    androidx.navigation.Navigation.findNavController(requireView())
-                            .navigate(R.id.action_homeFragment_to_categoryFragment);
-                    // Lưu ý: ID action này phải có trong nav_graph
-                } catch (Exception e) {
-                    e.printStackTrace();
+        // Gọi API lấy categories
+        apiService.getCategories().enqueue(new Callback<List<CategoryDto>>() {
+            @Override
+            public void onResponse(Call<List<CategoryDto>> call, Response<List<CategoryDto>> response) {
+                if (!response.isSuccessful() || response.body() == null) {
+                    Toast.makeText(getContext(), "Failed to load categories", Toast.LENGTH_SHORT).show();
+                    return;
                 }
-            } else {
-                androidx.navigation.Navigation.findNavController(requireView())
-                        .navigate(R.id.action_homeFragment_to_categoryProductsFragment);
+
+                List<CategoryDto> dtoList = response.body();
+                List<CategoryItem> categories = new ArrayList<>();
+
+                int index = 0;
+                for (CategoryDto dto : dtoList) {
+                    // TẠM THỜI: map icon → asset theo index hoặc để null
+                    String imagePath = null;
+                    // Nếu bạn về sau lưu icon giống tên file assets, có thể làm:
+                    // imagePath = "images/categories/" + dto.getIcon();
+
+                    categories.add(new CategoryItem(
+                            dto.getCategoryId(),
+                            imagePath,
+                            dto.getCategoryName()
+                    ));
+                    index++;
+                }
+
+                categoryAdapter = new CategoryAdapter(
+                        categories,
+                        requireContext().getAssets(),
+                        item -> {
+                            if (item.getName().equals("More")) {
+                                // Nếu vẫn muốn giữ logic More thì xử lý riêng,
+                                // còn hiện tại data từ BE thường không có "More"
+                                try {
+                                    Navigation.findNavController(requireView())
+                                            .navigate(R.id.action_homeFragment_to_categoryFragment);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            } else {
+                                // Chuyển sang CategoryProductsFragment kèm categoryId + name
+                                Bundle bundle = new Bundle();
+                                bundle.putInt("categoryId", item.getId());
+                                bundle.putString("categoryName", item.getName());
+                                Navigation.findNavController(requireView())
+                                        .navigate(R.id.action_homeFragment_to_categoryProductsFragment, bundle);
+                            }
+                        }
+                );
+                rvCategories.setAdapter(categoryAdapter);
+            }
+
+            @Override
+            public void onFailure(Call<List<CategoryDto>> call, Throwable t) {
+                Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                t.printStackTrace();
             }
         });
-        rvCategories.setAdapter(categoryAdapter);
     }
+
 
     private void setupBanner() {
         List<String> bannerList = new ArrayList<>();
