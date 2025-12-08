@@ -1,6 +1,7 @@
 package com.dine.DINERestaurant_Backend.order.controller;
 
 import com.dine.DINERestaurant_Backend.auth.jwt.JwtUtil;
+import com.dine.DINERestaurant_Backend.cart.service.CartService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import com.dine.DINERestaurant_Backend.order.entity.Order;
@@ -20,13 +21,9 @@ import java.util.Map;
 public class OrderController {
     @Autowired private JwtUtil jwtUtil;
     @Autowired private OrderService orderService;
-    public class OrderController {
+    @Autowired private CartService cartService; // ← THÊM DÒNG NÀY!!!
 
-        @Autowired private JwtUtil jwtUtil;
-        @Autowired private OrderService orderService;
-        @Autowired private CartService cartService; // ← THÊM DÒNG NÀY!!!
-
-        private Integer getCurrentUserId(String authHeader) {
+        private Integer extractUserIdFromToken(String authHeader) {
             if (authHeader == null || !authHeader.startsWith("Bearer ")) {
                 throw new RuntimeException("Token không hợp lệ");
             }
@@ -106,7 +103,7 @@ public class OrderController {
         }
     }
 
-    // ==================== CÁC API KHÁC (giữ format cũ, trả Entity trong data) ====================
+    // ==================== CÁC API KHÁC (trả Entity trong data) ====================
     private Integer getCurrentUserId(String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             throw new RuntimeException("Token không hợp lệ");

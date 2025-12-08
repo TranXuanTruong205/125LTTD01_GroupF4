@@ -130,7 +130,43 @@ public class OrderService {
         }
         return orderRepository.findByOrderStatus(status);
     }
+    @Transactional
+    public Order createOrderFromCart(Integer userId, String orderType,
+                                     Integer tableId, Integer addressId,
+                                     String paymentMethod, String note) {
 
+        Cart cart = cartService.getCartByUserId(userId);
+        if (cart.getCartItems() == null || cart.getCartItems().isEmpty()) {
+            throw new RuntimeException("Giỏ hàng trống!");
+        }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng"));
+
+        Order order = new Order();
+        order.setUser(user);
+        order.setOrderType(orderType);
+        order.setTableId(tableId);
+        order.setAddressId(addressId);
+        order.setPaymentMethod(paymentMethod);
+        order.setNote(note);
+        order.setTotalAmount(cart.getTotalAmount());
+        order.setDeliveryFee(BigDecimal.ZERO);
+        order.setOrderStatus("Đã đặt");
+        order.setCreatedAt(LocalDateTime.now());
+
+        for (CartItem ci : cart.getCartItems()) {
+            OrderDetail detail = new OrderDetail();
+            detail.setOrder(order);
+            detail.setItem(ci.getMenuItem());
+            detail.setQuantity(ci.getQuantity());
+            detail.setUnitPrice(ci.getPrice());
+            detail.setSubtotal(ci.getPrice().multiply(BigDecimal.valueOf(ci.getQuantity())));
+            order.getOrderDetails().add(detail);
+        }
+
+        return orderRepository.save(order);
+    }
     public String generateOrderNumber(Integer orderId) {
         return "SP" + String.format("%07d", orderId);
     }
