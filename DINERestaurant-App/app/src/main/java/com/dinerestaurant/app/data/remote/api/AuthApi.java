@@ -2,6 +2,7 @@ package com.dinerestaurant.app.data.remote.api;
 
 import com.dinerestaurant.app.model.LoginRequest;
 import com.dinerestaurant.app.model.LoginResponse;
+import com.dinerestaurant.app.model.LoginVerifyRequest;
 import com.dinerestaurant.app.model.RegisterRequest;
 import com.dinerestaurant.app.model.RegisterVerifyRequest;
 
@@ -19,6 +20,6 @@ public interface AuthApi {
     @POST("api/auth/login/request")
     Call<Map<String, Object>> loginRequestOtp(@Body LoginRequest request);
     @POST("api/auth/login/verify")
-    Call<Map<String, Object>> verifyLogin(@Body Map<String, String> body);
+    Call<Map<String, Object>> verifyLoginOtp(@Body LoginVerifyRequest request);
 
 }

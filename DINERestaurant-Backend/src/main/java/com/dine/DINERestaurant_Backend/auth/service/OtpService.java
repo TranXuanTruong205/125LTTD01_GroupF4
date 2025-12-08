@@ -18,7 +18,7 @@ public class OtpService {
 
     // Tạo và lưu OTP
     public String generateOtp(String phoneNumber) {
-        String otp = String.format("%06d", random.nextInt(999999));
+        String otp = String.format("%04d", random.nextInt(9999));
 
         OtpCode otpCode = new OtpCode();
         otpCode.setPhoneNumber(phoneNumber);
