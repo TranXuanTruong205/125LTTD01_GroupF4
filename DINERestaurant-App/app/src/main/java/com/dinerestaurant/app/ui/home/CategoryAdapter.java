@@ -18,23 +18,21 @@ import java.io.InputStream;
 import java.util.List;
 
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHolder> {
-
     private List<CategoryItem> items;
     private AssetManager assetManager;
-
-    // 1. Khai báo Interface lắng nghe sự kiện
     private OnItemClickListener listener;
-
+    public void setItems(List<CategoryItem> newItems) {
+        this.items = newItems;
+        notifyDataSetChanged();
+    }
     public interface OnItemClickListener {
         void onItemClick(CategoryItem item);
     }
-
     public CategoryAdapter(List<CategoryItem> items, AssetManager assetManager, OnItemClickListener listener) {
         this.items = items;
         this.assetManager = assetManager;
         this.listener = listener;
     }
-
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -42,7 +40,6 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
                 .inflate(R.layout.item_category, parent, false);
         return new ViewHolder(view);
     }
-
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         CategoryItem item = items.get(position);
@@ -59,7 +56,6 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
             // Nếu không load được ảnh, dùng icon mặc định
             holder.ivCategoryIcon.setImageResource(android.R.drawable.ic_menu_gallery);
         }
-
         //Gắn sự kiện Click vào item
         holder.itemView.setOnClickListener(v->{
             if(listener!=null){
@@ -67,16 +63,13 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
             }
         });
     }
-
     @Override
     public int getItemCount() {
         return items.size();
     }
-
     static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView ivCategoryIcon;
         TextView tvCategoryName;
-
         ViewHolder(View itemView) {
             super(itemView);
             ivCategoryIcon = itemView.findViewById(R.id.ivCategoryIcon);
