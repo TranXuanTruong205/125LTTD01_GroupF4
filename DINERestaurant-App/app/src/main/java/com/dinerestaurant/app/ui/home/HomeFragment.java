@@ -1,6 +1,5 @@
 package com.dinerestaurant.app.ui.home;
 
-import android.content.Intent; // Thêm import cho Intent
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -8,10 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ImageButton;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -21,15 +18,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.dinerestaurant.app.R;
-import com.dinerestaurant.app.adapter.home.BannerAdapter;
-import com.dinerestaurant.app.adapter.home.CategoryAdapter;
-import com.dinerestaurant.app.adapter.home.SpecialOfferAdapter;
-import com.dinerestaurant.app.model.home.CategoryItem;
-import com.dinerestaurant.app.model.home.SpecialOfferItem;
+import com.dinerestaurant.app.model.CategoryItem;
+import com.dinerestaurant.app.model.SpecialOfferItem;
 
 // Mặc dù MessageFragment được import, chúng ta sẽ không dùng nó trực tiếp ở đây
 // mà dùng ID của nó trong Nav Graph.
-import com.dinerestaurant.app.ui.other.MessageFragment;
 
 
 import java.util.ArrayList;

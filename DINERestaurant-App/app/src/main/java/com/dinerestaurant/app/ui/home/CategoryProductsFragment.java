@@ -10,8 +10,7 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.dinerestaurant.app.R;
-import com.dinerestaurant.app.adapter.home.CategoryProductAdapter;
-import com.dinerestaurant.app.model.home.CategoryProductItem;
+import com.dinerestaurant.app.model.CategoryProductItem;
 
 import java.util.ArrayList;
 import java.util.List;

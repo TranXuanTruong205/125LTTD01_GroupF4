@@ -2,9 +2,7 @@ package com.dinerestaurant.app.ui.other;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Color; // Thêm import Color
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment; // Đổi từ AppCompatActivity sang Fragment
 
 import com.dinerestaurant.app.R;
-import com.dinerestaurant.app.model.other.ChatMessage;
+import com.dinerestaurant.app.model.ChatMessage;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

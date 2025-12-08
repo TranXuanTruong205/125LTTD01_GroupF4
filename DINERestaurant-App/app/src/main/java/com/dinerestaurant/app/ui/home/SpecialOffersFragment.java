@@ -9,8 +9,7 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.dinerestaurant.app.R;
-import com.dinerestaurant.app.adapter.home.SpecialOfferAdapter;
-import com.dinerestaurant.app.model.home.SpecialOfferItem;
+import com.dinerestaurant.app.model.SpecialOfferItem;
 
 import java.util.ArrayList;
 import java.util.List;
