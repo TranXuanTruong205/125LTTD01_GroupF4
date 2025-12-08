@@ -8,6 +8,8 @@ import com.dine.DINERestaurant_Backend.menu.repository.MenuItemRepository;
 import com.dine.DINERestaurant_Backend.order.entity.Order;
 import com.dine.DINERestaurant_Backend.order.entity.OrderDetail;
 import com.dine.DINERestaurant_Backend.order.repository.OrderRepository;
+import com.dine.DINERestaurant_Backend.order.repository.UserAddressRepository;
+import com.dine.DINERestaurant_Backend.user.entity.UserAddress;
 import com.dine.DINERestaurant_Backend.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,7 +29,8 @@ public class OrderService {
     private OrderRepository orderRepository;
     @Autowired
     private CartService cartService;
-
+    @Autowired
+    private UserAddressRepository userAddressRepository;
     @Autowired
     private UserRepository userRepository;
 
@@ -164,7 +167,14 @@ public class OrderService {
         order.setUserId(userId);
         order.setOrderType(orderType);
         order.setTableId(tableId);
-        order.setAddressId(addressId);
+        // Nếu là giao hàng → lấy địa chỉ text từ user_addresses
+        if ("Giao hàng".equals(orderType) && addressId != null) {
+            UserAddress addr = userAddressRepository.findById(addressId)
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy địa chỉ giao hàng"));
+            order.setDeliveryAddress(addr.getAddressText());
+        } else {
+            order.setDeliveryAddress(null);
+        }
         order.setPaymentMethod(paymentMethod);
         order.setNote(note);
         order.setOrderStatus("Đã đặt");
