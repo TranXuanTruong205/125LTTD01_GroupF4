@@ -1,4 +1,4 @@
-package com.dinerestaurant.app.model.home;
+package com.dinerestaurant.app.model;
 
 public class SpecialOfferItem {
     private String imagePath;

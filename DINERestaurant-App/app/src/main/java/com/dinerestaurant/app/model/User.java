@@ -1,4 +1,4 @@
-package com.dinerestaurant.app.model.auth;
+package com.dinerestaurant.app.model;
 
 public class User {
     private String phone;

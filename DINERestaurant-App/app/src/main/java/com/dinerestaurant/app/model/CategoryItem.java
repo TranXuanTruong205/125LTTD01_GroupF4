@@ -1,4 +1,4 @@
-package com.dinerestaurant.app.model.home;
+package com.dinerestaurant.app.model;
 
 public class CategoryItem {
     private String imagePath; // Đường dẫn ảnh trong assets

@@ -11,7 +11,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.dinerestaurant.app.R;
-import com.dinerestaurant.app.data.StaticData;
+import com.dinerestaurant.app.data.local.StaticData;
 import com.dinerestaurant.app.ui.MainActivity;
 
 public class VerificationActivity extends AppCompatActivity {

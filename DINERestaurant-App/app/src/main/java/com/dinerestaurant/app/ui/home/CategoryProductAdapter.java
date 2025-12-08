@@ -1,4 +1,4 @@
-package com.dinerestaurant.app.adapter.home;
+package com.dinerestaurant.app.ui.home;
 
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
@@ -11,8 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.dinerestaurant.app.R;
-import com.dinerestaurant.app.model.home.CategoryProductItem;
-import com.dinerestaurant.app.model.home.SpecialOfferItem;
+import com.dinerestaurant.app.model.CategoryProductItem;
 
 import java.io.IOException;
 import java.io.InputStream;

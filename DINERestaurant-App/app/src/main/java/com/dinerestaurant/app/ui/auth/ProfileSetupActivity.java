@@ -2,7 +2,6 @@ package com.dinerestaurant.app.ui.auth;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,7 +10,7 @@ import android.text.TextWatcher;
 import android.widget.*;
 
 import com.dinerestaurant.app.R;
-import com.dinerestaurant.app.data.StaticData;
+import com.dinerestaurant.app.data.local.StaticData;
 import com.dinerestaurant.app.ui.MainActivity;
 
 import java.util.Calendar;

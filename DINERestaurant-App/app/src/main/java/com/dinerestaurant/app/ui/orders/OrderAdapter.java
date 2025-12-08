@@ -1,4 +1,4 @@
-package com.dinerestaurant.app.adapter.orders;
+package com.dinerestaurant.app.ui.orders;
 
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 import com.dinerestaurant.app.R;
-import com.dinerestaurant.app.model.orders.OrderItem;
+import com.dinerestaurant.app.model.OrderItem;
 
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHolder> {
 

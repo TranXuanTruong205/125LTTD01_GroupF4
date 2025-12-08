@@ -1,6 +1,6 @@
-package com.dinerestaurant.app.data;
+package com.dinerestaurant.app.data.local;
 
-import com.dinerestaurant.app.model.auth.User;
+import com.dinerestaurant.app.model.User;
 
 public class StaticData {
 

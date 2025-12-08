@@ -8,8 +8,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.dinerestaurant.app.R;
-import com.dinerestaurant.app.adapter.other.LikedProductAdapter;
-import com.dinerestaurant.app.model.other.LikedProductItem;
+import com.dinerestaurant.app.model.LikedProductItem;
 
 import java.util.ArrayList;
 import java.util.List;

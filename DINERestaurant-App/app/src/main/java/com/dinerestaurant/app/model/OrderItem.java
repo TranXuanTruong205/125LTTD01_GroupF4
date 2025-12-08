@@ -1,4 +1,4 @@
-package com.dinerestaurant.app.model.orders;
+package com.dinerestaurant.app.model;
 
 public class OrderItem {
     private String orderId;

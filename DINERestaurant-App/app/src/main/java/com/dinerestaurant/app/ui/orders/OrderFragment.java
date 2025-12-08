@@ -16,8 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 import com.dinerestaurant.app.R;
-import com.dinerestaurant.app.adapter.orders.OrderAdapter;
-import com.dinerestaurant.app.model.orders.OrderItem;
+import com.dinerestaurant.app.model.OrderItem;
 
 public class OrderFragment extends Fragment implements OrderAdapter.OnOrderClickListener {
 

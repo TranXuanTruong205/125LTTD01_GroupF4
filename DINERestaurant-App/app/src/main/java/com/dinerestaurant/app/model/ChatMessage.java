@@ -1,4 +1,4 @@
-package com.dinerestaurant.app.model.other;
+package com.dinerestaurant.app.model;
 
 public class ChatMessage {
     private String message;

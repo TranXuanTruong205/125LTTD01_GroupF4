@@ -1,13 +1,13 @@
-package com.dinerestaurant.app.model.home;
+package com.dinerestaurant.app.model;
 
-public class CategoryProductItem {
+public class LikedProductItem {
     private String imagePath;
     private String name;
     private double rating;
     private String originalPrice;
     private String discountPrice;
 
-    public CategoryProductItem(String imagePath, String name, double rating, String originalPrice, String discountPrice) {
+    public LikedProductItem(String imagePath, String name, double rating, String originalPrice, String discountPrice) {
         this.imagePath = imagePath;
         this.name = name;
         this.rating = rating;

@@ -11,7 +11,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.dinerestaurant.app.R;
-import com.dinerestaurant.app.data.StaticData;
+import com.dinerestaurant.app.data.local.StaticData;
 
 public class LoginActivity extends AppCompatActivity {
 

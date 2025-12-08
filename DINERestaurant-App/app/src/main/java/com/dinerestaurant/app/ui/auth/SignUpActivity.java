@@ -5,18 +5,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.dinerestaurant.app.R;
-import com.dinerestaurant.app.data.StaticData;
-import com.dinerestaurant.app.model.auth.User;
+import com.dinerestaurant.app.data.local.StaticData;
 
 public class SignUpActivity extends AppCompatActivity {
 

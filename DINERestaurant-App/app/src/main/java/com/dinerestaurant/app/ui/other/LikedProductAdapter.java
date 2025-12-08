@@ -1,4 +1,4 @@
-package com.dinerestaurant.app.adapter.other;
+package com.dinerestaurant.app.ui.other;
 
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
@@ -11,7 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.dinerestaurant.app.R;
-import com.dinerestaurant.app.model.other.LikedProductItem;
+import com.dinerestaurant.app.model.LikedProductItem;
 
 import java.io.IOException;
 import java.io.InputStream;

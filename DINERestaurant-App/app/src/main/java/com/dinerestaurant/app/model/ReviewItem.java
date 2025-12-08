@@ -1,4 +1,4 @@
-package com.dinerestaurant.app.model.home;
+package com.dinerestaurant.app.model;
 
 public class ReviewItem {
     private String avatarPath;

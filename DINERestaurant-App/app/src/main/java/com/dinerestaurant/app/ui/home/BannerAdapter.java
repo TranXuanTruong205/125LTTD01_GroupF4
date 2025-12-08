@@ -1,7 +1,6 @@
-package com.dinerestaurant.app.adapter.home;
+package com.dinerestaurant.app.ui.home;
 
 import android.content.Context;
-import android.content.res.AssetManager;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
