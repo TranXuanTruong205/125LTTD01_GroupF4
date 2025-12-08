@@ -1,23 +1,30 @@
 package com.dinerestaurant.app.model;
 
 public class CategoryProductItem {
-    private int id;             // itemId từ BE
-    private int categoryId;     // categoryId từ BE
-    private String imagePath;   // ảnh UI (có thể assets hoặc URL sau này)
+
+    // id của món (menu_items.item_id trên BE)
+    private int id;
+
+    // đường dẫn ảnh (tạm dùng assets như cũ, sau này có thể là URL)
+    private String imagePath;
+
     private String name;
     private double rating;
-    private double price;       // giá gốc
-    private Double discountPrice; // giá giảm (có thể null)
 
+    // giá gốc
+    private double price;
+
+    // giá khuyến mãi (có thể null)
+    private Double discountPrice;
+
+    // Constructor đầy đủ (dùng khi map từ BE)
     public CategoryProductItem(int id,
-                               int categoryId,
                                String imagePath,
                                String name,
                                double rating,
                                double price,
                                Double discountPrice) {
         this.id = id;
-        this.categoryId = categoryId;
         this.imagePath = imagePath;
         this.name = name;
         this.rating = rating;
@@ -25,12 +32,17 @@ public class CategoryProductItem {
         this.discountPrice = discountPrice;
     }
 
-    public int getId() {
-        return id;
+    // Constructor tiện cho dữ liệu fake cũ (không cần id)
+    public CategoryProductItem(String imagePath,
+                               String name,
+                               double rating,
+                               double price,
+                               Double discountPrice) {
+        this(0, imagePath, name, rating, price, discountPrice);
     }
 
-    public int getCategoryId() {
-        return categoryId;
+    public int getId() {
+        return id;
     }
 
     public String getImagePath() {
