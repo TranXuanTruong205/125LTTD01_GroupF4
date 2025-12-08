@@ -96,18 +96,15 @@ public class CategoryProductsFragment extends Fragment {
                     // TẠM THỜI: dùng assets cũ cho hình ảnh hoặc để null
                     String imagePath = null;
                     // Nếu về sau bạn map được dto.getImage() với file assets thì sửa tại đây
-
                     double price = dto.getPrice();
                     Double discount = dto.getDiscountPrice();
-
                     items.add(new CategoryProductItem(
-                            dto.getItemId(),
-                            dto.getCategory() != null ? dto.getCategory().getCategoryId() : categoryId,
-                            imagePath,
-                            dto.getItemName(),
-                            dto.getRating() != null ? dto.getRating() : 0.0,
-                            price,
-                            discount
+                            dto.getItemId(),          // id
+                            imagePath,                // imagePath (tạm null / sau map ảnh)
+                            dto.getItemName(),        // name
+                            dto.getRating() != null ? dto.getRating() : 0.0, // rating
+                            price,                    // price
+                            discount                  // discountPrice
                     ));
                     index++;
                 }
