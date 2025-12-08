@@ -284,4 +284,68 @@ public class OrderController {
         response.put("data", orders); // Trả thẳng List Entity
         return ResponseEntity.ok(response);
     }
+    @giTransactional
+    public Order createOrderFromCart(Integer userId, String orderType,
+                                     Integer tableId, Integer addressId,
+                                     String paymentMethod, String note) {
+
+        // Lấy giỏ hàng của user
+        Cart cart = cartService.getCartByUserId(userId);
+        if (cart == null || cart.getCartItems() == null || cart.getCartItems().isEmpty()) {
+            throw new RuntimeException("Giỏ hàng trống! Vui lòng thêm món trước khi thanh toán.");
+        }
+
+        // Tạo đơn hàng mới
+        Order order = new Order();
+        order.setUserId(userId);
+        order.setOrderType(orderType);
+        order.setTableId(tableId);
+        order.setAddressId(addressId);
+        order.setPaymentMethod(paymentMethod);
+        order.setNote(note);
+        order.setOrderStatus("Đã đặt");
+        order.setCreatedAt(LocalDateTime.now());
+
+        // Tính tổng tiền + tạo chi tiết đơn hàng từ giỏ
+        BigDecimal totalAmount = BigDecimal.ZERO;
+        List<OrderDetail> orderDetails = new ArrayList<>();
+
+        for (CartItem cartItem : cart.getCartItems()) {
+            MenuItem menuItem = cartItem.getMenuItem();
+            if (menuItem == null) continue;
+
+            BigDecimal unitPrice = cartItem.getPrice();
+            Integer quantity = cartItem.getQuantity();
+            BigDecimal subtotal = unitPrice.multiply(BigDecimal.valueOf(quantity));
+            totalAmount = totalAmount.add(subtotal);
+
+            OrderDetail detail = new OrderDetail();
+            detail.setItemId(menuItem.getItemId());
+            detail.setQuantity(quantity);
+            detail.setUnitPrice(unitPrice);
+            detail.setSubtotal(subtotal);
+            orderDetails.add(detail);
+        }
+
+        // Phí ship
+        if ("Giao hàng".equals(orderType)) {
+            order.setDeliveryFee(addressId != null ? BigDecimal.valueOf(20000) : BigDecimal.valueOf(15000));
+        } else {
+            order.setDeliveryFee(BigDecimal.ZERO);
+        }
+
+        order.setTotalAmount(totalAmount.add(order.getDeliveryFee()));
+
+        // Save đơn hàng trước để có ID
+        Order savedOrder = orderRepository.save(order);
+
+        // Gán orderId cho các detail
+        for (OrderDetail detail : orderDetails) {
+            detail.setOrderId(savedOrder.getOrderId());
+        }
+        savedOrder.setOrderDetails(orderDetails);
+
+        // Lưu lại lần cuối
+        return orderRepository.save(savedOrder);
+    }
 }
