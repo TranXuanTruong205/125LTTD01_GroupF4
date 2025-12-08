@@ -40,7 +40,7 @@ public class OrderController {
 
             Map<String, Object> response = new HashMap<>();
             try {
-                Integer userId = getCurrentUserId(authHeader);
+                Integer userId = extractUserIdFromToken(authHeader);
 
                 String orderType = (String) request.get("orderType");
                 Integer tableId = request.get("tableId") != null ? (Integer) request.get("tableId") : null;
