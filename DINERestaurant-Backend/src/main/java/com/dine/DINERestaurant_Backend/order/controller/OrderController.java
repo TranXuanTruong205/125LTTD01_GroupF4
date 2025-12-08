@@ -20,7 +20,56 @@ import java.util.Map;
 public class OrderController {
     @Autowired private JwtUtil jwtUtil;
     @Autowired private OrderService orderService;
+    public class OrderController {
 
+        @Autowired private JwtUtil jwtUtil;
+        @Autowired private OrderService orderService;
+        @Autowired private CartService cartService; // ← THÊM DÒNG NÀY!!!
+
+        private Integer getCurrentUserId(String authHeader) {
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                throw new RuntimeException("Token không hợp lệ");
+            }
+            String token = authHeader.substring(7);
+            String userIdStr = jwtUtil.extractUserId(token);
+            return Integer.parseInt(userIdStr);
+        }
+
+        // ==================== API MỚI: CHECKOUT TỪ GIỎ HÀNG ====================
+        @PostMapping("/checkout")
+        public ResponseEntity<Map<String, Object>> checkoutFromCart(
+                @RequestBody Map<String, Object> request,
+                @RequestHeader("Authorization") String authHeader) {
+
+            Map<String, Object> response = new HashMap<>();
+            try {
+                Integer userId = getCurrentUserId(authHeader);
+
+                String orderType = (String) request.get("orderType");
+                Integer tableId = request.get("tableId") != null ? (Integer) request.get("tableId") : null;
+                Integer addressId = request.get("addressId") != null ? (Integer) request.get("addressId") : null;
+                String paymentMethod = (String) request.get("paymentMethod");
+                String note = request.get("note") != null ? (String) request.get("note") : null;
+
+                // GỌI SERVICE MỚI: Tạo đơn từ giỏ hàng
+                Order order = orderService.createOrderFromCart(userId, orderType, tableId, addressId, paymentMethod, note);
+
+                // XÓA GIỎ HÀNG SAU KHI ĐẶT THÀNH CÔNG
+                cartService.clearCart(userId);
+
+                response.put("success", true);
+                response.put("message", "Đặt hàng thành công từ giỏ hàng!");
+                response.put("data", order);
+                response.put("orderNumber", orderService.generateOrderNumber(order.getOrderId()));
+
+                return ResponseEntity.status(HttpStatus.CREATED).body(response);
+
+            } catch (Exception e) {
+                response.put("success", false);
+                response.put("message", e.getMessage());
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+        }
     // ==================== ĐẶT ĐƠN HÀNG (3 loại) ====================
 
     @PostMapping("/onsite")
