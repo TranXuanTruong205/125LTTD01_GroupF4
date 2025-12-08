@@ -12,6 +12,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.dinerestaurant.app.R;
 import com.dinerestaurant.app.data.local.StaticData;
+import com.dinerestaurant.app.data.repository.AuthRepository;
+import com.dinerestaurant.app.model.LoginRequest;
+
+import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -59,22 +67,42 @@ public class LoginActivity extends AppCompatActivity {
 
         // Click Sign In
         btnSignIn.setOnClickListener(v -> {
-            String phone = edtPhone.getText().toString().trim();
+            String phone = "84"+edtPhone.getText().toString().trim();
 
             if (phone.isEmpty()) {
                 Toast.makeText(this, "Please enter phone number!", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            // Lưu phone vào dữ liệu tĩnh
-            StaticData.tempUser.setPhone(phone);
-            StaticData.isRegisterFlow = false;
+            // request gửi OTP
+            LoginRequest request = new LoginRequest(phone);
 
-            // Chuyển sang màn hình xác thực OTP
-            startActivity(new Intent(this, VerificationActivity.class));
+            new AuthRepository().loginRequestOtp(request)
+                    .enqueue(new Callback<Map<String, Object>>() {
+                        @Override
+                        public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
+                            if (response.isSuccessful() && response.body() != null) {
+
+                                Intent intent = new Intent(LoginActivity.this, VerificationActivity.class);
+                                intent.putExtra("phoneNumber", phone);
+                                startActivity(intent);
+
+                            } else {
+                                Toast.makeText(LoginActivity.this,
+                                        "Phone number not found! Please register.", Toast.LENGTH_SHORT).show();
+
+                                startActivity(new Intent(LoginActivity.this, SignUpActivity.class));
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<Map<String, Object>> call, Throwable t) {
+                            Toast.makeText(LoginActivity.this,
+                                    "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
         });
 
-        // Chuyển sang màn đăng ký
         findViewById(R.id.tvRegister2).setOnClickListener(v ->
                 startActivity(new Intent(this, SignUpActivity.class))
         );
