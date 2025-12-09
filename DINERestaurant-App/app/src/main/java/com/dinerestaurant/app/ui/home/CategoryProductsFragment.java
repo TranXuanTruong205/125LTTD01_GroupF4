@@ -35,7 +35,8 @@ public class CategoryProductsFragment extends Fragment {
     private int categoryId;
     private String categoryName;
 
-    public CategoryProductsFragment() { }
+    public CategoryProductsFragment() {
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -123,19 +124,54 @@ public class CategoryProductsFragment extends Fragment {
                 });
     }
 
-    // ❗ Tạm thời map image từ category + tên món → file assets
     private String mapMenuImage(MenuItemDto dto, String categoryName) {
+        // Sau này nếu muốn dùng cột image trong DB:
+        // if (dto.getImage() != null && !dto.getImage().isEmpty()) {
+        //     return "images/menu/" + dto.getImage();
+        // }
+
+        if (categoryName == null) {
+            return "images/special_offers/Image Burger.png"; // fallback
+        }
+
         String lowerCat = categoryName.toLowerCase();
 
         if (lowerCat.contains("burger")) {
             return "images/burger_list/Image Burger.png";
         }
         if (lowerCat.contains("pizza")) {
-            return "images/pizza_list/Image Pizza.png"; // ví dụ, sau này tạo thêm
+            return "images/pizza_list/Image Pizza.png";
         }
-        // thêm các trường hợp category khác nếu có
+        if (lowerCat.contains("taco")) {
+            return "images/taco_list/Image Taco.png";
+        }
+        if (lowerCat.contains("burrito")) {
+            return "images/burrito_list/Image Burrito.png";
+        }
+        if (lowerCat.contains("noodles") || lowerCat.contains("pho")) {
+            return "images/noodles_list/Image Noodles.png";
+        }
+        if (lowerCat.contains("sandwich")) {
+            return "images/sandwich_list/Image Sandwich.png";
+        }
+        if (lowerCat.contains("drink") || lowerCat.contains("nước") || lowerCat.contains("tea")) {
+            return "images/drink_list/Image Drink.png";
+        }
+        if (lowerCat.contains("donut")) {
+            return "images/donut_list/Image Donut.png";
+        }
+        if (lowerCat.contains("salad")) {
+            return "images/salad_list/Image Salad.png";
+        }
+        if (lowerCat.contains("pasta")) {
+            return "images/pasta_list/Image Pasta.png";
+        }
+        if (lowerCat.contains("ice cream") || lowerCat.contains("icecream") || lowerCat.contains("kem")) {
+            return "images/icecream_list/Image IceCream.png";
+        }
 
-        // fallback
+        // Mặc định: nếu không match category nào
         return "images/special_offers/Image Burger.png";
     }
+
 }
