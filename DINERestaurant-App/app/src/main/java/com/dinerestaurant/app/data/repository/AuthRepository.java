@@ -25,8 +25,8 @@ public class AuthRepository {
         return authApi.registerRequest(request);
     }
 
-    public Call<LoginResponse> registerVerify(RegisterVerifyRequest request) {
-        return authApi.registerVerify(request);
+    public Call<Map<String, Object>> verifyRegister(RegisterVerifyRequest body) {
+        return ApiClient.getAuthApi().verifyRegister(body);
     }
 
     public Call<Map<String, Object>> loginRequestOtp(LoginRequest request) {
