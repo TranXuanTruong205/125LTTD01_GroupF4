@@ -16,7 +16,7 @@ public interface AuthApi {
     @POST("api/auth/register/request")
     Call<Map<String, Object>> registerRequest(@Body RegisterRequest request);
     @POST("api/auth/register/verify")
-    Call<LoginResponse> registerVerify(@Body RegisterVerifyRequest request);
+    Call<Map<String, Object>> verifyRegister(@Body RegisterVerifyRequest body);
     @POST("api/auth/login/request")
     Call<Map<String, Object>> loginRequestOtp(@Body LoginRequest request);
     @POST("api/auth/login/verify")

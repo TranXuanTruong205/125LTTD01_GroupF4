@@ -15,8 +15,10 @@ import com.dinerestaurant.app.data.local.StaticData;
 import com.dinerestaurant.app.data.local.TokenManager;
 import com.dinerestaurant.app.data.repository.AuthRepository;
 import com.dinerestaurant.app.model.LoginVerifyRequest;
+import com.dinerestaurant.app.model.RegisterVerifyRequest;
 import com.dinerestaurant.app.ui.MainActivity;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import retrofit2.Call;
@@ -65,6 +67,7 @@ public class VerificationActivity extends AppCompatActivity {
 
         // Nhấn VERIFY
         btnVerify.setOnClickListener(v -> {
+
             String code = otp1.getText().toString()
                     + otp2.getText().toString()
                     + otp3.getText().toString()
@@ -77,48 +80,98 @@ public class VerificationActivity extends AppCompatActivity {
                 return;
             }
 
-            LoginVerifyRequest request = new LoginVerifyRequest(phone, code);
+            // ===============================
+            //  CASE ĐĂNG NHẬP
+            // ===============================
+            if (!StaticData.isRegisterFlow) {
 
-            new AuthRepository().verifyLoginOtp(request)
-                    .enqueue(new Callback<Map<String, Object>>() {
-                        @Override
-                        public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
-                            if (!response.isSuccessful() || response.body() == null) {
-                                showError("Server error!");
-                                return;
+                LoginVerifyRequest request = new LoginVerifyRequest(phone, code);
+
+                new AuthRepository().verifyLoginOtp(request)
+                        .enqueue(new Callback<Map<String, Object>>() {
+                            @Override
+                            public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
+
+                                if (!response.isSuccessful() || response.body() == null) {
+                                    showError("Server error!");
+                                    return;
+                                }
+
+                                Map<String, Object> body = response.body();
+
+                                if (body.containsKey("error")) {
+                                    showError(body.get("error").toString());
+                                    return;
+                                }
+
+                                // Lưu token
+                                String token = body.get("token").toString();
+                                new TokenManager(VerificationActivity.this).saveToken(token);
+
+                                goToMain();
                             }
 
-                            Map<String, Object> body = response.body();
+                            @Override
+                            public void onFailure(Call<Map<String, Object>> call, Throwable t) {
+                                showError("Network error: " + t.getMessage());
+                            }
+                        });
+            }
 
-                            if (body.containsKey("error")) {
-                                showError(body.get("error").toString());
-                                return;
+            // ===============================
+            //  CASE ĐĂNG KÝ
+            // ===============================
+            else {
+                RegisterVerifyRequest registerBody = new RegisterVerifyRequest(
+                        phone,
+                        StaticData.tempUser.getEmail(),
+                        StaticData.tempUser.getFullName(),
+                        code
+                );
+                new AuthRepository().verifyRegister(registerBody)
+                        .enqueue(new Callback<Map<String, Object>>() {
+                            @Override
+                            public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
+
+                                if (!response.isSuccessful() || response.body() == null) {
+                                    showError("Server error!");
+                                    return;
+                                }
+
+                                Map<String, Object> body = response.body();
+
+                                if (body.containsKey("error")) {
+                                    showError(body.get("error").toString());
+                                    return;
+                                }
+
+                                // Lưu token
+                                String token = body.get("token").toString();
+                                new TokenManager(VerificationActivity.this).saveToken(token);
+
+                                goToMain();
                             }
 
-                            String token = body.get("token").toString();
-                            // Lưu token vào SharedPreferences
-                            TokenManager tokenManager = new TokenManager(VerificationActivity.this);
-                            tokenManager.saveToken(token);
-
-                            // Chuyển sang MainActivity
-                            Intent intent = new Intent(VerificationActivity.this, MainActivity.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            startActivity(intent);
-                            finish();
-
-                        }
-
-                        @Override
-                        public void onFailure(Call<Map<String, Object>> call, Throwable t) {
-                            showError("Network error: " + t.getMessage());
-                        }
-                    });
+                            @Override
+                            public void onFailure(Call<Map<String, Object>> call, Throwable t) {
+                                showError("Network error: " + t.getMessage());
+                            }
+                        });
+            }
         });
+
 
 
         // Quay về login/back
         findViewById(R.id.tvSignIn).setOnClickListener(v -> finish());
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
+    }
+
+    private void goToMain() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 
     private void checkOtpInputs() {
@@ -145,4 +198,5 @@ public class VerificationActivity extends AppCompatActivity {
     private void showError(String message) {
         Toast.makeText(VerificationActivity.this, message, Toast.LENGTH_SHORT).show();
     }
+
 }
