@@ -92,16 +92,19 @@ public class HomeFragment extends Fragment {
                         Navigation.findNavController(requireView())
                                 .navigate(R.id.action_homeFragment_to_categoryFragment);
                     } else {
-                        // TODO: truyền categoryId/categoryName qua bundle nếu cần
+                        Bundle args = new Bundle();
+                        args.putInt("categoryId", item.getId());
+                        args.putString("categoryName", item.getName());
+
                         Navigation.findNavController(requireView())
-                                .navigate(R.id.action_homeFragment_to_categoryProductsFragment);
+                                .navigate(R.id.action_homeFragment_to_categoryProductsFragment, args);
                     }
                 }
         );
 
         rvCategories.setAdapter(categoryAdapter);
     }
-
+    
     private void loadCategories() {
         apiService.getCategories().enqueue(new Callback<List<CategoryDto>>() {
             @Override
