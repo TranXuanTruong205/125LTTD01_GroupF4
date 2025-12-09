@@ -104,7 +104,7 @@ public class HomeFragment extends Fragment {
 
         rvCategories.setAdapter(categoryAdapter);
     }
-    
+
     private void loadCategories() {
         apiService.getCategories().enqueue(new Callback<List<CategoryDto>>() {
             @Override
