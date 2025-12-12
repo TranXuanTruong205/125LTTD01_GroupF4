@@ -15,11 +15,9 @@ import java.util.Optional;
 
 @Service
 public class CartService {
-
     @Autowired private CartRepository cartRepository;
     @Autowired private UserRepository userRepository;
     @Autowired private MenuItemRepository menuItemRepository;
-
     // Lấy giỏ hàng theo User ID
     public Cart getCartByUserId(Integer userId) {
         User user = userRepository.findById(userId)
@@ -93,4 +91,30 @@ public class CartService {
         cart.calculateTotal();
         cartRepository.save(cart);
     }
+    @Transactional
+    public Cart addToCart(Integer userId, Integer menuItemId, Integer quantity) {
+        Cart cart = getCartByUserId(userId);
+        MenuItem item = menuItemRepository.findById(menuItemId)
+                .orElseThrow(() -> new RuntimeException("Item not found"));
+
+        Optional<CartItem> existingItem = cart.getCartItems().stream()
+                .filter(ci -> ci.getMenuItem().getItemId().equals(menuItemId))
+                .findFirst();
+
+        if (existingItem.isPresent()) {
+            CartItem cartItem = existingItem.get();
+            cartItem.setQuantity(cartItem.getQuantity() + quantity);
+        } else {
+            CartItem newItem = new CartItem();
+            newItem.setCart(cart);
+            newItem.setMenuItem(item);
+            newItem.setQuantity(quantity);
+            newItem.setPrice(item.getPrice());
+            cart.getCartItems().add(newItem);
+        }
+
+        cart.calculateTotal();
+        return cartRepository.save(cart);
+    }
+
 }
