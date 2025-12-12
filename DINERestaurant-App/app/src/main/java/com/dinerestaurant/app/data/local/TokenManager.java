@@ -1,5 +1,6 @@
 package com.dinerestaurant.app.data.local;
 
+<<<<<<< HEAD
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -25,3 +26,7 @@ public class TokenManager {
         prefs.edit().clear().apply();
     }
 }
+=======
+public class TokenManager {
+}
+>>>>>>> origin/feature/Tri-integrate-api-into-Menu-and-Category-ui
