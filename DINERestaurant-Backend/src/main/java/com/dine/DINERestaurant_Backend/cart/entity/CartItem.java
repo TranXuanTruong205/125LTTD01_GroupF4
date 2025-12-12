@@ -12,15 +12,18 @@ public class CartItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cart_item_id")
     private Integer cartItemId;
+
     @ManyToOne
     @JoinColumn(name = "cart_id")
-    @JsonIgnore // Tránh vòng lặp vô hạn khi serialize JSON
+    @JsonIgnore
     private Cart cart;
+
     @ManyToOne
     @JoinColumn(name = "item_id")
     private MenuItem menuItem;
+
     @Column(name = "quantity")
     private Integer quantity;
+
     @Column(name = "price")
-    private BigDecimal price; // Lưu giá tại thời điểm thêm vào giỏ
-}
+    private BigDecimal price;
