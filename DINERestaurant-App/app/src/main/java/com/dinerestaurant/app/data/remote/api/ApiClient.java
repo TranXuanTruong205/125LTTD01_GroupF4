@@ -1,9 +1,7 @@
 package com.dinerestaurant.app.data.remote.api;
 
-<<<<<<< HEAD
 import android.content.Context;
-=======
->>>>>>> origin/feature/Tri-integrate-api-into-Menu-and-Category-ui
+
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -11,10 +9,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiClient {
 
-<<<<<<< HEAD
-    private static Retrofit retrofit;
+    // Android Emulator → localhost
     private static final String BASE_URL = "http://10.0.2.2:8080/";
 
+    private static Retrofit retrofit;
+
+    /**
+     * Khởi tạo ApiClient – GỌI 1 LẦN DUY NHẤT (Application)
+     */
     public static void init(Context context) {
         if (retrofit != null) return;
 
@@ -22,8 +24,8 @@ public class ApiClient {
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
 
         OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(new AuthInterceptor(context))
-                .addInterceptor(logging)
+                .addInterceptor(new AuthInterceptor(context)) // 🔑 JWT
+                .addInterceptor(logging)                      // 🪵 Log API
                 .build();
 
         retrofit = new Retrofit.Builder()
@@ -33,32 +35,12 @@ public class ApiClient {
                 .build();
     }
 
+    // ====== Các API ======
+
     public static AuthApi getAuthApi() {
         return retrofit.create(AuthApi.class);
-=======
-    // Nếu BE chạy ở localhost:8080 trên máy tính,
-    // Android Emulator dùng 10.0.2.2
-    private static final String BASE_URL = "http://10.0.2.2:8080/";
-
-    private static Retrofit retrofit;
-
-    public static Retrofit getClient() {
-        if (retrofit == null) {
-
-            HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-
-            OkHttpClient client = new OkHttpClient.Builder()
-                    .addInterceptor(logging)
-                    .build();
-
-            retrofit = new Retrofit.Builder()
-                    .baseUrl(BASE_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .client(client)
-                    .build();
-        }
-        return retrofit;
->>>>>>> origin/feature/Tri-integrate-api-into-Menu-and-Category-ui
+    }
+    public static CartApi getCartApi() {
+        return retrofit.create(CartApi.class);
     }
 }
