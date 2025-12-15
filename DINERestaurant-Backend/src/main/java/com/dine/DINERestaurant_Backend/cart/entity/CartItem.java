@@ -27,3 +27,4 @@ public class CartItem {
 
     @Column(name = "price")
     private BigDecimal price;
+}

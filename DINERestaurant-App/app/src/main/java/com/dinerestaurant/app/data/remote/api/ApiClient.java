@@ -43,4 +43,11 @@ public class ApiClient {
     public static CartApi getCartApi() {
         return retrofit.create(CartApi.class);
     }
+    // Thêm hàm này để tương thích với code cũ
+    public static ApiService getApiService() {
+        if (retrofit == null) {
+            throw new IllegalStateException("ApiClient must be initialized with init(context) first!");
+        }
+        return retrofit.create(ApiService.class);
+    }
 }

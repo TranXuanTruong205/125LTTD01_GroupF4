@@ -61,7 +61,7 @@ public class CategoryProductsFragment extends Fragment {
 
         tvCategoryName.setText(categoryName);
 
-        apiService = ApiClient.getClient().create(ApiService.class);
+        apiService = ApiClient.getApiService();
 
         // Gọi API lấy sản phẩm theo Category
         loadProducts(view);

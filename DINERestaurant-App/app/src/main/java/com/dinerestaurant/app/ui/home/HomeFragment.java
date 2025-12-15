@@ -63,7 +63,7 @@ public class HomeFragment extends Fragment {
         btnCart = view.findViewById(R.id.ivCart);
         btnChat = view.findViewById(R.id.ivChat);
 
-        apiService = ApiClient.getClient().create(ApiService.class);
+        apiService = ApiClient.getApiService();
 
         // Categories
         setupCategoriesRecycler();
