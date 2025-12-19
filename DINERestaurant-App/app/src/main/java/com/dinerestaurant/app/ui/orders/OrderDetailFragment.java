@@ -77,7 +77,7 @@ public class OrderDetailFragment extends Fragment {
 
     private void initViews(View view) {
         // Header
-        btnBack = view.findViewById(R.id.imageButton3);
+        btnBack = view.findViewById(R.id.btnBack);
         btnMore = view.findViewById(R.id.imageButton);
         tvOrderId = view.findViewById(R.id.textView2);
 
