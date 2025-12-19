@@ -7,13 +7,15 @@ import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.PUT;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 
 public interface CartApi {
 
     @GET("api/cart")
     Call<Cart> getCart();
-
+    @POST("api/cart/add")
+    Call<Cart> addToCart(@Body Map<String, Object> body);
     @PUT("api/cart/update")
     Call<Cart> updateQuantity(@Body Map<String, Object> body);
 

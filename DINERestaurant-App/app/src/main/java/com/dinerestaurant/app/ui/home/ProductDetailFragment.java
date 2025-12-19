@@ -2,29 +2,42 @@ package com.dinerestaurant.app.ui.home;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import com.dinerestaurant.app.model.Cart;
+import com.dinerestaurant.app.data.remote.api.ApiClient;
+import com.dinerestaurant.app.model.CategoryProductItem;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.dinerestaurant.app.R;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class ProductDetailFragment extends Fragment {
 
     private int quantity = 1;
     public ProductDetailFragment() { }
+    private CategoryProductItem currentMenuItem;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // 1. Inflate view ra biến để xử lý
         View view = inflater.inflate(R.layout.fragment_product_detail, container, false);
-
+        if (getArguments() != null) {
+            currentMenuItem = (CategoryProductItem) getArguments().getSerializable("menu_item");
+        }
         // 2. Ánh xạ
 
         TextView btnSeeAllReviews = view.findViewById(R.id.btnSeeAllReview);
@@ -84,7 +97,7 @@ public class ProductDetailFragment extends Fragment {
         btnAddToBasket.setOnClickListener(v -> {
             // 1. Chuẩn bị dữ liệu body
             Map<String, Object> body = new HashMap<>();
-            body.put("menuItemId", currentMenuItem.getId()); // Cần ID của món ăn
+            body.put("menuItemId", currentMenuItem.getItemId());
             body.put("quantity", quantity);
             // 2. Gọi API
             ApiClient.getCartApi().addToCart(body).enqueue(new Callback<Cart>() {
