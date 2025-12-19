@@ -61,7 +61,7 @@ public class CategoryProductsFragment extends Fragment {
 
         tvCategoryName.setText(categoryName);
 
-        apiService = ApiClient.getClient().create(ApiService.class);
+        apiService = ApiClient.getApiService();
 
         // Gọi API lấy sản phẩm theo Category
         loadProducts(view);
@@ -111,8 +111,10 @@ public class CategoryProductsFragment extends Fragment {
                                 requireContext().getAssets(),
                                 item -> {
                                     try {
+                                        Bundle bundle = new Bundle();
+                                        bundle.putSerializable("menu_item", item); // Đóng gói món ăn với key "menu_item"
                                         Navigation.findNavController(rootView)
-                                                .navigate(R.id.action_categoryProductsFragment_to_productDetailFragment);
+                                                .navigate(R.id.action_categoryProductsFragment_to_productDetailFragment, bundle); // Gửi đi
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                     }
