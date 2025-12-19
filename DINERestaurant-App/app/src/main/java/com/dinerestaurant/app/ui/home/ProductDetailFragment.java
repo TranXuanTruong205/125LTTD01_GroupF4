@@ -81,7 +81,27 @@ public class ProductDetailFragment extends Fragment {
                 Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
             });
         }
-
+        btnAddToBasket.setOnClickListener(v -> {
+            // 1. Chuẩn bị dữ liệu body
+            Map<String, Object> body = new HashMap<>();
+            body.put("menuItemId", currentMenuItem.getId()); // Cần ID của món ăn
+            body.put("quantity", quantity);
+            // 2. Gọi API
+            ApiClient.getCartApi().addToCart(body).enqueue(new Callback<Cart>() {
+                @Override
+                public void onResponse(Call<Cart> call, Response<Cart> response) {
+                    if (response.isSuccessful()) {
+                        Toast.makeText(getContext(), "Đã thêm vào giỏ!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getContext(), "Lỗi thêm giỏ hàng", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                @Override
+                public void onFailure(Call<Cart> call, Throwable t) {
+                    Toast.makeText(getContext(), "Lỗi mạng: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
         return view;
     }
 }
