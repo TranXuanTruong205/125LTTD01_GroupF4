@@ -1,20 +1,21 @@
 package com.dinerestaurant.app.model;
 
 public class CategoryProductItem {
-    private int id;          // itemId từ BE
+
+    private int itemId;
     private String imagePath;
     private String name;
     private double rating;
     private double price;
-    private Double discountPrice;
+    private Double discountPrice; // có thể null
 
-    public CategoryProductItem(int id,
+    public CategoryProductItem(int itemId,
                                String imagePath,
                                String name,
                                double rating,
                                double price,
                                Double discountPrice) {
-        this.id = id;
+        this.itemId = itemId;
         this.imagePath = imagePath;
         this.name = name;
         this.rating = rating;
@@ -22,16 +23,8 @@ public class CategoryProductItem {
         this.discountPrice = discountPrice;
     }
 
-    public CategoryProductItem(String imagePath,
-                               String name,
-                               double rating,
-                               double price,
-                               Double discountPrice) {
-        this(0, imagePath, name, rating, price, discountPrice);
-    }
-
-    public int getId() {
-        return id;
+    public int getItemId() {
+        return itemId;
     }
 
     public String getImagePath() {
@@ -52,5 +45,10 @@ public class CategoryProductItem {
 
     public Double getDiscountPrice() {
         return discountPrice;
+    }
+
+    // Giá hiển thị (nếu có giảm thì dùng giảm, không thì dùng price)
+    public double getDisplayPrice() {
+        return discountPrice != null ? discountPrice : price;
     }
 }

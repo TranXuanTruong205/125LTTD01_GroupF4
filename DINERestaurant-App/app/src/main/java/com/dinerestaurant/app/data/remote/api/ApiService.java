@@ -11,15 +11,13 @@ import retrofit2.http.Path;
 
 public interface ApiService {
 
-    // --- CATEGORY ---
+    // ...... Auth endpoints (nếu có) ......
 
+    // Categories
     @GET("api/categories")
     Call<List<CategoryDto>> getCategories();
 
-    // --- MENU ITEMS ---
-
+    // MenuItems theo category
     @GET("api/menu-items/category/{categoryId}")
-    Call<List<MenuItemDto>> getMenuItemsByCategory(
-            @Path("categoryId") int categoryId
-    );
+    Call<List<MenuItemDto>> getMenuItemsByCategory(@Path("categoryId") int categoryId);
 }
