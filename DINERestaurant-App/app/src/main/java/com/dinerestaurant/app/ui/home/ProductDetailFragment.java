@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -13,10 +14,22 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.dinerestaurant.app.R;
+import com.dinerestaurant.app.data.remote.api.ApiClient;
+import com.dinerestaurant.app.model.Cart;
+import com.dinerestaurant.app.model.CategoryProductItem;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ProductDetailFragment extends Fragment {
 
     private int quantity = 1;
+    private CategoryProductItem currentMenuItem;
+
     public ProductDetailFragment() { }
 
     @Override
@@ -27,6 +40,11 @@ public class ProductDetailFragment extends Fragment {
 
         // 2. Ánh xạ
 
+        // Ánh xạ lại chính xác theo XML:
+        TextView tvName = view.findViewById(R.id.tvFoodName);
+        TextView tvDescription = view.findViewById(R.id.tvDescription);
+
+        // Nút bấm
         TextView btnSeeAllReviews = view.findViewById(R.id.btnSeeAllReview);
         View btnBack = view.findViewById(R.id.btnBack); // Giả sử bạn đặt ID là btnBack hoặc ivBack
         TextView tvQuantity = view.findViewById(R.id.tvQuantity);
@@ -35,6 +53,16 @@ public class ProductDetailFragment extends Fragment {
         Button btnAddToBasket = view.findViewById(R.id.btnAddToBasket);
 
         // --- SỰ KIỆN CLICK "See all review" ---
+        // 3. Hiển thị dữ liệu lên giao diện
+        if (currentMenuItem != null) {
+            if (tvName != null) tvName.setText(currentMenuItem.getName());
+//            if (tvDescription != null) tvDescription.setText(currentMenuItem.getDescription())
+        }
+
+        if (tvDescription != null) {
+            tvDescription.setText(currentMenuItem.getDescription());
+        }
+
         if (btnSeeAllReviews != null) {
             btnSeeAllReviews.setOnClickListener(v -> {
                 try {

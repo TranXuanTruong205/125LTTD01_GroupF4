@@ -95,6 +95,7 @@ public class CategoryProductsFragment extends Fragment {
                                     dto.getItemId(),
                                     imagePath,
                                     dto.getItemName(),
+                                    dto.getDescription(),
                                     dto.getRating() != null ? dto.getRating() : 0.0,
                                     price,
                                     discount
