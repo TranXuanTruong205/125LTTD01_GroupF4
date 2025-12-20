@@ -2,6 +2,7 @@ package com.dinerestaurant.app.data.remote.api;
 
 import com.dinerestaurant.app.data.remote.dto.CategoryDto;
 import com.dinerestaurant.app.data.remote.dto.MenuItemDto;
+import com.dinerestaurant.app.model.ItemOption;
 
 import java.util.List;
 
@@ -20,4 +21,6 @@ public interface ApiService {
     // MenuItems theo category
     @GET("api/menu-items/category/{categoryId}")
     Call<List<MenuItemDto>> getMenuItemsByCategory(@Path("categoryId") int categoryId);
+    @GET("api/menu-items/{itemId}/options")
+    Call<List<ItemOption>> getMenuOptions(@Path("itemId") int itemId);
 }
