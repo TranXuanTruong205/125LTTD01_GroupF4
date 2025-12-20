@@ -5,19 +5,22 @@ public class CategoryProductItem implements  Serializable {
     private int itemId;
     private String imagePath;
     private String name;
+    private String description;
     private double rating;
     private double price;
-    private Double discountPrice; // có thể null
+    private Double discountPrice;
 
     public CategoryProductItem(int itemId,
                                String imagePath,
                                String name,
+                               String description,
                                double rating,
                                double price,
                                Double discountPrice) {
         this.itemId = itemId;
         this.imagePath = imagePath;
         this.name = name;
+        this.description = description;
         this.rating = rating;
         this.price = price;
         this.discountPrice = discountPrice;
@@ -34,6 +37,7 @@ public class CategoryProductItem implements  Serializable {
     public String getName() {
         return name;
     }
+    public String getDescription() { return description;}
 
     public double getRating() {
         return rating;
