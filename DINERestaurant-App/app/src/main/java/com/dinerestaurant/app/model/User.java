@@ -1,37 +1,111 @@
 package com.dinerestaurant.app.model;
 
 public class User {
-    private String phone;
+
+    private int userId;
+    private String phoneNumber;
     private String email;
     private String fullName;
-    private String dob;
     private String gender;
-    private String location;
+    private String address;
+    private String dateOfBirth;
+    private String profilePicture;
+    private String role;
+    private boolean isActive;
+    private String createdAt;
+    private String lastLogin;
+    public int getUserId() {
+        return userId;
+    }
 
-    public User() {}
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
 
-    public User(String phone, String email, String fullName) {
-        this.phone = phone;
+    public String getEmail() {
+        return email;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public String getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public String getProfilePicture() {
+        return profilePicture;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public String getLastLogin() {
+        return lastLogin;
+    }
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public void setPhone(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void setEmail(String email) {
         this.email = email;
+    }
+
+    public void setFullName(String fullName) {
         this.fullName = fullName;
     }
 
-    // GET – SET
-    public String getPhone() { return phone; }
-    public void setPhone(String phone) { this.phone = phone; }
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public void setAddress(String address) {
+        this.address = address;
+    }
 
-    public String getFullName() { return fullName; }
-    public void setFullName(String fullName) { this.fullName = fullName; }
+    public void setDateOfBirth(String dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
 
-    public String getDob() { return dob; }
-    public void setDob(String dob) { this.dob = dob; }
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
+    }
 
-    public String getGender() { return gender; }
-    public void setGender(String gender) { this.gender = gender; }
+    public void setRole(String role) {
+        this.role = role;
+    }
 
-    public String getLocation() { return location; }
-    public void setLocation(String location) { this.location = location; }
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setLastLogin(String lastLogin) {
+        this.lastLogin = lastLogin;
+    }
 }

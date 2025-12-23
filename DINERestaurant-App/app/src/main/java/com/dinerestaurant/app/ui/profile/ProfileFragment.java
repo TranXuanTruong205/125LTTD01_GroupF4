@@ -14,6 +14,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.dinerestaurant.app.R;
+import com.dinerestaurant.app.ui.auth.ProfileSetupActivity;
 import com.dinerestaurant.app.ui.other.LikedFragment;
 // Đã sửa MessageFragment thành Fragment, nên chúng ta dùng nó như một Fragment
 import com.dinerestaurant.app.ui.other.MessageFragment;
@@ -24,6 +25,7 @@ public class ProfileFragment extends Fragment {
     // Khai báo biến cho Messages
     private LinearLayout btnMessages;
 
+    private ImageButton editProfileButton;
     // ID của vùng chứa Fragment trong MainActivity
     private static final int CONTAINER_ID = R.id.nav_host_fragment;
     // Thẻ (Tag) dùng để dọn dẹp Back Stack khi chuyển tab chính
@@ -45,6 +47,7 @@ public class ProfileFragment extends Fragment {
 
         btnback = view.findViewById(R.id.btnBack);
 
+        editProfileButton = view.findViewById(R.id.editProfileBtn);
         // 2. Thiết lập OnClickListener cho My Locations
         llMyLocations.setOnClickListener(v -> {
             MyLocationsFragment myLocationsFragment = new MyLocationsFragment();
@@ -59,10 +62,11 @@ public class ProfileFragment extends Fragment {
 
         // 4. Thiết lập OnClickListener cho Messages (Đã sửa logic)
         setupMessagesButton();
-
+        setupEditProfileButton();
         setupBackButton();
         return view;
     }
+
 
     private void setupMessagesButton() {
         if (btnMessages != null) {
@@ -92,6 +96,14 @@ public class ProfileFragment extends Fragment {
         transaction.addToBackStack(BACK_STACK_TAG);
 
         transaction.commit();
+    }
+    private void setupEditProfileButton() {
+        if (editProfileButton != null) {
+            editProfileButton.setOnClickListener(v -> {
+                Intent intent = new Intent(getActivity(), ProfileSetupActivity.class);
+                startActivity(intent);
+            });
+        }
     }
 
     private void setupBackButton() {
