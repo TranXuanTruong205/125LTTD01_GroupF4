@@ -173,7 +173,16 @@ public class ProductDetailFragment extends Fragment {
                 body.put("menuItemId", currentMenuItem.getItemId());
                 body.put("quantity", quantity);
 
-                // TODO: Gửi kèm danh sách optionId nếu API hỗ trợ lưu option (Hiện tại mới chỉ gửi quantity)
+                // Gửi kèm danh sách optionId đã chọn
+                List<Integer> selectedOptionIds = new ArrayList<>();
+                if (optionList != null) {
+                    for (ItemOption opt : optionList) {
+                        if (opt.isSelected()) {
+                            selectedOptionIds.add(opt.getOptionId());
+                        }
+                    }
+                }
+                body.put("optionIds", selectedOptionIds);
 
                 ApiClient.getCartApi().addToCart(body).enqueue(new Callback<Cart>() {
                     @Override

@@ -16,7 +16,6 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
 
     private List<CartItem> items;
     private OnCartAction listener;
-
     public interface OnCartAction {
         void onIncrease(int cartItemId, int currentQty);
         void onDecrease(int cartItemId, int currentQty);
@@ -47,12 +46,20 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         holder.tvName.setText(item.getMenuItem().getItemName());
         holder.tvPrice.setText(item.getMenuItem().getPrice() + " đ");
         holder.tvQuantity.setText(String.valueOf(item.getQuantity()));
-
-        // TODO: Load Image (Bạn có thể thêm Glide sau)
-        
         holder.btnPlus.setOnClickListener(v -> listener.onIncrease(item.getCartItemId(), item.getQuantity()));
         holder.btnMinus.setOnClickListener(v -> listener.onDecrease(item.getCartItemId(), item.getQuantity()));
         holder.btnDelete.setOnClickListener(v -> listener.onDelete(item.getCartItemId()));
+        if (item.getOptions() != null && !item.getOptions().isEmpty()) {
+            StringBuilder sb = new StringBuilder("Toppings: ");
+            for (int i = 0; i < item.getOptions().size(); i++) {
+                sb.append(item.getOptions().get(i).getOptionName());
+                if (i < item.getOptions().size() - 1) sb.append(", ");
+            }
+            holder.tvOptions.setText(sb.toString());
+            holder.tvOptions.setVisibility(View.VISIBLE);
+        } else {
+            holder.tvOptions.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -62,6 +69,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         TextView tvName, tvPrice, tvQuantity;
         ImageButton btnPlus, btnMinus, btnDelete;
         ImageView imgProduct;
+        TextView tvOptions;
 
         ViewHolder(View view) {
             super(view);
@@ -72,6 +80,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
             btnMinus = view.findViewById(R.id.btnMinus);
             btnDelete = view.findViewById(R.id.btnDelete);
             imgProduct = view.findViewById(R.id.ivProductImage);
+            tvOptions = view.findViewById(R.id.tvProductOptions);
         }
     }
 }
