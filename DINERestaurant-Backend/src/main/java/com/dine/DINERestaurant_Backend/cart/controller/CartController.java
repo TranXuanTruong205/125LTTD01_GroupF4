@@ -46,7 +46,8 @@ public class CartController {
             Integer userId = getUserIdFromToken(authHeader);
             Integer itemId = (Integer) payload.get("menuItemId");
             Integer quantity = (Integer) payload.get("quantity");
-            return ResponseEntity.ok(cartService.addToCart(userId, itemId, quantity));
+            java.util.List<Integer> optionIds = (java.util.List<Integer>) payload.get("optionIds");
+            return ResponseEntity.ok(cartService.addToCart(userId, itemId, quantity, optionIds));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().build();
