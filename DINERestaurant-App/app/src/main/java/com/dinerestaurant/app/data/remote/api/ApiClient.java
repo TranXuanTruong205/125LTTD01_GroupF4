@@ -32,4 +32,11 @@ public class ApiClient {
     public static AuthApi getAuthApi() {
         return retrofit.create(AuthApi.class);
     }
+    public static ApiNotification getNotificationApi() {
+        return retrofit.create(ApiNotification.class);
+    }
+    public static PromotionApi getPromotionApi() {
+        return retrofit.create(PromotionApi.class);
+    }
+
 }
