@@ -1,7 +1,6 @@
 package com.dinerestaurant.app.data.repository;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import com.dinerestaurant.app.data.remote.api.ApiClient;
 import com.dinerestaurant.app.data.remote.api.ReservationApi;
@@ -13,17 +12,10 @@ import retrofit2.Call;
 public class ReservationRepository {
 
     private final ReservationApi api;
-    private final Context context;
 
     public ReservationRepository(Context context) {
-        this.context = context;
+        // Context được sử dụng để init ApiClient nếu cần
         this.api = ApiClient.getReservationApi();
-    }
-
-    private String getAuthToken() {
-        SharedPreferences prefs = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
-        String token = prefs.getString("token", "");
-        return "Bearer " + token;
     }
 
     public Call<Map<String, Object>> getAvailableTables(String date, String time, int guestCount) {
@@ -31,14 +23,14 @@ public class ReservationRepository {
     }
 
     public Call<Map<String, Object>> createReservation(Map<String, Object> request) {
-        return api.createReservation(getAuthToken(), request);
+        return api.createReservation(request);
     }
 
     public Call<Map<String, Object>> getMyReservations() {
-        return api.getMyReservations(getAuthToken());
+        return api.getMyReservations();
     }
 
     public Call<Map<String, Object>> cancelReservation(int reservationId) {
-        return api.cancelReservation(getAuthToken(), reservationId);
+        return api.cancelReservation(reservationId);
     }
 }
