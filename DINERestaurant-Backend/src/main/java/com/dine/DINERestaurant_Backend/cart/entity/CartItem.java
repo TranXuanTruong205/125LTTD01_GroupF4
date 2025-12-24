@@ -1,4 +1,5 @@
 package com.dine.DINERestaurant_Backend.cart.entity;
+
 import com.dine.DINERestaurant_Backend.menu.entity.ItemOption;
 import com.dine.DINERestaurant_Backend.menu.entity.MenuItem;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -30,11 +31,25 @@ public class CartItem {
 
     @Column(name = "price")
     private BigDecimal price;
+
     @ManyToMany
     @JoinTable(
             name = "cart_item_options",
             joinColumns = @JoinColumn(name = "cart_item_id"),
             inverseJoinColumns = @JoinColumn(name = "option_id")
     )
-    private List<ItemOption> options;
+    private List<ItemOption> options; // Chỉ cần giữ lại 1 đoạn này
+
+    // Hàm này rất quan trọng để tính tổng tiền chính xác (Base + Toppings)
+    public BigDecimal getLinePrice() {
+        BigDecimal total = price; // Giá gốc món ăn
+        if (options != null) {
+            for (ItemOption opt : options) {
+                if (opt.getExtraPrice() != null) {
+                    total = total.add(opt.getExtraPrice());
+                }
+            }
+        }
+        return total.multiply(BigDecimal.valueOf(quantity));
+    }
 }
