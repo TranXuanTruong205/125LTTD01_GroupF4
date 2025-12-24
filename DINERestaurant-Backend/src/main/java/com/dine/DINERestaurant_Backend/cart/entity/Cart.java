@@ -29,7 +29,7 @@ public class Cart {
 
     public void calculateTotal() {
         this.totalAmount = cartItems.stream()
-                .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                .map(CartItem::getLinePrice) // Sử dụng line price thay vì chỉ price * quantity
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }
