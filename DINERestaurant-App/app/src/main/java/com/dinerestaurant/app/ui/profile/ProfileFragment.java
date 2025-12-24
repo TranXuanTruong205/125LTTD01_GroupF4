@@ -28,12 +28,18 @@ import com.dinerestaurant.app.ui.other.LikedFragment;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import com.dinerestaurant.app.data.local.TokenManager;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.dinerestaurant.app.ui.auth.LoginActivity;
+
 
 public class ProfileFragment extends Fragment {
     private ImageView imgAvatar;
     private TextView tvFullName, tvPhone, tvEmail;
     private ImageButton editProfileButton, btnBack;
-    private LinearLayout btnMessages;
+    private LinearLayout btnMessages,btnLogout;
 
     private UserApi userApi;
 
@@ -49,6 +55,7 @@ public class ProfileFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
         // Bind views
+        btnLogout = view.findViewById(R.id.btnLogout);
         imgAvatar = view.findViewById(R.id.imgAvatar);
         tvFullName = view.findViewById(R.id.tvFullName);
         tvPhone = view.findViewById(R.id.tvPhone);
@@ -68,6 +75,8 @@ public class ProfileFragment extends Fragment {
         loadProfile();
 
         // ===== Listeners =====
+        btnLogout.setOnClickListener(v -> logout());
+
         editProfileButton.setOnClickListener(v ->
                 startActivity(new Intent(getActivity(), ProfileSetupActivity.class))
         );
@@ -113,6 +122,34 @@ public class ProfileFragment extends Fragment {
         });
     }
 
+    private void logout() {
+
+        // 1. Xoá token JWT
+        new TokenManager(requireContext()).clear();
+
+        // 2. Logout Google (nếu user login Google)
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(
+                GoogleSignInOptions.DEFAULT_SIGN_IN
+        ).build();
+
+        GoogleSignInClient googleSignInClient =
+                GoogleSignIn.getClient(requireContext(), gso);
+
+        googleSignInClient.signOut().addOnCompleteListener(task -> {
+
+            // 3. Quay về LoginActivity
+            Intent intent = new Intent(requireContext(), LoginActivity.class);
+
+            // Xoá toàn bộ back stack
+            intent.setFlags(
+                    Intent.FLAG_ACTIVITY_NEW_TASK |
+                            Intent.FLAG_ACTIVITY_CLEAR_TASK
+            );
+
+            startActivity(intent);
+            requireActivity().finish();
+        });
+    }
 
     private void bindUser(User user) {
 

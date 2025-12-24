@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -32,16 +33,41 @@ public class SignUpActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
 
+        // 1️⃣ BIND VIEW TRƯỚC
         edtPhone = findViewById(R.id.edtPhone);
         edtEmail = findViewById(R.id.edtEmail);
         edtFullName = findViewById(R.id.edtFullName);
         btnRegister = findViewById(R.id.btnRegister);
 
-        // Disable ban đầu
+        // 2️⃣ ĐỌC INTENT SAU KHI BIND VIEW
+        Intent intent = getIntent();
+        if (intent != null && intent.getBooleanExtra("fromGoogle", false)) {
+
+            String email = intent.getStringExtra("email");
+            String fullName = intent.getStringExtra("fullName");
+
+            // DEBUG (RẤT QUAN TRỌNG)
+            Log.d("SIGNUP", "Email = " + email);
+            Log.d("SIGNUP", "FullName = " + fullName);
+
+            if (email != null) {
+                edtEmail.setText(email);
+                edtEmail.setEnabled(false);
+                edtEmail.setFocusable(false);
+                edtEmail.setClickable(false);
+                edtEmail.setAlpha(0.6f);
+            }
+
+            if (fullName != null) {
+                edtFullName.setText(fullName);
+            }
+            validateInputs();
+        }
+
+        // 3️⃣ CÒN LẠI GIỮ NGUYÊN
         btnRegister.setEnabled(false);
         btnRegister.setBackgroundResource(R.drawable.bg_btn_signin);
 
-        // Gắn watcher
         TextWatcher watcher = new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -54,10 +80,7 @@ public class SignUpActivity extends AppCompatActivity {
         edtEmail.addTextChangedListener(watcher);
         edtFullName.addTextChangedListener(watcher);
 
-        // CLICK REGISTER → Gọi API register/request
         btnRegister.setOnClickListener(v -> registerRequest());
-
-        findViewById(R.id.tvSignIn).setOnClickListener(v -> finish());
     }
 
     // =====================================================================
