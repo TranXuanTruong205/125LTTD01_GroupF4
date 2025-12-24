@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,8 +17,6 @@ import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.dinerestaurant.app.R;
 import com.dinerestaurant.app.data.repository.OrderRepository;
@@ -53,9 +50,6 @@ public class OrderDetailFragment extends Fragment {
     private TextView tvDeliveryValue;
     private TextView tvDiscountValue;
     private TextView tvTotalValue;
-
-    // Items container
-    private LinearLayout layoutOrderItems;
 
     // Bottom buttons
     private Button btnCancel;
@@ -120,9 +114,6 @@ public class OrderDetailFragment extends Fragment {
         tvSubtotalValue = view.findViewById(R.id.tv_subtotal_value);
         tvDeliveryValue = view.findViewById(R.id.tv_delivery_value);
         tvDiscountValue = view.findViewById(R.id.tv_discount_value);
-
-        // Items container - Dùng RecyclerView hoặc LinearLayout
-        layoutOrderItems = view.findViewById(R.id.layout_order_items);
 
         // Bottom buttons
         btnCancel = view.findViewById(R.id.btn_cancel);
@@ -251,7 +242,7 @@ public class OrderDetailFragment extends Fragment {
 
         // Order items
         List<Map<String, Object>> orderDetails = (List<Map<String, Object>>) order.get("orderDetails");
-        if (orderDetails != null && layoutOrderItems != null) {
+        if (orderDetails != null) {
             displayOrderItems(orderDetails);
         }
 
