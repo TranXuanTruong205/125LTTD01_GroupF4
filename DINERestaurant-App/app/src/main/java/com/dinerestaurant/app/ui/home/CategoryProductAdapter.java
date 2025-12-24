@@ -46,16 +46,14 @@ public class CategoryProductAdapter extends RecyclerView.Adapter<CategoryProduct
         holder.tvProductName.setText(item.getName());
         holder.tvRating.setText(String.valueOf(item.getRating()));
 
-        // giá gốc
-        holder.tvOriginalPrice.setText(formatPrice(item.getPrice()));
+        holder.tvOriginalPrice.setText(item.getPrice() + "đ");
 
-        // giá khuyến mãi (nếu có)
         if (item.getDiscountPrice() != null) {
-            holder.tvDiscountPrice.setVisibility(View.VISIBLE);
-            holder.tvDiscountPrice.setText(formatPrice(item.getDiscountPrice()));
+            holder.tvDiscountPrice.setText(item.getDiscountPrice() + "đ");
         } else {
-            holder.tvDiscountPrice.setVisibility(View.GONE);
+            holder.tvDiscountPrice.setText(""); // hoặc ẩn TextView nếu muốn
         }
+
 
         // Load ảnh từ assets
         try {

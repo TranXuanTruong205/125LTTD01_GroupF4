@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingVertical="10dp"
+    android:gravity="center_vertical">
+
+    <!-- Tên Topping -->
+    <TextView
+        android:id="@+id/tvOptionName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Option Name"
+        android:textSize="15sp"
+        android:textColor="#1A1A1A" />
+
+    <!-- Giá thêm -->
+    <TextView
+        android:id="@+id/tvOptionPrice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="+ 10.000đ"
+        android:textSize="15sp"
+        android:textColor="#FF6B6B"
+        android:layout_marginEnd="10dp"/>
+
+    <!-- Checkbox chọn -->
+    <CheckBox
+        android:id="@+id/cbOption"
+        android:layout_width="24dp"
+        android:layout_height="24dp" />
+
+</LinearLayout>

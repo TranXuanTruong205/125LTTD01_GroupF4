@@ -151,74 +151,131 @@ public class OrderService {
     }
     // ====================== CHECKOUT TỪ GIỎ HÀNG ======================
     @Transactional
-    public Order createOrderFromCart(Integer userId, String orderType,
-                                     Integer tableId, Integer addressId,
-                                     String paymentMethod, String note) {
+    public Order createOrderFromCart(
+            Integer userId,
+            String orderType,
+            Integer tableId,
+            Integer addressId,
+            String paymentMethod,
+            String note,
+            List<Integer> cartItemIds
+    ) {
+        // 1) Validate input
+        if (userId == null) throw new RuntimeException("Thiếu userId!");
+        if (cartItemIds == null || cartItemIds.isEmpty())
+            throw new RuntimeException("Chưa chọn món nào để thanh toán!");
 
-        // Lấy giỏ hàng của user
-        Cart cart = cartService.getCartByUserId(userId);
-        if (cart == null || cart.getCartItems() == null || cart.getCartItems().isEmpty()) {
-            throw new RuntimeException("Giỏ hàng trống! Vui lòng thêm món trước khi thanh toán.");
+        if (orderType == null || orderType.isBlank())
+            throw new RuntimeException("Thiếu orderType!");
+
+        // Nếu là ăn tại bàn mà không có tableId (tuỳ bạn có dùng loại này không)
+        if (!"Giao hàng".equals(orderType) && tableId == null) {
+            // Nếu bạn có các loại khác (Mang về) thì chỉnh điều kiện theo hệ thống của bạn
+            // Ở đây mình để an toàn: không giao hàng thì cần tableId
+            // Nếu bạn không cần tableId cho "Mang về" thì bỏ check này.
+            // throw new RuntimeException("Thiếu tableId cho đơn không giao hàng!");
         }
 
-        // Tạo đơn hàng mới
+        // 2) Lấy giỏ hàng (cartService đã đảm nhiệm tạo cart nếu chưa có)
+        Cart cart = cartService.getCartByUserId(userId);
+        if (cart == null || cart.getCartItems() == null || cart.getCartItems().isEmpty())
+            throw new RuntimeException("Giỏ hàng trống! Vui lòng thêm món trước khi thanh toán.");
+
+        // 3) Lọc ra đúng các món được chọn để checkout
+        List<CartItem> selectedItems = cart.getCartItems().stream()
+                .filter(item -> item != null
+                        && item.getCartItemId() != null
+                        && cartItemIds.contains(item.getCartItemId()))
+                .toList();
+
+        if (selectedItems.isEmpty())
+            throw new RuntimeException("Chưa chọn món nào để thanh toán!");
+
+        // 4) Tạo Order
         Order order = new Order();
         order.setUserId(userId);
         order.setOrderType(orderType);
         order.setTableId(tableId);
+
         // Nếu là giao hàng → lấy địa chỉ text từ user_addresses
-        if ("Giao hàng".equals(orderType) && addressId != null) {
-            UserAddress addr = userAddressRepository.findById(addressId)
-                    .orElseThrow(() -> new RuntimeException("Không tìm thấy địa chỉ giao hàng"));
-            order.setDeliveryAddress(addr.getAddressText());
+        if ("Giao hàng".equals(orderType)) {
+            if (addressId != null) {
+                UserAddress addr = userAddressRepository.findById(addressId)
+                        .orElseThrow(() -> new RuntimeException("Không tìm thấy địa chỉ giao hàng"));
+                order.setDeliveryAddress(addr.getAddressText());
+            } else {
+                // tuỳ nghiệp vụ: cho phép null thì để null, không cho thì throw
+                order.setDeliveryAddress(null);
+                // throw new RuntimeException("Thiếu addressId cho đơn giao hàng!");
+            }
         } else {
             order.setDeliveryAddress(null);
         }
+
         order.setPaymentMethod(paymentMethod);
         order.setNote(note);
         order.setOrderStatus("Đã đặt");
         order.setCreatedAt(LocalDateTime.now());
 
-        // Tính tổng tiền + tạo chi tiết đơn hàng từ giỏ
-        BigDecimal totalAmount = BigDecimal.ZERO;
+        // 5) Tính tiền + tạo OrderDetail từ selectedItems (ĐÃ FIX GIÁ TOPPING)
+        BigDecimal itemsTotal = BigDecimal.ZERO;
         List<OrderDetail> orderDetails = new ArrayList<>();
 
-        for (CartItem cartItem : cart.getCartItems()) {
+        for (CartItem cartItem : selectedItems) {
             MenuItem menuItem = cartItem.getMenuItem();
             if (menuItem == null) continue;
 
-            BigDecimal unitPrice = cartItem.getPrice();
+            // Lấy TỔNG GIÁ của dòng này (Đã bao gồm Topping + số lượng)
+            BigDecimal lineTotal = cartItem.getLinePrice();
             Integer quantity = cartItem.getQuantity();
-            BigDecimal subtotal = unitPrice.multiply(BigDecimal.valueOf(quantity));
-            totalAmount = totalAmount.add(subtotal);
+            if (quantity == null || quantity <= 0) continue;
+            if (lineTotal == null) lineTotal = BigDecimal.ZERO;
+            // Tính lại đơn giá thực tế (đã gồm Topping) để hiển thị trên hóa đơn
+            BigDecimal unitPriceWithToppings = lineTotal.divide(BigDecimal.valueOf(quantity), 2, java.math.RoundingMode.HALF_UP);
+
+            itemsTotal = itemsTotal.add(lineTotal);
 
             OrderDetail detail = new OrderDetail();
             detail.setItemId(menuItem.getItemId());
             detail.setQuantity(quantity);
-            detail.setUnitPrice(unitPrice);
-            detail.setSubtotal(subtotal);
+            detail.setUnitPrice(unitPriceWithToppings); // Đơn giá có tính cả Topping
+            detail.setSubtotal(lineTotal);
+
             orderDetails.add(detail);
         }
 
-        // Phí ship
+        if (orderDetails.isEmpty())
+            throw new RuntimeException("Danh sách món thanh toán không hợp lệ!");
+
+        // 6) Phí ship
         if ("Giao hàng".equals(orderType)) {
+            // bạn có thể tính theo khoảng cách/địa chỉ; tạm giữ như code cũ của bạn
             order.setDeliveryFee(addressId != null ? BigDecimal.valueOf(20000) : BigDecimal.valueOf(15000));
         } else {
             order.setDeliveryFee(BigDecimal.ZERO);
         }
 
-        order.setTotalAmount(totalAmount.add(order.getDeliveryFee()));
+        // Tổng tiền cuối (items + ship)
+        order.setTotalAmount(itemsTotal.add(order.getDeliveryFee()));
 
-        // Save đơn hàng trước để có ID
+        // 7) Save order trước để có orderId
         Order savedOrder = orderRepository.save(order);
 
-        // Gán orderId cho các detail
+        // Gán orderId cho detail
         for (OrderDetail detail : orderDetails) {
             detail.setOrderId(savedOrder.getOrderId());
         }
         savedOrder.setOrderDetails(orderDetails);
 
-        // Lưu lại lần cuối
-        return orderRepository.save(savedOrder);
+        // Save lại lần 2 để lưu detail (giống pattern bạn đang dùng)
+        savedOrder = orderRepository.save(savedOrder);
+
+        // 8) Sau khi tạo đơn THÀNH CÔNG → mới xóa các món đã checkout khỏi cart
+        cart.getCartItems().removeIf(item -> item != null
+                && item.getCartItemId() != null
+                && cartItemIds.contains(item.getCartItemId()));
+        cart.calculateTotal();
+        cartService.saveCart(cart);
+        return savedOrder;
     }
 }

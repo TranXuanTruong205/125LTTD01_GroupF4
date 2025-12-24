@@ -1,37 +1,33 @@
 package com.dinerestaurant.app.model;
+import java.io.Serializable;
+public class CategoryProductItem implements  Serializable {
 
-public class CategoryProductItem {
-    private int id;          // itemId từ BE
+    private int itemId;
     private String imagePath;
     private String name;
+    private String description;
     private double rating;
     private double price;
     private Double discountPrice;
 
-    public CategoryProductItem(int id,
+    public CategoryProductItem(int itemId,
                                String imagePath,
                                String name,
+                               String description,
                                double rating,
                                double price,
                                Double discountPrice) {
-        this.id = id;
+        this.itemId = itemId;
         this.imagePath = imagePath;
         this.name = name;
+        this.description = description;
         this.rating = rating;
         this.price = price;
         this.discountPrice = discountPrice;
     }
 
-    public CategoryProductItem(String imagePath,
-                               String name,
-                               double rating,
-                               double price,
-                               Double discountPrice) {
-        this(0, imagePath, name, rating, price, discountPrice);
-    }
-
-    public int getId() {
-        return id;
+    public int getItemId() {
+        return itemId;
     }
 
     public String getImagePath() {
@@ -41,6 +37,7 @@ public class CategoryProductItem {
     public String getName() {
         return name;
     }
+    public String getDescription() { return description;}
 
     public double getRating() {
         return rating;
@@ -52,5 +49,10 @@ public class CategoryProductItem {
 
     public Double getDiscountPrice() {
         return discountPrice;
+    }
+
+    // Giá hiển thị (nếu có giảm thì dùng giảm, không thì dùng price)
+    public double getDisplayPrice() {
+        return discountPrice != null ? discountPrice : price;
     }
 }

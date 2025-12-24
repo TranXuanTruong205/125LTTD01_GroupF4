@@ -42,20 +42,20 @@ public class OrderController {
             try {
                 Integer userId = extractUserIdFromToken(authHeader);
 
+                // Lấy danh sách ID các món người dùng đã tích chọn từ Android gửi lên
+                List<Integer> cartItemIds = (List<Integer>) request.get("cartItemIds");
+
                 String orderType = (String) request.get("orderType");
                 Integer tableId = request.get("tableId") != null ? (Integer) request.get("tableId") : null;
                 Integer addressId = request.get("addressId") != null ? (Integer) request.get("addressId") : null;
                 String paymentMethod = (String) request.get("paymentMethod");
                 String note = request.get("note") != null ? (String) request.get("note") : null;
 
-                // GỌI SERVICE MỚI: Tạo đơn từ giỏ hàng
-                Order order = orderService.createOrderFromCart(userId, orderType, tableId, addressId, paymentMethod, note);
-
-                // XÓA GIỎ HÀNG SAU KHI ĐẶT THÀNH CÔNG
-                cartService.clearCart(userId);
+                // Gọi Service với tham số cartItemIds mới
+                Order order = orderService.createOrderFromCart(userId, orderType, tableId, addressId, paymentMethod, note, cartItemIds);
 
                 response.put("success", true);
-                response.put("message", "Đặt hàng thành công từ giỏ hàng!");
+                response.put("message", "Đặt hàng thành công!");
                 response.put("data", order);
                 response.put("orderNumber", orderService.generateOrderNumber(order.getOrderId()));
 

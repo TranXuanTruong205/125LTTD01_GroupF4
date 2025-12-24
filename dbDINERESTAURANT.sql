@@ -446,6 +446,112 @@ INSERT INTO notifications (user_id, title, message, type, is_read) VALUES
 (4, N'Đặt bàn thành công', N'Bạn đã đặt bàn Table 02 vào 12:00 ngày 12/11/2024', N'Đặt bàn', 1);
 GO
 
+
+
+-- Thêm dữ liệu vào menu_items
+USE dbDINERESTAURANT;
+GO
+
+-------------------------------------------------
+-- 1) BURGER (category_id = 1) – đã có 3 món, thêm 3 món mới
+-------------------------------------------------
+INSERT INTO menu_items (category_id, item_name, description, price, discount_price, image, rating, total_reviews, is_available) VALUES
+(1, N'BBQ Bacon Burger', N'Burger bò nướng sốt BBQ với thịt xông khói và phô mai', 65000, 60000, N'bbq_bacon_burger.jpg', 4.8, 430, 1),
+(1, N'Double Cheese Burger', N'Burger hai lớp phô mai tan chảy, cực kỳ béo ngậy', 70000, NULL, N'double_cheese_burger.jpg', 4.7, 389, 1),
+(1, N'Mushroom Burger', N'Burger bò với nấm xào bơ và hành tây', 62000, 58000, N'mushroom_burger.jpg', 4.6, 275, 1);
+GO
+
+-------------------------------------------------
+-- 2) TACO (category_id = 2) – bạn đã có: Classic Taco, Chicken Taco
+--    → thêm 2 món nữa cho đủ 4
+-------------------------------------------------
+INSERT INTO menu_items (category_id, item_name, description, price, discount_price, image, rating, total_reviews, is_available) VALUES
+(2, N'Beef Taco', N'Taco bò xào với phô mai và salsa cay', 42000, NULL, N'beef_taco.jpg', 4.5, 165, 1),
+(2, N'Fish Taco', N'Taco cá chiên giòn với sốt tartar', 45000, 42000, N'fish_taco.jpg', 4.6, 142, 1);
+GO
+
+-------------------------------------------------
+-- 3) BURRITO (category_id = 3) – đã có: Beef Burrito, Chicken Burrito
+--    → thêm 2 món
+-------------------------------------------------
+INSERT INTO menu_items (category_id, item_name, description, price, discount_price, image, rating, total_reviews, is_available) VALUES
+(3, N'Veggie Burrito', N'Burrito chay với rau củ, đậu và phô mai', 50000, NULL, N'veggie_burrito.jpg', 4.4, 120, 1),
+(3, N'Spicy Burrito', N'Burrito cay với thịt bò, ớt jalapeño và sốt đặc biệt', 57000, 53000, N'spicy_burrito.jpg', 4.6, 138, 1);
+GO
+
+-------------------------------------------------
+-- 4) DRINK (category_id = 4) – đã có 4 món
+--    → thêm 2 món nữa cho phong phú
+-------------------------------------------------
+INSERT INTO menu_items (category_id, item_name, description, price, discount_price, image, rating, total_reviews, is_available) VALUES
+(4, N'Trà Chanh', N'Trà chanh mát lạnh, ít đường', 18000, NULL, N'tra_chanh.jpg', 4.5, 420, 1),
+(4, N'Nước Cam Ép', N'Nước cam tươi, giàu vitamin C', 22000, 20000, N'orange_juice.jpg', 4.7, 380, 1);
+GO
+
+-------------------------------------------------
+-- 5) PIZZA (category_id = 5) – đã có 3 món
+--    → thêm 2 món
+-------------------------------------------------
+INSERT INTO menu_items (category_id, item_name, description, price, discount_price, image, rating, total_reviews, is_available) VALUES
+(5, N'Margherita Pizza', N'Pizza phô mai và sốt cà chua cổ điển', 100000, 90000, N'margherita_pizza.jpg', 4.5, 310, 1),
+(5, N'Veggie Pizza', N'Pizza rau củ với ớt chuông, oliu và nấm', 115000, NULL, N'veggie_pizza.jpg', 4.6, 275, 1);
+GO
+
+-------------------------------------------------
+-- 6) DONUT (category_id = 6) – chưa có món nào → thêm 4 món
+-------------------------------------------------
+INSERT INTO menu_items (category_id, item_name, description, price, discount_price, image, rating, total_reviews, is_available) VALUES
+(6, N'Chocolate Donut', N'Donut phủ chocolate đậm đà', 25000, 20000, N'chocolate_donut.jpg', 4.6, 190, 1),
+(6, N'Strawberry Donut', N'Donut phủ sốt dâu tây', 25000, NULL, N'strawberry_donut.jpg', 4.5, 160, 1),
+(6, N'Glazed Donut', N'Donut phủ đường glaze cổ điển', 22000, NULL, N'glazed_donut.jpg', 4.4, 140, 1),
+(6, N'Matcha Donut', N'Donut trà xanh Nhật Bản', 27000, 25000, N'matcha_donut.jpg', 4.6, 130, 1);
+GO
+
+-------------------------------------------------
+-- 7) SALAD (category_id = 7) – đã có 2 món
+--    → thêm 2 món nữa
+-------------------------------------------------
+INSERT INTO menu_items (category_id, item_name, description, price, discount_price, image, rating, total_reviews, is_available) VALUES
+(7, N'Fruit Salad', N'Salad trái cây tươi theo mùa', 45000, 40000, N'fruit_salad.jpg', 4.7, 210, 1),
+(7, N'Mixed Green Salad', N'Salad rau trộn với sốt dầu giấm', 42000, NULL, N'mixed_green_salad.jpg', 4.5, 180, 1);
+GO
+
+-------------------------------------------------
+-- 8) NOODLES (category_id = 8) – đã có: Ramen Noodles, Pho Bo
+--    → thêm 2 món nữa
+-------------------------------------------------
+INSERT INTO menu_items (category_id, item_name, description, price, discount_price, image, rating, total_reviews, is_available) VALUES
+(8, N'Udon Noodles', N'Mì udon Nhật với tempura tôm', 68000, 65000, N'udon_noodles.jpg', 4.7, 230, 1),
+(8, N'Mì Xào Hải Sản', N'Mì xào hải sản với rau củ', 62000, NULL, N'seafood_noodles.jpg', 4.6, 195, 1);
+GO
+
+-------------------------------------------------
+-- 9) SANDWICH (category_id = 9) – đã có: Club Sandwich, Chicken Sandwich
+--    → thêm 2 món
+-------------------------------------------------
+INSERT INTO menu_items (category_id, item_name, description, price, discount_price, image, rating, total_reviews, is_available) VALUES
+(9, N'Tuna Sandwich', N'Sandwich cá ngừ sốt mayo', 52000, NULL, N'tuna_sandwich.jpg', 4.5, 160, 1),
+(9, N'Egg Sandwich', N'Sandwich trứng với sốt mayonnaise', 48000, 45000, N'egg_sandwich.jpg', 4.4, 140, 1);
+GO
+
+-------------------------------------------------
+-- 10) PASTA (category_id = 10) – đã có: Carbonara, Bolognese
+--     → thêm 2 món
+-------------------------------------------------
+INSERT INTO menu_items (category_id, item_name, description, price, discount_price, image, rating, total_reviews, is_available) VALUES
+(10, N'Penne Alfredo', N'Mì penne sốt kem phô mai béo ngậy', 70000, NULL, N'penne_alfredo.jpg', 4.7, 210, 1),
+(10, N'Lasagna', N'Mì lasagna nướng với thịt bò và phô mai', 80000, 75000, N'lasagna.jpg', 4.8, 260, 1);
+GO
+
+-------------------------------------------------
+-- 11) ICE CREAM (category_id = 11) – đã có 3 món
+--     → thêm 2 món
+-------------------------------------------------
+INSERT INTO menu_items (category_id, item_name, description, price, discount_price, image, rating, total_reviews, is_available) VALUES
+(11, N'Mango Ice Cream', N'Kem xoài mát lạnh', 28000, 20000, N'mango_icecream.jpg', 4.6, 190, 1),
+(11, N'Cookies & Cream Ice Cream', N'Kem cookies & cream với vụn bánh quy', 30000, 22000, N'cookies_cream_icecream.jpg', 4.8, 230, 1);
+GO
+
 -- ============================================
 -- KẾT THÚC SCHEMA VÀ DỮ LIỆU MẪU
 -- ============================================

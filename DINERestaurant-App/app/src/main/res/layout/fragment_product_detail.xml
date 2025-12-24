@@ -168,99 +168,14 @@
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="#1A1A1A" />
-
+        </LinearLayout>
             <!-- OPTIONS -->
-            <LinearLayout
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvOptions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginTop="8dp">
-
-                <!-- Cheese -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingVertical="10dp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Add Cheese"
-                        android:textSize="15sp"
-                        android:textColor="#1A1A1A" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="+ £0.50"
-                        android:textSize="15sp" />
-
-                    <CheckBox
-                        android:id="@+id/checkboxCheese"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp" />
-                </LinearLayout>
-
-                <!-- Bacon -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingVertical="10dp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Add Bacon"
-                        android:textSize="15sp"
-                        android:textColor="#1A1A1A" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="+ £1.00"
-                        android:textSize="15sp" />
-
-                    <CheckBox
-                        android:id="@+id/checkboxBacon"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp" />
-                </LinearLayout>
-
-                <!-- Meat -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingVertical="10dp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Add Meat"
-                        android:textSize="15sp"
-                        android:textColor="#1A1A1A" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="+ £1.00"
-                        android:textSize="15sp" />
-
-                    <CheckBox
-                        android:id="@+id/checkboxMeat"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-        </LinearLayout>
+                android:layout_marginTop="8dp"
+                android:nestedScrollingEnabled="false" />
 
         <!-- BOTTOM BAR -->
         <LinearLayout

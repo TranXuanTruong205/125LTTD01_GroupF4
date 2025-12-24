@@ -45,4 +45,8 @@ public class ApiClient {
         }
     }
 
+    public static CartApi getCartApi() {
+        return retrofit.create(CartApi.class);
+    }
+
 }

@@ -54,7 +54,7 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-        apiService = ApiClient.getApiService();
+
         // Ánh xạ view
         viewPagerBanner = view.findViewById(R.id.viewPagerBanner);
         layoutIndicator = view.findViewById(R.id.layoutIndicator);
@@ -63,6 +63,7 @@ public class HomeFragment extends Fragment {
         btnCart = view.findViewById(R.id.ivCart);
         btnChat = view.findViewById(R.id.ivChat);
 
+        apiService = ApiClient.getApiService();
 
         // Categories
         setupCategoriesRecycler();
@@ -91,9 +92,12 @@ public class HomeFragment extends Fragment {
                         Navigation.findNavController(requireView())
                                 .navigate(R.id.action_homeFragment_to_categoryFragment);
                     } else {
-                        // TODO: truyền categoryId/categoryName qua bundle nếu cần
+                        Bundle args = new Bundle();
+                        args.putInt("categoryId", item.getId());
+                        args.putString("categoryName", item.getName());
+
                         Navigation.findNavController(requireView())
-                                .navigate(R.id.action_homeFragment_to_categoryProductsFragment);
+                                .navigate(R.id.action_homeFragment_to_categoryProductsFragment, args);
                     }
                 }
         );
