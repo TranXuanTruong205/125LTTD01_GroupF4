@@ -126,56 +126,92 @@
                     app:tint="@color/gray" />
             </FrameLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#FFFFFF"
-        android:orientation="vertical"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="50px"
-            android:layout_marginTop="50px"
-            android:layout_marginRight="50px"
-            android:orientation="horizontal">
-
-            <ImageButton
-                android:id="@+id/imageButton"
-                android:layout_width="49dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="#FFFFFF"
-                app:srcCompat="?attr/homeAsUpIndicator" />
-
             <TextView
-                android:id="@+id/textView"
-                android:layout_width="336dp"
-                android:layout_height="46dp"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:paddingTop="10px"
-                android:paddingRight="30dp"
-                android:text="Order"
-                android:textAlignment="center"
-                android:textSize="70px"
-                android:textStyle="bold" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <ImageButton
-                android:id="@+id/imageButton2"
+                android:id="@+id/scanLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="#FFFFFF"
-                app:srcCompat="@drawable/Magnifer" />
+                android:visibility="gone"
+                android:text="Scan"
+                android:textColor="@color/orange"
+                android:textStyle="bold"
+                android:textSize="12sp" />
+        </LinearLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- NOTIFY -->
+        <LinearLayout
+            android:id="@+id/tabNotify"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:id="@+id/notifyIconContainer"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:foregroundGravity="center"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/notifyIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_notification"
+                    app:tint="@color/gray" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/notifyLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:text="Notify"
+                android:textColor="@color/orange"
+                android:textStyle="bold"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+
+        <!-- PROFILE -->
+        <LinearLayout
+            android:id="@+id/tabProfile"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:id="@+id/profileIconContainer"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:foregroundGravity="center"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/profileIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_profile"
+                    app:tint="@color/gray" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/profileLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:text="Profile"
+                android:textColor="@color/orange"
+                android:textStyle="bold"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
