@@ -53,4 +53,5 @@ public class PromotionController {
         ApplyPromotionResponse response = promotionService.applyPromotion(currentUserId, request);
         return ResponseEntity.ok(response);
     }
+
 }
