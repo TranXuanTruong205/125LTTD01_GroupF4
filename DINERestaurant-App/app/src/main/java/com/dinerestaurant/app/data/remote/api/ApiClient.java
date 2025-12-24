@@ -32,5 +32,17 @@ public class ApiClient {
     public static AuthApi getAuthApi() {
         return retrofit.create(AuthApi.class);
     }
+    public static UserApi getUserApi() {
+        return retrofit.create(UserApi.class);
+    }
+    public static ApiService getApiService() {
+        checkInit();
+        return retrofit.create(ApiService.class);
+    }
+    private static void checkInit() {
+        if (retrofit == null) {
+            throw new IllegalStateException("ApiClient chưa init");
+        }
+    }
 
 }

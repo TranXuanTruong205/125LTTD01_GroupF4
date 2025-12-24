@@ -42,7 +42,7 @@ public class CategoryProductsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_category_products, container, false);
-
+        apiService = ApiClient.getApiService();
         // Setup views
         tvCategoryName = view.findViewById(R.id.tvCategoryName);
         tvCategoryIcon = view.findViewById(R.id.tvCategoryIcon);
@@ -60,8 +60,6 @@ public class CategoryProductsFragment extends Fragment {
         }
 
         tvCategoryName.setText(categoryName);
-
-        apiService = ApiClient.getClient().create(ApiService.class);
 
         // Gọi API lấy sản phẩm theo Category
         loadProducts(view);

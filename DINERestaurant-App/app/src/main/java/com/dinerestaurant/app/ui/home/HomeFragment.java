@@ -54,7 +54,7 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-
+        apiService = ApiClient.getApiService();
         // Ánh xạ view
         viewPagerBanner = view.findViewById(R.id.viewPagerBanner);
         layoutIndicator = view.findViewById(R.id.layoutIndicator);
@@ -63,7 +63,6 @@ public class HomeFragment extends Fragment {
         btnCart = view.findViewById(R.id.ivCart);
         btnChat = view.findViewById(R.id.ivChat);
 
-        apiService = ApiClient.getClient().create(ApiService.class);
 
         // Categories
         setupCategoriesRecycler();
