@@ -1,415 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF">
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#FFFFFF"
             android:orientation="vertical">
 
             <!-- Header -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="47dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="30dp"
-                android:layout_marginRight="20dp"
+                android:layout_margin="20dp"
                 android:orientation="horizontal">
 
                 <ImageButton
                     android:id="@+id/btn_back"
-                    android:layout_width="94dp"
+                    android:layout_width="48dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
                     android:background="@drawable/bg_circle_white"
                     app:srcCompat="@drawable/arrow_left" />
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:paddingRight="100px"
                     android:text="Promotions"
-                    android:textAlignment="center"
                     android:textColor="#000000"
                     android:textSize="20sp"
-                    android:textStyle="bold" />
-
+                    android:textStyle="bold"/>
             </LinearLayout>
 
-            <!-- Promo Code Input -->
+            <!-- Promo Code -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="53dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginRight="20dp"
+                android:layout_marginHorizontal="20dp"
                 android:background="@drawable/rounded_bg"
-                android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingStart="16dp"
-                android:paddingEnd="8dp">
+                android:paddingHorizontal="16dp">
 
                 <EditText
                     android:id="@+id/edt_promo_code"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:background="@android:color/transparent"
                     android:hint="Promo Code"
-                    android:inputType="text"
-                    android:textColor="#000000"
-                    android:textColorHint="#999999"
-                    android:textSize="15sp" />
+                    android:background="@android:color/transparent"/>
 
                 <Button
                     android:id="@+id/btn_apply_code"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:minHeight="0dp"
-                    android:paddingTop="0dp"
-                    android:paddingBottom="0dp"
                     android:background="@android:color/transparent"
-                    android:gravity="center_vertical|center_horizontal"
                     android:text="Apply"
-                    android:textAllCaps="false"
-                    android:textColor="#FF6347"
-                    android:textSize="15sp"
-                    android:textStyle="bold" />
-
+                    android:textColor="#FF6347"/>
             </LinearLayout>
 
-            <!-- Shipping Offers Section -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginBottom="12dp"
-                android:text="Shipping Offers"
-                android:textColor="#666666"
-                android:textSize="14sp" />
-
-            <!-- FREE SHIPPING -->
-            <androidx.cardview.widget.CardView
+            <!-- RecyclerView -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_promotions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="12dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="2dp">
+                android:layout_margin="20dp"
+                android:nestedScrollingEnabled="false"/>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:padding="16dp">
-
-                    <!-- Ticket Icon -->
-                    <ImageView
-                        android:layout_width="42dp"
-                        android:layout_height="42dp"
-                        android:background="@drawable/fno_circle_yellow"
-                        android:padding="10dp"
-                        android:src="@drawable/ic_coupon" />
-                    <!-- Promo Info -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:layout_weight="1"
-                        android:orientation="horizontal">
-
-
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="FREE SHIPPING"
-                            android:textColor="#000000"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_marginStart="8dp"
-                            android:background="@drawable/info_circle"
-                            android:gravity="center"
-                            android:text="i"
-                            android:textColor="#999999"
-                            android:textSize="12sp" />
-
-                    </LinearLayout>
-
-                    <!-- Checkbox -->
-                    <CheckBox
-                        android:id="@+id/cb_free_shipping"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
-
-            <!-- 20% OFF Shipping -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="12dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="2dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:padding="16dp">
-
-                    <ImageView
-                        android:layout_width="42dp"
-                        android:layout_height="42dp"
-                        android:background="@drawable/fno_circle_yellow"
-                        android:padding="10dp"
-                        android:src="@drawable/ic_coupon" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:layout_weight="1"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="20% OFF"
-                            android:textColor="#000000"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_marginStart="8dp"
-                            android:background="@drawable/info_circle"
-                            android:gravity="center"
-                            android:text="i"
-                            android:textColor="#999999"
-                            android:textSize="12sp" />
-
-                    </LinearLayout>
-
-                    <CheckBox
-                        android:id="@+id/cb_shipping_20"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
-
-            <!-- Order Offers Section -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="12dp"
-                android:text="Order Offers"
-                android:textColor="#666666"
-                android:textSize="14sp" />
-
-            <!-- 20% OFF Order -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="12dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="2dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:padding="16dp">
-
-                    <ImageView
-                        android:layout_width="42dp"
-                        android:layout_height="42dp"
-                        android:background="@drawable/fno_circle_yellow"
-                        android:padding="10dp"
-                        android:src="@drawable/ic_coupon" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:layout_weight="1"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="20% OFF"
-                            android:textColor="#000000"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_marginStart="8dp"
-                            android:background="@drawable/info_circle"
-                            android:gravity="center"
-                            android:text="i"
-                            android:textColor="#999999"
-                            android:textSize="12sp" />
-
-                    </LinearLayout>
-
-                    <CheckBox
-                        android:id="@+id/cb_order_20"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
-
-            <!-- 10% OFF Order -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="12dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="2dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:padding="16dp">
-
-                    <ImageView
-                        android:layout_width="42dp"
-                        android:layout_height="42dp"
-                        android:background="@drawable/fno_circle_yellow"
-                        android:padding="10dp"
-                        android:src="@drawable/ic_coupon" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:layout_weight="1"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="10% OFF"
-                            android:textColor="#000000"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_marginStart="8dp"
-                            android:background="@drawable/info_circle"
-                            android:gravity="center"
-                            android:text="i"
-                            android:textColor="#999999"
-                            android:textSize="12sp" />
-
-                    </LinearLayout>
-
-                    <CheckBox
-                        android:id="@+id/cb_order_10"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
-
-            <!-- Get More Promotions Button -->
+            <!-- Get More -->
             <LinearLayout
                 android:id="@+id/btn_get_more"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="24dp"
+                android:layout_margin="20dp"
                 android:background="@drawable/get_more_bg"
                 android:gravity="center"
-                android:orientation="horizontal"
                 android:padding="16dp">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="+"
-                    android:textColor="#FF6347"
-                    android:textSize="24sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:text="Get More Promotions"
                     android:textColor="#FF6347"
                     android:textSize="18sp"
                     android:textStyle="bold" />
-
             </LinearLayout>
 
-            <!-- Apply Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_apply"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="32dp"
+                android:layout_margin="20dp"
                 android:backgroundTint="#FF6347"
                 android:text="Apply"
-                android:textAllCaps="false"
-                android:textColor="#FFFFFF"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:cornerRadius="28dp" />
+                android:textColor="#FFFFFF"/>
 
         </LinearLayout>
-
     </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

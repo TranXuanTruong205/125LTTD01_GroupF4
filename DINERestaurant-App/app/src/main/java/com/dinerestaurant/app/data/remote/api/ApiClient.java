@@ -29,9 +29,7 @@ public class ApiClient {
                 .build();
     }
 
-    public static AuthApi getAuthApi() {
-        return retrofit.create(AuthApi.class);
-    }
+
     public static UserApi getUserApi() {
         return retrofit.create(UserApi.class);
     }
@@ -47,6 +45,24 @@ public class ApiClient {
 
     public static CartApi getCartApi() {
         return retrofit.create(CartApi.class);
+    }
+
+    public static ApiNotification getNotificationApi() {
+        return retrofit.create(ApiNotification.class);
+    }
+    public static PromotionApi getPromotionApi() {
+        return retrofit.create(PromotionApi.class);
+    }
+
+        public static Retrofit getClient() {
+            if (retrofit == null) {
+                retrofit = new Retrofit.Builder()
+                        .baseUrl(BASE_URL)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+            }
+            return retrofit;
+
     }
 
 }
