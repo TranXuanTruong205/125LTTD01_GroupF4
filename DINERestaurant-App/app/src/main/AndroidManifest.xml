@@ -11,6 +11,7 @@
         android:maxSdkVersion="32"/>
 
     <application
+        android:usesCleartextTraffic="true"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:usesCleartextTraffic="true"
@@ -21,7 +22,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.DINERestaurantApp">
-
         <activity
             android:name=".ui.auth.SplashActivity"
             android:exported="true">
@@ -37,5 +37,7 @@
         <activity android:name=".ui.auth.VerificationActivity" />
         <activity android:name=".ui.auth.ProfileSetupActivity" />
     </application>
+    <uses-permission android:name="android.permission.INTERNET" />
+
 
 </manifest>
