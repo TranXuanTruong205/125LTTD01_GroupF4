@@ -73,7 +73,9 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
 
     @Override
     public int getItemCount() { return items == null ? 0 : items.size(); }
-
+    public List<CartItem> getItems() {
+        return items;
+    }
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvName, tvPrice, tvQuantity;
         ImageButton btnPlus, btnMinus, btnDelete;

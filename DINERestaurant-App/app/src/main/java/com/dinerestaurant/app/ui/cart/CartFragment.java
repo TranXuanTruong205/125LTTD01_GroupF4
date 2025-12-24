@@ -86,8 +86,12 @@ public class CartFragment extends Fragment {
             }
 
             @Override
-            public void onDelete(int cartItemId) {
+            public void onDelete(int cartItemId){
                 deleteCartItem(cartItemId);
+            }
+            @Override
+            public void onSelectionChanged() {
+                calculateAndDisplayTotal(); // <--- Thêm đoạn này vào trong listener
             }
         });
 
@@ -105,6 +109,7 @@ public class CartFragment extends Fragment {
                     // Cập nhật danh sách món ăn
                     if (cart.getCartItems() != null) {
                         adapter.updateData(cart.getCartItems());
+                        calculateAndDisplayTotal();
                     } else {
                         adapter.updateData(new ArrayList<>());
                     }
@@ -139,7 +144,6 @@ public class CartFragment extends Fragment {
                     Toast.makeText(getContext(), "Không thể cập nhật số lượng", Toast.LENGTH_SHORT).show();
                 }
             }
-
             @Override
             public void onFailure(Call<Cart> call, Throwable t) {
                 Toast.makeText(getContext(), "Lỗi kết nối", Toast.LENGTH_SHORT).show();
@@ -170,5 +174,19 @@ public class CartFragment extends Fragment {
         // Cập nhật giao diện tiền
         if (tvSubtotalValue != null) tvSubtotalValue.setText(String.format("£ %.2f", subtotal));
         if (tvTotalValue != null) tvTotalValue.setText(String.format("£ %.2f", subtotal));
+    }
+    // 2. Viết hàm tính tổng tiền dựa trên các CheckBox đã chọn
+    private void calculateAndDisplayTotal() {
+        double total = 0;
+        // Giả sử adapter.getItems() trả về danh sách CartItem hiện tại
+        for (CartItem item : adapter.getItems()) {
+            if (item.isSelected()) {
+                // Cộng (giá món ăn + giá topping nếu có) * số lượng
+                // Ở giai đoạn này nếu chưa có hàm getLinePrice ở model Android,
+                // bạn có thể tạm tính đơn giản hoặc dùng dữ liệu từ BE.
+                total += (item.getMenuItem().getPrice() * item.getQuantity());
+            }
+        }
+        updatePriceUI(total);
     }
 }
