@@ -104,5 +104,8 @@ public class CartService {
         cart.calculateTotal();
         cartRepository.save(cart);
     }
-
+    @Transactional
+    public Cart saveCart(Cart cart) {
+        return cartRepository.save(cart);
+    }
 }
