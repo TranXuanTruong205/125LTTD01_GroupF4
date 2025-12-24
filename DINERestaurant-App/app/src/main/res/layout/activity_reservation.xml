@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Đặt bàn"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="24dp"/>
+
+    <EditText
+        android:id="@+id/edt_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Ngày (yyyy-MM-dd)"
+        android:inputType="none"
+        android:layout_marginBottom="8dp"/>
+
+    <EditText
+        android:id="@+id/edt_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Giờ (HH:mm)"
+        android:inputType="none"
+        android:layout_marginBottom="8dp"/>
+
+    <EditText
+        android:id="@+id/edt_guest_count"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Số khách"
+        android:inputType="number"
+        android:layout_marginBottom="16dp"/>
+
+    <Button
+        android:id="@+id/btn_check_availability"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Kiểm tra bàn trống"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:id="@+id/tv_no_table"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Không có bàn trống"
+        android:textColor="#FF0000"
+        android:visibility="gone"
+        android:layout_marginBottom="16dp"/>
+
+    <GridView
+        android:id="@+id/gv_tables"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:numColumns="3"
+        android:horizontalSpacing="8dp"
+        android:verticalSpacing="8dp"
+        android:visibility="gone"/>
+
+    <EditText
+        android:id="@+id/edt_note"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Ghi chú (tùy chọn)"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"/>
+
+    <Button
+        android:id="@+id/btn_book_table"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Đặt bàn"
+        android:enabled="false"/>
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:layout_marginTop="16dp"/>
+</LinearLayout>
