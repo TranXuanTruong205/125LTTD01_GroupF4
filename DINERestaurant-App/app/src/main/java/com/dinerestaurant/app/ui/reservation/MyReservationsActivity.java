@@ -18,6 +18,7 @@ import com.dinerestaurant.app.R;
 import com.dinerestaurant.app.data.repository.ReservationRepository;
 import com.dinerestaurant.app.model.ReservationItem;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,7 @@ public class MyReservationsActivity extends AppCompatActivity
     private LinearLayout layoutEmpty;
     private MaterialButton btnBookNow;
     private ProgressBar progressBar;
+    private ExtendedFloatingActionButton fabNewReservation;
 
     private ReservationRepository repository;
     private ReservationAdapter adapter;
@@ -59,6 +61,7 @@ public class MyReservationsActivity extends AppCompatActivity
         layoutEmpty = findViewById(R.id.layout_empty);
         btnBookNow = findViewById(R.id.btn_book_now);
         progressBar = findViewById(R.id.progress_bar);
+        fabNewReservation = findViewById(R.id.fab_new_reservation);
     }
 
     private void setupRecyclerView() {
@@ -73,7 +76,13 @@ public class MyReservationsActivity extends AppCompatActivity
         swipeRefresh.setOnRefreshListener(this::loadReservations);
         swipeRefresh.setColorSchemeResources(R.color.orange);
 
+        // Nút đặt bàn trong empty state
         btnBookNow.setOnClickListener(v -> {
+            startActivity(new Intent(this, ReservationActivity.class));
+        });
+
+        // FAB đặt bàn mới (luôn hiển thị)
+        fabNewReservation.setOnClickListener(v -> {
             startActivity(new Intent(this, ReservationActivity.class));
         });
     }

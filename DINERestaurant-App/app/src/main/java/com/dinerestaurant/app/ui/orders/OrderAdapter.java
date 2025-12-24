@@ -6,11 +6,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.List;
+
 import com.dinerestaurant.app.R;
 import com.dinerestaurant.app.model.OrderItem;
+import com.google.android.material.button.MaterialButton;
 
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHolder> {
 
@@ -19,6 +23,8 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
 
     public interface OnOrderClickListener {
         void onOrderClick(OrderItem order);
+
+        void onCancelClick(OrderItem order, int position);
     }
 
     public OrderAdapter(List<OrderItem> orderList, OnOrderClickListener listener) {
@@ -38,9 +44,9 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
     public void onBindViewHolder(@NonNull OrderViewHolder holder, int position) {
         OrderItem order = orderList.get(position);
 
-        holder.tvOrderId.setText("Order ID : " + order.getOrderId());
+        holder.tvOrderId.setText("Mã đơn: " + order.getOrderId());
         holder.tvPrice.setText(order.getFormattedPrice());
-        holder.tvStatus.setText(order.getStatus());
+        holder.tvStatus.setText(getVietnameseStatus(order.getStatus()));
         holder.ivFood.setImageResource(order.getFoodImage());
 
         // Set rating stars
@@ -49,20 +55,46 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
         // Set status color
         setStatusColor(holder, order.getStatus());
 
-        // 👉 Hiện / ẩn stepper
+        // Hiện / ẩn stepper
         if (order.isShowStepper()) {
             holder.stepperLayout.setVisibility(View.VISIBLE);
         } else {
             holder.stepperLayout.setVisibility(View.GONE);
         }
 
-        // Click listener - Đã thêm logic ngăn click nếu đơn hàng bị Hủy
+        // Hiển thị nút hủy đơn chỉ khi status = Active
+        if (order.getStatus().equals("Active")) {
+            holder.btnCancelOrder.setVisibility(View.VISIBLE);
+            holder.btnCancelOrder.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onCancelClick(order, holder.getAdapterPosition());
+                }
+            });
+        } else {
+            holder.btnCancelOrder.setVisibility(View.GONE);
+        }
+
+        // Click listener - chỉ cho xem chi tiết, không cho Cancelled
         holder.itemView.setOnClickListener(v -> {
-            // Chỉ cho phép click nếu đơn hàng không bị hủy (Cancelled)
             if (listener != null && !order.getStatus().equals("Cancelled")) {
                 listener.onOrderClick(order);
             }
         });
+    }
+
+    private String getVietnameseStatus(String status) {
+        if (status == null)
+            return "Đang xử lý";
+        switch (status) {
+            case "Active":
+                return "Đang xử lý";
+            case "Completed":
+                return "Hoàn thành";
+            case "Cancelled":
+                return "Đã hủy";
+            default:
+                return status;
+        }
     }
 
     private void setRatingStars(OrderViewHolder holder, int rating) {
@@ -114,6 +146,8 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
         TextView tvStatus;
         TextView tvStar1, tvStar2, tvStar3, tvStar4, tvStar5;
         View stepperLayout;
+        MaterialButton btnCancelOrder;
+
         public OrderViewHolder(@NonNull View itemView) {
             super(itemView);
             ivFood = itemView.findViewById(R.id.iv_food);
@@ -125,9 +159,8 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
             tvStar3 = itemView.findViewById(R.id.tv_star3);
             tvStar4 = itemView.findViewById(R.id.tv_star4);
             tvStar5 = itemView.findViewById(R.id.tv_star5);
-
             stepperLayout = itemView.findViewById(R.id.layout_stepper);
+            btnCancelOrder = itemView.findViewById(R.id.btn_cancel_order);
         }
     }
-
 }

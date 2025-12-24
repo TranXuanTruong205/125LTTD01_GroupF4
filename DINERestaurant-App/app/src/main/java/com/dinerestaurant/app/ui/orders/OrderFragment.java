@@ -293,7 +293,8 @@ public class OrderFragment extends Fragment implements OrderAdapter.OnOrderClick
         }
     }
 
-    public void onCancelOrderClick(OrderItem order, int position) {
+    @Override
+    public void onCancelClick(OrderItem order, int position) {
         new AlertDialog.Builder(requireContext())
                 .setTitle("Xác nhận hủy")
                 .setMessage("Bạn có chắc muốn hủy đơn hàng này không?")
