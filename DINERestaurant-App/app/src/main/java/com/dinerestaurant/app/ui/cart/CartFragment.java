@@ -70,7 +70,7 @@ public class CartFragment extends Fragment {
 
     private void setupRecyclerView() {
         // Khởi tạo Adapter với 3 hành động: Tăng, Giảm, Xóa
-        adapter = new CartAdapter(new ArrayList<>(), new CartAdapter.OnCartAction() {
+        adapter = new CartAdapter(new ArrayList<>(),requireContext().getAssets(), new CartAdapter.OnCartAction() {
             @Override
             public void onIncrease(int cartItemId, int currentQty) {
                 updateCartItemQuantity(cartItemId, currentQty + 1);
