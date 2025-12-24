@@ -14,12 +14,13 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.dinerestaurant.app.R;
-import com.dinerestaurant.app.model.TableItem;
-import com.dinerestaurant.app.repository.ReservationRepository;
+import com.dinerestaurant.app.model.TableItem; // sửa đường dẫn nếu TableItem ở model
+import com.dinerestaurant.app.data.repository.ReservationRepository;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -91,12 +92,12 @@ public class ReservationActivity extends AppCompatActivity implements TableGridA
     }
 
     private void checkTables() {
-        String date = edtDate.getText().toString();
-        String time = edtTime.getText().toString();
-        String guestStr = edtGuestCount.getText().toString();
+        String date = edtDate.getText().toString().trim();
+        String time = edtTime.getText().toString().trim();
+        String guestStr = edtGuestCount.getText().toString().trim();
 
         if (date.isEmpty() || time.isEmpty() || guestStr.isEmpty()) {
-            Toast.makeText(this, "Vui lòng nhập đầy đủ", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -109,9 +110,10 @@ public class ReservationActivity extends AppCompatActivity implements TableGridA
             public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
                 showLoading(false);
                 if (response.isSuccessful() && response.body() != null) {
-                    boolean success = (boolean) response.body().get("success");
+                    Map<String, Object> res = response.body();
+                    boolean success = (boolean) res.get("success");
                     if (success) {
-                        List<Map<String, Object>> data = (List<Map<String, Object>>) response.body().get("data");
+                        List<Map<String, Object>> data = (List<Map<String, Object>>) res.get("data");
                         tables.clear();
                         for (Map<String, Object> map : data) {
                             TableItem table = new TableItem();
@@ -124,7 +126,11 @@ public class ReservationActivity extends AppCompatActivity implements TableGridA
                         adapter.notifyDataSetChanged();
                         tvNoTable.setVisibility(tables.isEmpty() ? View.VISIBLE : View.GONE);
                         gvTables.setVisibility(tables.isEmpty() ? View.GONE : View.VISIBLE);
+                    } else {
+                        Toast.makeText(ReservationActivity.this, "Không có bàn trống", Toast.LENGTH_SHORT).show();
                     }
+                } else {
+                    Toast.makeText(ReservationActivity.this, "Lỗi kiểm tra bàn", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -140,18 +146,21 @@ public class ReservationActivity extends AppCompatActivity implements TableGridA
     public void onTableSelected(TableItem table) {
         selectedTable = table;
         btnBook.setEnabled(true);
-        Toast.makeText(this, "Chọn bàn " + table.getTableNumber(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Đã chọn bàn " + table.getTableNumber(), Toast.LENGTH_SHORT).show();
     }
 
     private void bookTable() {
-        if (selectedTable == null) return;
+        if (selectedTable == null) {
+            Toast.makeText(this, "Vui lòng chọn bàn", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         Map<String, Object> request = new HashMap<>();
         request.put("tableId", selectedTable.getTableId());
-        request.put("reservationDate", edtDate.getText().toString());
-        request.put("reservationTime", edtTime.getText().toString());
-        request.put("guestCount", Integer.parseInt(edtGuestCount.getText().toString()));
-        request.put("note", edtNote.getText().toString());
+        request.put("reservationDate", edtDate.getText().toString().trim());
+        request.put("reservationTime", edtTime.getText().toString().trim());
+        request.put("guestCount", Integer.parseInt(edtGuestCount.getText().toString().trim()));
+        request.put("note", edtNote.getText().toString().trim());
 
         showLoading(true);
 
@@ -165,15 +174,18 @@ public class ReservationActivity extends AppCompatActivity implements TableGridA
                         Toast.makeText(ReservationActivity.this, "Đặt bàn thành công!", Toast.LENGTH_LONG).show();
                         finish();
                     } else {
-                        Toast.makeText(ReservationActivity.this, response.body().get("message").toString(), Toast.LENGTH_LONG).show();
+                        String msg = (String) response.body().get("message");
+                        Toast.makeText(ReservationActivity.this, msg != null ? msg : "Đặt bàn thất bại", Toast.LENGTH_LONG).show();
                     }
+                } else {
+                    Toast.makeText(ReservationActivity.this, "Lỗi đặt bàn", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<Map<String, Object>> call, Throwable t) {
                 showLoading(false);
-                Toast.makeText(ReservationActivity.this, "Lỗi: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(ReservationActivity.this, "Lỗi mạng: " + t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }

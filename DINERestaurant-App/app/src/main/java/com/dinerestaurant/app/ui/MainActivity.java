@@ -7,6 +7,9 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.dinerestaurant.app.R;
+import com.dinerestaurant.app.ui.reservation.ReservationActivity;
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -22,10 +25,10 @@ public class MainActivity extends AppCompatActivity {
     private NavController nav;
     private LinearLayout bottomNavBar;
 
-    ImageView homeIcon, orderIcon, scanIcon, notifyIcon, profileIcon;
-    TextView homeLabel, orderLabel, scanLabel, notifyLabel, profileLabel;
-    FrameLayout homeIconContainer, orderIconContainer, scanIconContainer, notifyIconContainer, profileIconContainer;
-    LinearLayout tabHome, tabOrder, tabScan, tabNotify, tabProfile;
+    ImageView homeIcon, orderIcon, scanIcon,reservationIcon, notifyIcon, profileIcon;
+    TextView homeLabel, orderLabel, scanLabel,reservationLabel, notifyLabel, profileLabel;
+    FrameLayout homeIconContainer, orderIconContainer, scanIconContainer,reservationIconContainer, notifyIconContainer, profileIconContainer;
+    LinearLayout tabHome, tabOrder, tabScan,tabReservation, tabNotify, tabProfile;
 
     // Danh sách các Fragment ID sẽ hiển thị Bottom Bar
     private final Set<Integer> mainNavFragments = new HashSet<>(Arrays.asList(
@@ -71,24 +74,28 @@ public class MainActivity extends AppCompatActivity {
         tabHome = findViewById(R.id.tabHome);
         tabOrder = findViewById(R.id.tabOrder);
         tabScan = findViewById(R.id.tabScan);
+        tabReservation = findViewById(R.id.tabReservation);
         tabNotify = findViewById(R.id.tabNotify);
         tabProfile = findViewById(R.id.tabProfile);
 
         homeIconContainer = findViewById(R.id.homeIconContainer);
         orderIconContainer = findViewById(R.id.orderIconContainer);
         scanIconContainer = findViewById(R.id.scanIconContainer);
+        reservationIconContainer = findViewById(R.id.reservationIconContainer);
         notifyIconContainer = findViewById(R.id.notifyIconContainer);
         profileIconContainer = findViewById(R.id.profileIconContainer);
 
         homeLabel = findViewById(R.id.homeLabel);
         orderLabel = findViewById(R.id.orderLabel);
         scanLabel = findViewById(R.id.scanLabel);
+        reservationLabel = findViewById(R.id.reservationLabel);
         notifyLabel = findViewById(R.id.notifyLabel);
         profileLabel = findViewById(R.id.profileLabel);
 
         homeIcon = findViewById(R.id.homeIcon);
         orderIcon = findViewById(R.id.orderIcon);
         scanIcon = findViewById(R.id.scanIcon);
+        reservationIcon = findViewById(R.id.reservationIcon);
         notifyIcon = findViewById(R.id.notifyIcon);
         profileIcon = findViewById(R.id.profileIcon);
     }
@@ -136,6 +143,13 @@ public class MainActivity extends AppCompatActivity {
             nav.navigate(R.id.scanQRFragment);
         });
 
+        tabReservation.setOnClickListener(v -> {
+            clearSubScreensBackStack();
+            selectTab(tabReservation);
+            // Mở màn ReservationActivity (vì bạn dùng Activity, không phải Fragment)
+            startActivity(new Intent(MainActivity.this, ReservationActivity.class));
+        });
+
         tabNotify.setOnClickListener(v -> {
             clearSubScreensBackStack();
             selectTab(tabNotify);
@@ -155,6 +169,7 @@ public class MainActivity extends AppCompatActivity {
         homeIcon.setImageTintList(ContextCompat.getColorStateList(this, R.color.icon_inactive));
         orderIcon.setImageTintList(ContextCompat.getColorStateList(this, R.color.icon_inactive));
         scanIcon.setImageTintList(ContextCompat.getColorStateList(this, R.color.icon_inactive));
+        reservationIcon.setImageTintList(ContextCompat.getColorStateList(this, R.color.icon_inactive));
         notifyIcon.setImageTintList(ContextCompat.getColorStateList(this, R.color.icon_inactive));
         profileIcon.setImageTintList(ContextCompat.getColorStateList(this, R.color.icon_inactive));
 
@@ -164,11 +179,12 @@ public class MainActivity extends AppCompatActivity {
         scanIconContainer.setBackground(null);
         notifyIconContainer.setBackground(null);
         profileIconContainer.setBackground(null);
-
+        reservationIconContainer.setBackground(null);
         // ẨN TEXT
         homeLabel.setVisibility(View.GONE);
         orderLabel.setVisibility(View.GONE);
         scanLabel.setVisibility(View.GONE);
+        reservationLabel.setVisibility(View.GONE);
         notifyLabel.setVisibility(View.GONE);
         profileLabel.setVisibility(View.GONE);
 
@@ -178,6 +194,7 @@ public class MainActivity extends AppCompatActivity {
         if (selected == tabHome) activateTab(homeIconContainer, homeIcon, homeLabel);
         else if (selected == tabOrder) activateTab(orderIconContainer, orderIcon, orderLabel);
         else if (selected == tabScan) activateTab(scanIconContainer, scanIcon, scanLabel);
+        else if (selected == tabReservation) activateTab(reservationIconContainer, reservationIcon, reservationLabel);
         else if (selected == tabNotify) activateTab(notifyIconContainer, notifyIcon, notifyLabel);
         else if (selected == tabProfile) activateTab(profileIconContainer, profileIcon, profileLabel);
     }

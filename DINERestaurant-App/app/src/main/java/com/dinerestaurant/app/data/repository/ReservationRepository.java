@@ -1,7 +1,8 @@
-package com.dinerestaurant.app.repository;
+package com.dinerestaurant.app.data.repository;
 
+import com.dinerestaurant.app.data.remote.api.ApiClient;
 import com.dinerestaurant.app.data.remote.api.ReservationApi;
-import com.dinerestaurant.app.data.remote.ApiClient;
+import com.dinerestaurant.app.data.remote.api.ApiClient;
 
 import java.util.Map;
 

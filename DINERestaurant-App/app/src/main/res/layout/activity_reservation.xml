@@ -3,53 +3,77 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="#F5F5F5">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Đặt bàn"
-        android:textSize="24sp"
+        android:textSize="28sp"
         android:textStyle="bold"
-        android:layout_marginBottom="24dp"/>
+        android:textColor="#333333"
+        android:layout_marginBottom="24dp"
+        android:layout_gravity="center_horizontal"/>
 
-    <EditText
-        android:id="@+id/edt_date"
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Ngày (yyyy-MM-dd)"
-        android:inputType="none"
-        android:layout_marginBottom="8dp"/>
+        android:layout_marginBottom="8dp">
 
-    <EditText
-        android:id="@+id/edt_time"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edt_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ngày đặt bàn (yyyy-MM-dd)"
+            android:focusable="false"
+            android:clickable="true"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Giờ (HH:mm)"
-        android:inputType="none"
-        android:layout_marginBottom="8dp"/>
+        android:layout_marginBottom="8dp">
 
-    <EditText
-        android:id="@+id/edt_guest_count"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edt_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Giờ đặt bàn (HH:mm)"
+            android:focusable="false"
+            android:clickable="true"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Số khách"
-        android:inputType="number"
-        android:layout_marginBottom="16dp"/>
+        android:layout_marginBottom="16dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edt_guest_count"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Số khách"
+            android:inputType="number"/>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/btn_check_availability"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Kiểm tra bàn trống"
+        android:backgroundTint="#4CAF50"
+        android:textColor="#FFFFFF"
         android:layout_marginBottom="16dp"/>
 
     <TextView
         android:id="@+id/tv_no_table"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Không có bàn trống"
-        android:textColor="#FF0000"
+        android:text="Không có bàn trống vào thời gian này"
+        android:textColor="#F44336"
+        android:textSize="16sp"
+        android:layout_gravity="center"
         android:visibility="gone"
         android:layout_marginBottom="16dp"/>
 
@@ -58,23 +82,31 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:numColumns="3"
-        android:horizontalSpacing="8dp"
-        android:verticalSpacing="8dp"
+        android:horizontalSpacing="12dp"
+        android:verticalSpacing="12dp"
+        android:stretchMode="columnWidth"
         android:visibility="gone"/>
 
-    <EditText
-        android:id="@+id/edt_note"
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Ghi chú (tùy chọn)"
         android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"/>
+        android:layout_marginBottom="16dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edt_note"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ghi chú (tùy chọn)"/>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/btn_book_table"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Đặt bàn"
+        android:backgroundTint="#2196F3"
+        android:textColor="#FFFFFF"
         android:enabled="false"/>
 
     <ProgressBar
@@ -82,6 +114,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:visibility="gone"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="24dp"
+        android:visibility="gone"/>
 </LinearLayout>
