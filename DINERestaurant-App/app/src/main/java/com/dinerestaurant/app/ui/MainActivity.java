@@ -25,10 +25,10 @@ public class MainActivity extends AppCompatActivity {
     private NavController nav;
     private LinearLayout bottomNavBar;
 
-    ImageView homeIcon, orderIcon, scanIcon,reservationIcon, notifyIcon, profileIcon;
-    TextView homeLabel, orderLabel, scanLabel,reservationLabel, notifyLabel, profileLabel;
-    FrameLayout homeIconContainer, orderIconContainer, scanIconContainer,reservationIconContainer, notifyIconContainer, profileIconContainer;
-    LinearLayout tabHome, tabOrder, tabScan,tabReservation, tabNotify, tabProfile;
+    ImageView homeIcon, orderIcon, scanIcon, reservationIcon, notifyIcon, profileIcon;
+    TextView homeLabel, orderLabel, scanLabel, reservationLabel, notifyLabel, profileLabel;
+    FrameLayout homeIconContainer, orderIconContainer,  scanIconContainer,reservationIconContainer, notifyIconContainer, profileIconContainer;
+    LinearLayout tabHome, tabOrder, tabScan, tabReservation, tabNotify, tabProfile;
 
     // Danh sách các Fragment ID sẽ hiển thị Bottom Bar
     private final Set<Integer> mainNavFragments = new HashSet<>(Arrays.asList(

@@ -31,6 +31,8 @@
         <activity android:name=".ui.auth.SignUpActivity" />
         <activity android:name=".ui.auth.VerificationActivity" />
         <activity android:name=".ui.auth.ProfileSetupActivity" />
+        <activity android:name=".ui.reservation.ReservationActivity" 
+            android:theme="@style/Theme.DINERestaurantApp" />
     </application>
 
 </manifest>

@@ -1,25 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:padding="16dp"
-    android:background="#E0E0E0"
-    android:layout_margin="4dp">
+    android:layout_margin="8dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp">
 
-    <TextView
-        android:id="@+id/tv_table_number"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/layout_table_item"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Bàn 1"
-        android:textSize="18sp"
-        android:textStyle="bold"/>
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="16dp"
+        android:background="@drawable/bg_table_item_unselected">
 
-    <TextView
-        android:id="@+id/tv_capacity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="4 chỗ"
-        android:textSize="14sp"/>
-</LinearLayout>
+        <!-- Icon bàn -->
+        <ImageView
+            android:id="@+id/iv_table_icon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/baseline_backup_table_24"
+            app:tint="#FF6B00" />
+
+        <!-- Số bàn -->
+        <TextView
+            android:id="@+id/tv_table_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Bàn 1"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#333333" />
+
+        <!-- Sức chứa -->
+        <TextView
+            android:id="@+id/tv_capacity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="4 chỗ"
+            android:textSize="14sp"
+            android:textColor="#666666" />
+
+        <!-- Badge trạng thái -->
+        <TextView
+            android:id="@+id/tv_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="4dp"
+            android:text="Còn trống"
+            android:textSize="12sp"
+            android:textColor="@android:color/white"
+            android:background="@drawable/bg_status_available" />
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
