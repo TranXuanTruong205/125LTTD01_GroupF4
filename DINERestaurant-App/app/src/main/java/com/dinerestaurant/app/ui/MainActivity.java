@@ -7,7 +7,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.dinerestaurant.app.R;
-import com.dinerestaurant.app.ui.reservation.ReservationActivity;
+import com.dinerestaurant.app.ui.reservation.MyReservationsActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,7 +27,8 @@ public class MainActivity extends AppCompatActivity {
 
     ImageView homeIcon, orderIcon, scanIcon, reservationIcon, notifyIcon, profileIcon;
     TextView homeLabel, orderLabel, scanLabel, reservationLabel, notifyLabel, profileLabel;
-    FrameLayout homeIconContainer, orderIconContainer,  scanIconContainer,reservationIconContainer, notifyIconContainer, profileIconContainer;
+    FrameLayout homeIconContainer, orderIconContainer, scanIconContainer, reservationIconContainer, notifyIconContainer,
+            profileIconContainer;
     LinearLayout tabHome, tabOrder, tabScan, tabReservation, tabNotify, tabProfile;
 
     // Danh sách các Fragment ID sẽ hiển thị Bottom Bar
@@ -36,16 +37,15 @@ public class MainActivity extends AppCompatActivity {
             R.id.orderFragment,
             R.id.scanQRFragment,
             R.id.notificationFragment,
-            R.id.profileFragment
-    ));
+            R.id.profileFragment));
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        NavHostFragment navHostFragment =
-                (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.nav_host_fragment);
 
         if (navHostFragment != null) {
             nav = navHostFragment.getNavController();
@@ -60,12 +60,28 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Khi quay lại từ Activity bên ngoài (Reservation, etc.), sync lại tab với
+        // destination hiện tại
+        if (nav != null && nav.getCurrentDestination() != null) {
+            int currentDestId = nav.getCurrentDestination().getId();
+            syncTabSelection(currentDestId);
+        }
+    }
+
     private void selectInitialTab(int destinationId) {
-        if (destinationId == R.id.homeFragment) selectTab(tabHome);
-        else if (destinationId == R.id.orderFragment) selectTab(tabOrder);
-        else if (destinationId == R.id.scanQRFragment) selectTab(tabScan);
-        else if (destinationId == R.id.notificationFragment) selectTab(tabNotify);
-        else if (destinationId == R.id.profileFragment) selectTab(tabProfile);
+        if (destinationId == R.id.homeFragment)
+            selectTab(tabHome);
+        else if (destinationId == R.id.orderFragment)
+            selectTab(tabOrder);
+        else if (destinationId == R.id.scanQRFragment)
+            selectTab(tabScan);
+        else if (destinationId == R.id.notificationFragment)
+            selectTab(tabNotify);
+        else if (destinationId == R.id.profileFragment)
+            selectTab(tabProfile);
     }
 
     private void setupViews() {
@@ -110,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
     private void syncTabSelection(int destinationId) {
         // Dựa vào ID của màn hình đang hiển thị, chọn Tab tương ứng
         if (destinationId == R.id.homeFragment) {
@@ -124,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
             selectTab(tabProfile);
         }
     }
+
     private void setupClicks() {
         tabHome.setOnClickListener(v -> {
             clearSubScreensBackStack();
@@ -144,10 +162,9 @@ public class MainActivity extends AppCompatActivity {
         });
 
         tabReservation.setOnClickListener(v -> {
-            clearSubScreensBackStack();
-            selectTab(tabReservation);
-            // Mở màn ReservationActivity (vì bạn dùng Activity, không phải Fragment)
-            startActivity(new Intent(MainActivity.this, ReservationActivity.class));
+            // Mở màn MyReservationsActivity để xem lịch sử đặt bàn
+            // Không selectTab vì đây là Activity bên ngoài, khi quay lại sẽ giữ tab cũ
+            startActivity(new Intent(MainActivity.this, MyReservationsActivity.class));
         });
 
         tabNotify.setOnClickListener(v -> {
@@ -191,12 +208,18 @@ public class MainActivity extends AppCompatActivity {
         resetIconPosition();
 
         // Kích hoạt tab được chọn
-        if (selected == tabHome) activateTab(homeIconContainer, homeIcon, homeLabel);
-        else if (selected == tabOrder) activateTab(orderIconContainer, orderIcon, orderLabel);
-        else if (selected == tabScan) activateTab(scanIconContainer, scanIcon, scanLabel);
-        else if (selected == tabReservation) activateTab(reservationIconContainer, reservationIcon, reservationLabel);
-        else if (selected == tabNotify) activateTab(notifyIconContainer, notifyIcon, notifyLabel);
-        else if (selected == tabProfile) activateTab(profileIconContainer, profileIcon, profileLabel);
+        if (selected == tabHome)
+            activateTab(homeIconContainer, homeIcon, homeLabel);
+        else if (selected == tabOrder)
+            activateTab(orderIconContainer, orderIcon, orderLabel);
+        else if (selected == tabScan)
+            activateTab(scanIconContainer, scanIcon, scanLabel);
+        else if (selected == tabReservation)
+            activateTab(reservationIconContainer, reservationIcon, reservationLabel);
+        else if (selected == tabNotify)
+            activateTab(notifyIconContainer, notifyIcon, notifyLabel);
+        else if (selected == tabProfile)
+            activateTab(profileIconContainer, profileIcon, profileLabel);
     }
 
     private void resetIconPosition() {

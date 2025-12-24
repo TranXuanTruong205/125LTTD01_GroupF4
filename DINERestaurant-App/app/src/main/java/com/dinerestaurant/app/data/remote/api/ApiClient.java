@@ -12,8 +12,10 @@ public class ApiClient {
     private static final String BASE_URL = "http://10.0.2.2:8080/";
 
     private static ReservationApi reservationApi;
+
     public static void init(Context context) {
-        if (retrofit != null) return;
+        if (retrofit != null)
+            return;
 
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -39,5 +41,14 @@ public class ApiClient {
             reservationApi = retrofit.create(ReservationApi.class);
         }
         return reservationApi;
+    }
+
+    private static OrderApi orderApi;
+
+    public static OrderApi getOrderApi() {
+        if (orderApi == null) {
+            orderApi = retrofit.create(OrderApi.class);
+        }
+        return orderApi;
     }
 }
