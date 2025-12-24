@@ -2,6 +2,7 @@ package com.dinerestaurant.app.ui.reservation;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -36,7 +37,7 @@ import retrofit2.Response;
 public class ReservationActivity extends AppCompatActivity implements TableAdapter.OnTableClickListener {
 
     // Views
-    private ImageView btnBack;
+    private ImageView btnBack, btnMyReservations;
     private TextInputEditText edtDate, edtTime, edtGuestCount, edtNote;
     private MaterialButton btnCheck, btnBook;
     private RecyclerView rvTables;
@@ -65,6 +66,7 @@ public class ReservationActivity extends AppCompatActivity implements TableAdapt
 
     private void initViews() {
         btnBack = findViewById(R.id.btn_back);
+        btnMyReservations = findViewById(R.id.btn_my_reservations);
         edtDate = findViewById(R.id.edt_date);
         edtTime = findViewById(R.id.edt_time);
         edtGuestCount = findViewById(R.id.edt_guest_count);
@@ -89,6 +91,11 @@ public class ReservationActivity extends AppCompatActivity implements TableAdapt
 
     private void setupListeners() {
         btnBack.setOnClickListener(v -> finish());
+
+        // Nút xem lịch đặt bàn
+        btnMyReservations.setOnClickListener(v -> {
+            startActivity(new Intent(this, MyReservationsActivity.class));
+        });
 
         edtDate.setOnClickListener(v -> showDatePicker());
         edtTime.setOnClickListener(v -> showTimePicker());

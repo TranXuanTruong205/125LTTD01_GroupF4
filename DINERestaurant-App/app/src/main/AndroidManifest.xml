@@ -33,6 +33,8 @@
         <activity android:name=".ui.auth.ProfileSetupActivity" />
         <activity android:name=".ui.reservation.ReservationActivity" 
             android:theme="@style/Theme.DINERestaurantApp" />
+        <activity android:name=".ui.reservation.MyReservationsActivity" 
+            android:theme="@style/Theme.DINERestaurantApp" />
     </application>
 
 </manifest>

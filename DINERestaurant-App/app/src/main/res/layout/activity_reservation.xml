@@ -29,6 +29,19 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 app:tint="@android:color/white" />
 
+            <!-- Nút xem lịch đặt bàn -->
+            <ImageView
+                android:id="@+id/btn_my_reservations"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_alignParentEnd="true"
+                android:padding="12dp"
+                android:layout_marginEnd="8dp"
+                android:src="@drawable/ic_history"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Xem lịch đặt bàn"
+                app:tint="@android:color/white" />
+
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
