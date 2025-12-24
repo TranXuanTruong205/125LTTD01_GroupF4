@@ -12,7 +12,18 @@ import android.widget.Toast;
 
 import com.dinerestaurant.app.R;
 import com.dinerestaurant.app.data.local.StaticData;
+import com.dinerestaurant.app.data.local.TokenManager;
+import com.dinerestaurant.app.data.repository.AuthRepository;
+import com.dinerestaurant.app.model.LoginVerifyRequest;
+import com.dinerestaurant.app.model.RegisterVerifyRequest;
 import com.dinerestaurant.app.ui.MainActivity;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class VerificationActivity extends AppCompatActivity {
 
@@ -56,36 +67,111 @@ public class VerificationActivity extends AppCompatActivity {
 
         // Nhấn VERIFY
         btnVerify.setOnClickListener(v -> {
+
             String code = otp1.getText().toString()
                     + otp2.getText().toString()
                     + otp3.getText().toString()
                     + otp4.getText().toString();
 
-            if (!code.equals(StaticData.STATIC_OTP)) {
-                Toast.makeText(this, "Incorrect OTP!", Toast.LENGTH_SHORT).show();
+            String phone = getIntent().getStringExtra("phoneNumber");
+
+            if (phone == null) {
+                showError("Missing phone number!");
                 return;
             }
 
-            if (StaticData.isRegisterFlow) {
-                // Tiếp tục luồng đăng ký
-                startActivity(new Intent(this, ProfileSetupActivity.class));
-                finish(); // Đóng VerificationActivity
-            } else {
-                // Đăng nhập thành công -> Chuyển sang MainActivity
-                Toast.makeText(this, "Login Success!", Toast.LENGTH_SHORT).show();
+            // ===============================
+            //  CASE ĐĂNG NHẬP
+            // ===============================
+            if (!StaticData.isRegisterFlow) {
 
-                Intent intent = new Intent(this, MainActivity.class);
-                // Cờ quan trọng: Xóa back stack để không quay lại được màn hình Login/Verification
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
+                LoginVerifyRequest request = new LoginVerifyRequest(phone, code);
 
-                finish(); // Đóng Activity hiện tại ngay lập tức
+                new AuthRepository().verifyLoginOtp(request)
+                        .enqueue(new Callback<Map<String, Object>>() {
+                            @Override
+                            public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
+
+                                if (!response.isSuccessful() || response.body() == null) {
+                                    showError("Server error!");
+                                    return;
+                                }
+
+                                Map<String, Object> body = response.body();
+
+                                if (body.containsKey("error")) {
+                                    showError(body.get("error").toString());
+                                    return;
+                                }
+
+                                // Lưu token
+                                String token = body.get("token").toString();
+                                new TokenManager(VerificationActivity.this).saveToken(token);
+
+                                goToMain();
+                            }
+
+                            @Override
+                            public void onFailure(Call<Map<String, Object>> call, Throwable t) {
+                                showError("Network error: " + t.getMessage());
+                            }
+                        });
+            }
+
+            // ===============================
+            //  CASE ĐĂNG KÝ
+            // ===============================
+            else {
+                RegisterVerifyRequest registerBody = new RegisterVerifyRequest(
+                        phone,
+                        StaticData.tempUser.getEmail(),
+                        StaticData.tempUser.getFullName(),
+                        code
+                );
+                new AuthRepository().verifyRegister(registerBody)
+                        .enqueue(new Callback<Map<String, Object>>() {
+                            @Override
+                            public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
+
+                                if (!response.isSuccessful() || response.body() == null) {
+                                    showError("Server error!");
+                                    return;
+                                }
+
+                                Map<String, Object> body = response.body();
+
+                                if (body.containsKey("error")) {
+                                    showError(body.get("error").toString());
+                                    return;
+                                }
+
+                                // Lưu token
+                                String token = body.get("token").toString();
+                                new TokenManager(VerificationActivity.this).saveToken(token);
+
+                                goToMain();
+                            }
+
+                            @Override
+                            public void onFailure(Call<Map<String, Object>> call, Throwable t) {
+                                showError("Network error: " + t.getMessage());
+                            }
+                        });
             }
         });
+
+
 
         // Quay về login/back
         findViewById(R.id.tvSignIn).setOnClickListener(v -> finish());
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
+    }
+
+    private void goToMain() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 
     private void checkOtpInputs() {
@@ -109,4 +195,8 @@ public class VerificationActivity extends AppCompatActivity {
             btnVerify.setBackgroundResource(R.drawable.bg_btn_signin); // xám
         }
     }
+    private void showError(String message) {
+        Toast.makeText(VerificationActivity.this, message, Toast.LENGTH_SHORT).show();
+    }
+
 }
