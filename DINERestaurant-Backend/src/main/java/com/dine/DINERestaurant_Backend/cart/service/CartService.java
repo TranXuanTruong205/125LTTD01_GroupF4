@@ -38,33 +38,27 @@ public class CartService {
     @Transactional
     public Cart addToCart(Integer userId, Integer menuItemId, Integer quantity, List<Integer> optionIds) {
         Cart cart = getCartByUserId(userId);
-        MenuItem item = menuItemRepository.findById(menuItemId)
-                .orElseThrow(() -> new RuntimeException("Item not found"));
-        // 1. Lấy danh sách ItemOption thực tế từ DB dựa trên optionIds gửi lên
+        MenuItem item = menuItemRepository.findById(menuItemId).orElseThrow();
         List<ItemOption> selectedOptions = itemOptionRepository.findAllById(optionIds);
-        // 2. Tìm xem trong giỏ hàng đã có món "y hệt" (cùng món + cùng option) chưa
+        // Tìm xem món y hệt (cùng ID + cùng Option) đã có chưa
         Optional<CartItem> existingItem = cart.getCartItems().stream()
                 .filter(ci -> ci.getMenuItem().getItemId().equals(menuItemId))
-                .filter(ci -> isSameOptions(ci.getOptions(), selectedOptions)) // Kiểm tra trùng Option
+                .filter(ci -> isSameOptions(ci.getOptions(), selectedOptions))
                 .findFirst();
         if (existingItem.isPresent()) {
-            // Nếu trùng hoàn toàn -> Chỉ tăng số lượng
-            CartItem cartItem = existingItem.get();
-            cartItem.setQuantity(cartItem.getQuantity() + quantity);
+            existingItem.get().setQuantity(existingItem.get().getQuantity() + quantity);
         } else {
-            // Nếu khác Option -> Tạo dòng mới trong giỏ hàng
             CartItem newItem = new CartItem();
             newItem.setCart(cart);
             newItem.setMenuItem(item);
             newItem.setQuantity(quantity);
-            newItem.setOptions(selectedOptions); // Gán danh sách Option mới
+            newItem.setOptions(selectedOptions);
             newItem.setPrice(item.getPrice());
             cart.getCartItems().add(newItem);
         }
         cart.calculateTotal();
         return cartRepository.save(cart);
     }
-    // Hàm hỗ trợ so sánh 2 danh sách Option có giống hệt nhau không
     private boolean isSameOptions(List<ItemOption> list1, List<ItemOption> list2) {
         if (list1.size() != list2.size()) return false;
         List<Integer> ids1 = list1.stream().map(ItemOption::getOptionId).sorted().toList();
@@ -105,4 +99,5 @@ public class CartService {
         cart.calculateTotal();
         cartRepository.save(cart);
     }
+
 }
