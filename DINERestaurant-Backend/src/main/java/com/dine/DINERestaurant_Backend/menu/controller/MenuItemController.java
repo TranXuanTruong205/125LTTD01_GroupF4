@@ -39,30 +39,28 @@ public class MenuItemController {
     public ResponseEntity<MenuItem> createMenuItem(@RequestBody MenuItem menuItem) {
         return ResponseEntity.ok(menuItemService.createMenuItem(menuItem));
     }
-    
-    // API: DELETE /api/menu-items/{id} (Xóa)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMenuItem(@PathVariable Integer id) {
         menuItemService.deleteMenuItem(id);
         return ResponseEntity.ok().build();
     }
-
-    // API: Tìm kiếm món ăn
-    // GET /api/menu/search?keyword=...
     @GetMapping("/search")
     public ResponseEntity<List<MenuItem>> searchMenuItems(@RequestParam String keyword) {
         // Lưu ý: Cần đảm bảo MenuItemRepository đã có hàm tìm kiếm (xem lại hướng dẫn trước nếu chưa có)
         return ResponseEntity.ok(menuItemService.searchMenuItems(keyword));
     }
-
-    // API: Lấy Topping/Options
-    // GET /api/menu/{id}/options
-    // API: Lấy Topping/Options
-    // GET /api/menu/{id}/options
     @GetMapping("/{id}/options")
     public ResponseEntity<List<Object>> getMenuOptions(@PathVariable Integer id) {
         // Gọi service để lấy danh sách thật
         List<com.dine.DINERestaurant_Backend.menu.entity.ItemOption> options = itemOptionService.getOptionsByMenuItem(id);
         return ResponseEntity.ok((List) options);
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<MenuItem> updateMenuItem(@PathVariable Integer id, @RequestBody MenuItem menuItem) {
+        MenuItem updated = menuItemService.updateMenuItem(id, menuItem);
+        if (updated != null) {
+            return ResponseEntity.ok(updated);
+        }
+        return ResponseEntity.notFound().build();
     }
 }
