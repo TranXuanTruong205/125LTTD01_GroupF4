@@ -91,7 +91,8 @@ public class ProfileFragment extends Fragment {
         );
 
         llMyLocations.setOnClickListener(v ->
-                replaceFragment(new MyLocationsFragment())
+                Navigation.findNavController(v)
+                        .navigate(R.id.action_profileFragment_to_myLocationsFragment)
         );
 
         llLiked.setOnClickListener(v ->

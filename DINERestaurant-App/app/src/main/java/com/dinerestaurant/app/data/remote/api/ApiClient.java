@@ -29,7 +29,9 @@ public class ApiClient {
                 .build();
     }
 
-
+    public static AuthApi getAuthApi() {
+        return retrofit.create(AuthApi.class);
+    }
     public static UserApi getUserApi() {
         return retrofit.create(UserApi.class);
     }

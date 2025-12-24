@@ -59,6 +59,9 @@
         <action
             android:id="@+id/action_profileFragment_to_messageFragment"
             app:destination="@id/messageFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_myLocationsFragment"
+            app:destination="@id/myLocationsFragment" />
     </fragment>
 
 
