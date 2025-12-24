@@ -1,42 +1,99 @@
 package com.dinerestaurant.app.ui.auth;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
-import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.*;
 
+import com.bumptech.glide.Glide;
 import com.dinerestaurant.app.R;
 import com.dinerestaurant.app.model.User;
 import com.dinerestaurant.app.data.remote.api.ApiClient;
 import com.dinerestaurant.app.data.remote.api.UserApi;
-import com.dinerestaurant.app.ui.MainActivity;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ProfileSetupActivity extends AppCompatActivity {
 
+    // ===== Views =====
     EditText edtPhone, edtEmail, edtFullName, edtLocation;
     TextView edtDob, edtGender;
     Button btnContinue;
-    ImageView btnBack;
+    ImageView btnBack, imgAvatar, btnEditAvatar;
+
+    // ===== Data =====
     UserApi userApi;
+    Uri selectedAvatarUri;
+
+    // ===== Image Picker =====
+    private final ActivityResultLauncher<String> imagePickerLauncher =
+            registerForActivityResult(
+                    new ActivityResultContracts.GetContent(),
+                    uri -> {
+                        if (uri != null) {
+                            selectedAvatarUri = uri;
+
+                            Glide.with(this)
+                                    .load(uri)
+                                    .placeholder(R.drawable.ic_profile_placeholder)
+                                    .error(R.drawable.ic_profile_placeholder)
+                                    .into(imgAvatar);
+                        }
+                    }
+            );
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_setup);
 
-        // ánh xạ view
+        // ===== Init API =====
+        userApi = ApiClient.getUserApi();
+
+        // ===== Bind Views =====
+        bindViews();
+
+        // ===== Load Profile =====
+        loadProfile();
+        String savedAvatar = getSharedPreferences("profile", MODE_PRIVATE)
+                .getString("avatar_uri", null);
+
+        if (savedAvatar != null) {
+            Glide.with(this)
+                    .load(Uri.parse(savedAvatar))
+                    .placeholder(R.drawable.ic_profile_placeholder)
+                    .into(imgAvatar);
+        }
+
+        // ===== Init UI =====
+        setupListeners();
+        disableContinueButton();
+    }
+
+    // ==========================
+    // BIND VIEWS
+    // ==========================
+    private void bindViews() {
         edtPhone = findViewById(R.id.edtPhone);
         edtEmail = findViewById(R.id.edtEmail);
         edtFullName = findViewById(R.id.edtFullName);
@@ -45,23 +102,28 @@ public class ProfileSetupActivity extends AppCompatActivity {
         edtGender = findViewById(R.id.edtGender);
         btnContinue = findViewById(R.id.btnContinue);
         btnBack = findViewById(R.id.btnBack);
-        // init api
-        userApi = ApiClient.getUserApi();
+        imgAvatar = findViewById(R.id.imgAvatar);
+        btnEditAvatar = findViewById(R.id.btnEditAvatar);
+    }
 
-        // load profile từ backend
-        loadProfile();
+    // ==========================
+    // LISTENERS
+    // ==========================
+    private void setupListeners() {
 
-        // disable nút ban đầu
-        btnContinue.setEnabled(false);
-        btnContinue.setBackgroundResource(R.drawable.bg_btn_signin);
+        btnBack.setOnClickListener(v -> finish());
 
-        // chọn ngày sinh
+        btnEditAvatar.setOnClickListener(v ->
+                imagePickerLauncher.launch("image/*")
+        );
+
         edtDob.setOnClickListener(v -> showDatePicker());
 
-        // chọn giới tính
         edtGender.setOnClickListener(v -> showGenderDialog());
 
-        // text watcher
+        btnContinue.setOnClickListener(v -> uploadAvatarThenUpdateProfile());
+
+
         TextWatcher watcher = new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -72,14 +134,6 @@ public class ProfileSetupActivity extends AppCompatActivity {
 
         edtFullName.addTextChangedListener(watcher);
         edtLocation.addTextChangedListener(watcher);
-
-        // nút continue
-        btnContinue.setOnClickListener(v -> updateProfile());
-        // nút back
-        btnBack.setOnClickListener(v -> {
-            finish();
-        });
-
     }
 
     // ==========================
@@ -104,26 +158,100 @@ public class ProfileSetupActivity extends AppCompatActivity {
     }
 
     private void bindUser(User user) {
+
         edtPhone.setText(user.getPhoneNumber());
         edtEmail.setText(user.getEmail());
         edtFullName.setText(user.getFullName());
+        edtLocation.setText(user.getAddress());
+        edtGender.setText(user.getGender());
+        edtDob.setText(user.getDateOfBirth());
 
-        if (user.getGender() != null)
-            edtGender.setText(user.getGender());
+        if (user.getProfilePicture() != null) {
+            try {
+                if (user.getProfilePicture() != null) {
+                    Glide.with(this)
+                            .load(user.getProfilePicture())
+                            .placeholder(R.drawable.ic_profile_placeholder)
+                            .error(R.drawable.ic_profile_placeholder)
+                            .into(imgAvatar);
+                }
 
-        if (user.getAddress() != null)
-            edtLocation.setText(user.getAddress());
+            } catch (Exception ignored) {}
+        }
 
-        if (user.getDateOfBirth() != null)
-            edtDob.setText(user.getDateOfBirth());
+        validateInputs();
+    }
+    private void uploadAvatarThenUpdateProfile() {
+
+        if (selectedAvatarUri == null) {
+            updateProfile();
+            return;
+        }
+
+        try {
+            File file = uriToFile(selectedAvatarUri);
+
+            RequestBody requestBody =
+                    RequestBody.create(file, MediaType.parse("image/*"));
+
+            MultipartBody.Part part =
+                    MultipartBody.Part.createFormData(
+                            "file",
+                            file.getName(),
+                            requestBody
+                    );
+
+            userApi.uploadAvatar(part).enqueue(new Callback<Map<String, String>>() {
+                @Override
+                public void onResponse(Call<Map<String, String>> call,
+                                       Response<Map<String, String>> response) {
+
+                    if (response.isSuccessful()) {
+                        // backend đã lưu avatarUrl vào DB
+                        updateProfile(); // chỉ update text
+                    } else {
+                        Toast.makeText(ProfileSetupActivity.this,
+                                "Upload avatar thất bại",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Map<String, String>> call, Throwable t) {
+                    Toast.makeText(ProfileSetupActivity.this,
+                            "Không upload được avatar",
+                            Toast.LENGTH_SHORT).show();
+                }
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private File uriToFile(Uri uri) throws IOException {
+
+        InputStream inputStream = getContentResolver().openInputStream(uri);
+        File tempFile = new File(getCacheDir(), "avatar_upload.jpg");
+
+        FileOutputStream outputStream = new FileOutputStream(tempFile);
+
+        byte[] buffer = new byte[1024];
+        int len;
+        while ((len = inputStream.read(buffer)) > 0) {
+            outputStream.write(buffer, 0, len);
+        }
+
+        outputStream.close();
+        inputStream.close();
+
+        return tempFile;
     }
 
     // ==========================
     // UPDATE PROFILE
     // ==========================
     private void updateProfile() {
-
-        btnContinue.setEnabled(false);
 
         Map<String, Object> body = new HashMap<>();
         body.put("fullName", edtFullName.getText().toString().trim());
@@ -135,23 +263,17 @@ public class ProfileSetupActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Map<String, String>> call,
                                    Response<Map<String, String>> response) {
+
                 if (response.isSuccessful()) {
                     Toast.makeText(ProfileSetupActivity.this,
                             "Cập nhật thành công",
                             Toast.LENGTH_SHORT).show();
-
-                    Intent intent = new Intent(ProfileSetupActivity.this, MainActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
                     finish();
-                } else {
-                    btnContinue.setEnabled(true);
                 }
             }
 
             @Override
             public void onFailure(Call<Map<String, String>> call, Throwable t) {
-                btnContinue.setEnabled(true);
                 Toast.makeText(ProfileSetupActivity.this,
                         "Cập nhật thất bại",
                         Toast.LENGTH_SHORT).show();
@@ -159,29 +281,27 @@ public class ProfileSetupActivity extends AppCompatActivity {
         });
     }
 
+
     // ==========================
     // DATE PICKER
     // ==========================
     private void showDatePicker() {
         Calendar cal = Calendar.getInstance();
-        int y = cal.get(Calendar.YEAR);
-        int m = cal.get(Calendar.MONTH);
-        int d = cal.get(Calendar.DAY_OF_MONTH);
 
-        DatePickerDialog dialog = new DatePickerDialog(
+        new DatePickerDialog(
                 this,
                 (view, year, month, dayOfMonth) -> {
-                    String formattedDate = String.format(
+                    String date = String.format(
                             "%04d-%02d-%02d",
                             year, month + 1, dayOfMonth
                     );
-                    edtDob.setText(formattedDate);
-
+                    edtDob.setText(date);
                     validateInputs();
                 },
-                y, m, d
-        );
-        dialog.show();
+                cal.get(Calendar.YEAR),
+                cal.get(Calendar.MONTH),
+                cal.get(Calendar.DAY_OF_MONTH)
+        ).show();
     }
 
     // ==========================
@@ -191,7 +311,7 @@ public class ProfileSetupActivity extends AppCompatActivity {
         String[] genders = {"Nam", "Nữ", "Khác"};
 
         new android.app.AlertDialog.Builder(this)
-                .setTitle("Select Gender")
+                .setTitle("Chọn giới tính")
                 .setItems(genders, (dialog, which) -> {
                     edtGender.setText(genders[which]);
                     validateInputs();
@@ -200,25 +320,22 @@ public class ProfileSetupActivity extends AppCompatActivity {
     }
 
     // ==========================
-    // VALIDATE INPUT
+    // VALIDATION
     // ==========================
     private void validateInputs() {
-
-        String fullName = edtFullName.getText().toString().trim();
-        String dob = edtDob.getText().toString().trim();
-        String gender = edtGender.getText().toString().trim();
-
         boolean isValid =
-                !fullName.isEmpty() &&
-                        !dob.isEmpty() &&
-                        !gender.isEmpty();
+                !edtFullName.getText().toString().trim().isEmpty() &&
+                        !edtDob.getText().toString().trim().isEmpty() &&
+                        !edtGender.getText().toString().trim().isEmpty();
 
         btnContinue.setEnabled(isValid);
+        btnContinue.setBackgroundResource(
+                isValid ? R.drawable.gb_btn_enable : R.drawable.bg_btn_signin
+        );
+    }
 
-        if (isValid) {
-            btnContinue.setBackgroundResource(R.drawable.gb_btn_enable);
-        } else {
-            btnContinue.setBackgroundResource(R.drawable.bg_btn_signin);
-        }
+    private void disableContinueButton() {
+        btnContinue.setEnabled(false);
+        btnContinue.setBackgroundResource(R.drawable.bg_btn_signin);
     }
 }

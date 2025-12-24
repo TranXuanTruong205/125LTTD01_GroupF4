@@ -59,6 +59,7 @@
             android:background="@drawable/fp_bg_user_card">
 
             <ImageView
+                android:id="@+id/imgAvatar"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 android:src="@drawable/pic_avatar_default"
@@ -73,6 +74,7 @@
                 android:paddingStart="12dp">
 
                 <TextView
+                    android:id="@+id/tvFullName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Trần Xuân Trường"
@@ -81,6 +83,7 @@
                     android:textColor="#1A1A1A" />
 
                 <TextView
+                    android:id="@+id/tvPhone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="(+84) 393 999 999"
@@ -89,6 +92,7 @@
                     android:layout_marginTop="4dp" />
 
                 <TextView
+                    android:id="@+id/tvEmail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="xuantruong277@gmail.com"

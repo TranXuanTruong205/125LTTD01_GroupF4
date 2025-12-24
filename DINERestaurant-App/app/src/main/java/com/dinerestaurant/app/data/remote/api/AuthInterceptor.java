@@ -24,11 +24,9 @@ public class AuthInterceptor implements Interceptor {
 
         String token = tokenManager.getToken();
         if (token == null) {
-            // Không có token -> gửi request như bình thường
             return chain.proceed(original);
         }
 
-        // Gắn header Authorization
         Request newRequest = original.newBuilder()
                 .addHeader("Authorization", "Bearer " + token)
                 .build();
