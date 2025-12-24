@@ -204,6 +204,7 @@ public class MainActivity extends AppCompatActivity {
         setMargin(homeIconContainer, defaultMargin);
         setMargin(orderIconContainer, defaultMargin);
         setMargin(scanIconContainer, defaultMargin);
+        setMargin(reservationIconContainer, defaultMargin);
         setMargin(notifyIconContainer, defaultMargin);
         setMargin(profileIconContainer, defaultMargin);
     }
