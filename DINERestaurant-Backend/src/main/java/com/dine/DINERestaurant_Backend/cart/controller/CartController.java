@@ -12,13 +12,10 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/cart")
 public class CartController {
-
     @Autowired
     private CartService cartService;
-
     @Autowired
     private com.dine.DINERestaurant_Backend.auth.jwt.JwtUtil jwtUtil;
-
     private Integer getUserIdFromToken(String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             throw new RuntimeException("Token không hợp lệ");
@@ -27,7 +24,6 @@ public class CartController {
         String userIdStr = jwtUtil.extractUserId(token);
         return Integer.parseInt(userIdStr);
     }
-
     @GetMapping
     public ResponseEntity<Cart> getCart(@RequestHeader("Authorization") String authHeader) {
         try {
@@ -37,7 +33,6 @@ public class CartController {
             return ResponseEntity.status(401).build();
         }
     }
-
     @PostMapping("/add")
     public ResponseEntity<Cart> addToCart(@RequestBody Map<String, Object> payload,
                                           @RequestHeader("Authorization") String authHeader) {
@@ -54,7 +49,6 @@ public class CartController {
             return ResponseEntity.badRequest().build();
         }
     }
-
     @PutMapping("/update")
     public ResponseEntity<Cart> updateQuantity(@RequestBody Map<String, Object> payload,
                                                @RequestHeader("Authorization") String authHeader) {
@@ -67,7 +61,6 @@ public class CartController {
             return ResponseEntity.badRequest().build();
         }
     }
-
     @DeleteMapping("/items/{cartItemId}")
     public ResponseEntity<Void> removeItem(@PathVariable Integer cartItemId,
                                            @RequestHeader("Authorization") String authHeader) {
@@ -79,7 +72,6 @@ public class CartController {
             return ResponseEntity.badRequest().build();
         }
     }
-
     @DeleteMapping("/clear")
     public ResponseEntity<Void> clearCart(@RequestHeader("Authorization") String authHeader) {
         try {

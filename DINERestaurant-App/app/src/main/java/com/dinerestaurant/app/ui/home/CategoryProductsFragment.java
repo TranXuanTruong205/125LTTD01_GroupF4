@@ -132,10 +132,6 @@ public class CategoryProductsFragment extends Fragment {
     }
 
     private String mapMenuImage(MenuItemDto dto, String categoryName) {
-        // Sau này nếu muốn dùng cột image trong DB:
-        // if (dto.getImage() != null && !dto.getImage().isEmpty()) {
-        //     return "images/menu/" + dto.getImage();
-        // }
 
         if (categoryName == null) {
             return "images/special_offers/Image Burger.png"; // fallback

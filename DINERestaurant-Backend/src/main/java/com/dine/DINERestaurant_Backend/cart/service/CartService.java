@@ -34,31 +34,36 @@ public class CartService {
                     return cartRepository.save(newCart);
                 });
     }
-
     @Transactional
     public Cart addToCart(Integer userId, Integer menuItemId, Integer quantity, List<Integer> optionIds) {
         Cart cart = getCartByUserId(userId);
-        MenuItem item = menuItemRepository.findById(menuItemId).orElseThrow();
+        MenuItem item = menuItemRepository.findById(menuItemId)
+                .orElseThrow(() -> new RuntimeException("Item not found"));
+        // 1. Lấy danh sách ItemOption thực tế từ DB dựa trên optionIds gửi lên
         List<ItemOption> selectedOptions = itemOptionRepository.findAllById(optionIds);
-        // Tìm xem món y hệt (cùng ID + cùng Option) đã có chưa
+        // 2. Tìm xem trong giỏ hàng đã có món "y hệt" (cùng món + cùng option) chưa
         Optional<CartItem> existingItem = cart.getCartItems().stream()
                 .filter(ci -> ci.getMenuItem().getItemId().equals(menuItemId))
-                .filter(ci -> isSameOptions(ci.getOptions(), selectedOptions))
+                .filter(ci -> isSameOptions(ci.getOptions(), selectedOptions)) // Kiểm tra trùng Option
                 .findFirst();
         if (existingItem.isPresent()) {
-            existingItem.get().setQuantity(existingItem.get().getQuantity() + quantity);
+            // Nếu trùng hoàn toàn -> Chỉ tăng số lượng
+            CartItem cartItem = existingItem.get();
+            cartItem.setQuantity(cartItem.getQuantity() + quantity);
         } else {
+            // Nếu khác Option -> Tạo dòng mới trong giỏ hàng
             CartItem newItem = new CartItem();
             newItem.setCart(cart);
             newItem.setMenuItem(item);
             newItem.setQuantity(quantity);
-            newItem.setOptions(selectedOptions);
+            newItem.setOptions(selectedOptions); // Gán danh sách Option mới
             newItem.setPrice(item.getPrice());
             cart.getCartItems().add(newItem);
         }
         cart.calculateTotal();
         return cartRepository.save(cart);
     }
+    // Hàm hỗ trợ so sánh 2 danh sách Option có giống hệt nhau không
     private boolean isSameOptions(List<ItemOption> list1, List<ItemOption> list2) {
         if (list1.size() != list2.size()) return false;
         List<Integer> ids1 = list1.stream().map(ItemOption::getOptionId).sorted().toList();
