@@ -39,38 +39,43 @@ public class AuthController {
     // ================= REGISTER STEP 1: SEND OTP =================
     @PostMapping("/register/request")
     public Object requestRegister(@RequestBody Map<String, String> payload) {
+        try {
+            String phone = payload.get("phoneNumber");
+            String email = payload.get("email");
+            String fullName = payload.get("fullName");
 
-        String phone = payload.get("phoneNumber");
-        String email = payload.get("email");
-        String fullName = payload.get("fullName");
+            if (phone == null || phone.isBlank() ||
+                    email == null || email.isBlank() ||
+                    fullName == null || fullName.isBlank()) {
+                return Map.of("error", "Vui lòng nhập đầy đủ SĐT, Email và Họ tên");
+            }
 
-        if (phone == null || phone.isBlank() ||
-                email == null || email.isBlank() ||
-                fullName == null || fullName.isBlank()) {
-            return Map.of("error", "Vui lòng nhập đầy đủ SĐT, Email và Họ tên");
+            if (authService.checkExist(phone)) {
+                return Map.of("error", "Số điện thoại đã đăng ký tài khoản khác!");
+            }
+
+            if (authService.getByEmail(email).isPresent()) {
+                return Map.of("error", "Email đã tồn tại trong hệ thống!");
+            }
+
+            String fullPhone = "+" + phone;
+            String otp = otpService.generateOtp(fullPhone);
+
+            smsService.sendOtpSms(fullPhone, otp);
+
+            return Map.of(
+                    "message", "OTP đã được gửi",
+                    "phoneNumber", phone,
+                    "email", email,
+                    "fullName", fullName
+            );
+
+        } catch (RuntimeException ex) {
+            // Trả về JSON chuẩn
+            return Map.of("error", ex.getMessage());
         }
-
-        // Check số điện thoại đã tồn tại
-        if (authService.checkExist(phone)) {
-            return Map.of("error", "Số điện thoại đã đăng ký tài khoản khác!");
-        }
-
-        // Check email đã tồn tại
-        if (authService.getByEmail(email).isPresent()) {
-            return Map.of("error", "Email đã tồn tại trong hệ thống!");
-        }
-
-        String fullPhone = "+" + phone;
-        String otp = otpService.generateOtp(fullPhone);
-        smsService.sendOtpSms(fullPhone, otp);
-
-        return Map.of(
-                "message", "OTP đã được gửi",
-                "phoneNumber", phone,
-                "email", email,
-                "fullName", fullName
-        );
     }
+
 
 
 

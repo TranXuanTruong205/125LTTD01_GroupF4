@@ -8,9 +8,19 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.dinerestaurant.app.R;
 import com.dinerestaurant.app.data.local.StaticData;
+import com.dinerestaurant.app.data.repository.AuthRepository;
+import com.dinerestaurant.app.model.RegisterRequest;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SignUpActivity extends AppCompatActivity {
 
@@ -27,75 +37,97 @@ public class SignUpActivity extends AppCompatActivity {
         edtFullName = findViewById(R.id.edtFullName);
         btnRegister = findViewById(R.id.btnRegister);
 
-        // Mặc định: disable + màu nhạt
+        // Disable ban đầu
         btnRegister.setEnabled(false);
         btnRegister.setBackgroundResource(R.drawable.bg_btn_signin);
-        btnRegister.setAlpha(1f);
 
-        // Bắt sự thay đổi của 3 ô input
+        // Gắn watcher
         TextWatcher watcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
                 validateInputs();
             }
-
-            @Override
-            public void afterTextChanged(Editable s) {}
+            @Override public void afterTextChanged(Editable s) {}
         };
 
         edtPhone.addTextChangedListener(watcher);
         edtEmail.addTextChangedListener(watcher);
         edtFullName.addTextChangedListener(watcher);
 
-        // Nhấn REGISTER
-        btnRegister.setOnClickListener(v -> {
-            String phone = edtPhone.getText().toString().trim();
-            String email = edtEmail.getText().toString().trim();
-            String fullName = edtFullName.getText().toString().trim();
+        // CLICK REGISTER → Gọi API register/request
+        btnRegister.setOnClickListener(v -> registerRequest());
 
-            // Lưu dữ liệu vào StaticData.tempUser
-            StaticData.tempUser.setPhone(phone);
-            StaticData.tempUser.setEmail(email);
-            StaticData.tempUser.setFullName(fullName);
-
-            // Đánh dấu đây là luồng đăng ký
-            StaticData.isRegisterFlow = true;
-
-            // Đi đến OTP
-            startActivity(new Intent(this, VerificationActivity.class));
-        });
-
-        // Quay lại login
         findViewById(R.id.tvSignIn).setOnClickListener(v -> finish());
     }
 
+    // =====================================================================
+    //                      STEP 1: REQUEST REGISTER (SEND OTP)
+    // =====================================================================
+    private void registerRequest() {
 
-    // -----------------------------------------------------------------
-    //      Validate inputs + Đổi màu nút Register (ENABLE / DISABLE)
-    // -----------------------------------------------------------------
+        String phone = "84" + edtPhone.getText().toString().trim();
+        String email = edtEmail.getText().toString().trim();
+        String fullName = edtFullName.getText().toString().trim();
+
+        RegisterRequest request = new RegisterRequest(phone, email, fullName);
+
+        new AuthRepository().registerRequest(request)
+                .enqueue(new Callback<Map<String, Object>>() {
+                    @Override
+                    public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
+
+                        if (!response.isSuccessful() || response.body() == null) {
+                            Toast.makeText(SignUpActivity.this, "Lỗi server!", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        Map<String, Object> res = response.body();
+
+                        // 1) Nếu có KEY "error" → báo lỗi
+                        if (res.containsKey("error")) {
+                            String errorMsg = res.get("error").toString();
+                            Toast.makeText(SignUpActivity.this, errorMsg, Toast.LENGTH_LONG).show();
+                            return;   // không chuyển màn
+                        }
+
+                        // 2) Không có lỗi → đăng ký thành công
+
+                        // Lưu dữ liệu chuẩn để sang OTP
+                        StaticData.tempUser.setPhone(phone);
+                        StaticData.tempUser.setEmail(email);
+                        StaticData.tempUser.setFullName(fullName);
+                        StaticData.isRegisterFlow = true;
+
+                        // Chuyển sang màn xác minh OTP
+                        Intent intent = new Intent(SignUpActivity.this, VerificationActivity.class);
+                        intent.putExtra("phoneNumber", phone);
+                        startActivity(intent);
+                    }
+
+                    @Override
+                    public void onFailure(Call<Map<String, Object>> call, Throwable t) {
+                        Toast.makeText(SignUpActivity.this, "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+
+
+    // =====================================================================
+    //               Validate inputs + chuyển màu nút REGISTER
+    // =====================================================================
     private void validateInputs() {
         String phone = edtPhone.getText().toString().trim();
         String email = edtEmail.getText().toString().trim();
         String fullname = edtFullName.getText().toString().trim();
 
-        // Vì bạn dùng (+84), người dùng CHỈ nhập 9 số còn lại.
         boolean validPhone = phone.length() == 9;
         boolean validEmail = !email.isEmpty();
         boolean validName = !fullname.isEmpty();
 
         boolean allValid = validPhone && validEmail && validName;
 
-        if (allValid) {
-            btnRegister.setEnabled(true);
-            btnRegister.setAlpha(1f); // không bị mờ
-            btnRegister.setBackgroundResource(R.drawable.gb_btn_enable); // cam đậm
-        } else {
-            btnRegister.setEnabled(false);
-            btnRegister.setAlpha(1f);
-            btnRegister.setBackgroundResource(R.drawable.bg_btn_signin); // nhạt
-        }
+        btnRegister.setEnabled(allValid);
+        btnRegister.setBackgroundResource(allValid ? R.drawable.gb_btn_enable : R.drawable.bg_btn_signin);
     }
 }
