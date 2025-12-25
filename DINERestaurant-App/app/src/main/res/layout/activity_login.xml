@@ -145,7 +145,7 @@
             android:layout_marginTop="20dp">
 
             <ImageView
-                android:id="@+id/btnGoogle"
+                android:id="@+id/btnGoogleLogin"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:padding="8dp"

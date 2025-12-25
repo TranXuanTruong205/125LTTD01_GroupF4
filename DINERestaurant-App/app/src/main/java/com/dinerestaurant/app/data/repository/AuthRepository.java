@@ -35,5 +35,7 @@ public class AuthRepository {
     public Call<Map<String, Object>> verifyLoginOtp(LoginVerifyRequest request) {
         return ApiClient.getAuthApi().verifyLoginOtp(request);
     }
-
+    public Call<Map<String, Object>> loginGoogle(Map<String, String> body) {
+        return authApi.loginGoogle(body);
+    }
 }

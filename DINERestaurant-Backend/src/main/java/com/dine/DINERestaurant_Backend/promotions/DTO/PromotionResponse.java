@@ -13,67 +13,27 @@ public class PromotionResponse {
     private LocalDate endDate;
     private Boolean isActive;
 
-    public Integer getId() {
-        return id;
-    }
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
 
-    public void setId(Integer id) {       // <- dùng ở mapToResponse
-        this.id = id;
-    }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
 
-    public String getTitle() {
-        return title;
-    }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
-    public void setTitle(String title) {  // <- dùng ở mapToResponse
-        this.title = title;
-    }
+    public String getImage() { return image; }
+    public void setImage(String image) { this.image = image; }
 
-    public String getDescription() {
-        return description;
-    }
+    public Integer getDiscountPercent() { return discountPercent; }
+    public void setDiscountPercent(Integer discountPercent) { this.discountPercent = discountPercent; }
 
-    public void setDescription(String description) { // ...
-        this.description = description;
-    }
+    public LocalDate getStartDate() { return startDate; }
+    public void setStartDate(LocalDate startDate) { this.startDate = startDate; }
 
-    public String getImage() {
-        return image;
-    }
+    public LocalDate getEndDate() { return endDate; }
+    public void setEndDate(LocalDate endDate) { this.endDate = endDate; }
 
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public Integer getDiscountPercent() {
-        return discountPercent;
-    }
-
-    public void setDiscountPercent(Integer discountPercent) {
-        this.discountPercent = discountPercent;
-    }
-
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
-    }
-
-    public LocalDate getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(LocalDate endDate) {
-        this.endDate = endDate;
-    }
-
-    public Boolean getIsActive() {
-        return isActive;
-    }
-
-    public void setIsActive(Boolean isActive) {  // <- dùng ở mapToResponse
-        this.isActive = isActive;
-    }
+    public Boolean getIsActive() { return isActive; }
+    public void setIsActive(Boolean active) { isActive = active; }
 }

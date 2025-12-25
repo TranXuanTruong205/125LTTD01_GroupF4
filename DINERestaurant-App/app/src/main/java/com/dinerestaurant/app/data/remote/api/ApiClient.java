@@ -1,7 +1,6 @@
 package com.dinerestaurant.app.data.remote.api;
 
 import android.content.Context;
-
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -9,14 +8,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiClient {
 
-    // Android Emulator → localhost
+    private static Retrofit retrofit;
+    private static ReservationApi reservationApi;
+
     private static final String BASE_URL = "http://10.0.2.2:8080/";
 
-    private static Retrofit retrofit;
-
-    /**
-     * Khởi tạo ApiClient – GỌI 1 LẦN DUY NHẤT (Application)
-     */
     public static void init(Context context) {
         if (retrofit != null) return;
 
@@ -24,8 +20,8 @@ public class ApiClient {
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
 
         OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(new AuthInterceptor(context)) // 🔑 JWT
-                .addInterceptor(logging)                      // 🪵 Log API
+                .addInterceptor(new AuthInterceptor(context))
+                .addInterceptor(logging)
                 .build();
 
         retrofit = new Retrofit.Builder()
@@ -35,19 +31,60 @@ public class ApiClient {
                 .build();
     }
 
-    // ====== Các API ======
-
     public static AuthApi getAuthApi() {
         return retrofit.create(AuthApi.class);
     }
+    public static UserApi getUserApi() {
+        return retrofit.create(UserApi.class);
+    }
+    public static ApiService getApiService() {
+        checkInit();
+        return retrofit.create(ApiService.class);
+    }
+    private static void checkInit() {
+        if (retrofit == null) {
+            throw new IllegalStateException("ApiClient chưa init");
+        }
+    }
+
     public static CartApi getCartApi() {
         return retrofit.create(CartApi.class);
     }
-    // Thêm hàm này để tương thích với code cũ
-    public static ApiService getApiService() {
+
+    public static ApiNotification getNotificationApi() {
+        return retrofit.create(ApiNotification.class);
+    }
+    public static PromotionApi getPromotionApi() {
+        return retrofit.create(PromotionApi.class);
+    }
+
+    public static Retrofit getClient() {
         if (retrofit == null) {
-            throw new IllegalStateException("ApiClient must be initialized with init(context) first!");
+            retrofit = new Retrofit.Builder()
+                    .baseUrl(BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
         }
-        return retrofit.create(ApiService.class);
+        return retrofit;
+
+    }
+    public static UserAddressApi getUserAddressApi() {
+        checkInit();
+        return retrofit.create(UserAddressApi.class);
+    }
+    public static ReservationApi getReservationApi() {
+        if (reservationApi == null) {
+            reservationApi = retrofit.create(ReservationApi.class);
+        }
+        return reservationApi;
+    }
+
+    private static OrderApi orderApi;
+
+    public static OrderApi getOrderApi() {
+        if (orderApi == null) {
+            orderApi = retrofit.create(OrderApi.class);
+        }
+        return orderApi;
     }
 }

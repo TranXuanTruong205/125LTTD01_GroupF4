@@ -2,16 +2,15 @@ package com.dine.DINERestaurant_Backend.promotions.DTO;
 
 public class ApplyPromotionRequest {
 
-    // CHANGED: dùng Integer cho khớp Order.orderId & Promotion.id
-    private Integer orderId;
+    private Integer cartId;
     private Integer promotionId;
 
-    public Integer getOrderId() {
-        return orderId;
+    public Integer getCartId() {
+        return cartId;
     }
 
-    public void setOrderId(Integer orderId) {
-        this.orderId = orderId;
+    public void setCartId(Integer cartId) {
+        this.cartId = cartId;
     }
 
     public Integer getPromotionId() {
