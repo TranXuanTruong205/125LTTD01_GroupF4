@@ -552,6 +552,31 @@ INSERT INTO menu_items (category_id, item_name, description, price, discount_pri
 (11, N'Cookies & Cream Ice Cream', N'Kem cookies & cream với vụn bánh quy', 30000, 22000, N'cookies_cream_icecream.jpg', 4.8, 230, 1);
 GO
 
+-- Cập nhật cho khớp với tên file thực tế trong folder assets/images/categories/
+UPDATE categories SET icon = 'images/categories/ic_burger.png' WHERE category_name = 'Burger';
+UPDATE categories SET icon = 'images/categories/ic_taco.png' WHERE category_name = 'Taco';
+UPDATE categories SET icon = 'images/categories/ic_burrito.png' WHERE category_name = 'Burrito';
+UPDATE categories SET icon = 'images/categories/ic_drink.png' WHERE category_name = 'Drink';
+UPDATE categories SET icon = 'images/categories/ic_pizza.png' WHERE category_name = 'Pizza';
+UPDATE categories SET icon = 'images/categories/ic_donut.png' WHERE category_name = 'Donut';
+UPDATE categories SET icon = 'images/categories/ic_salad.png' WHERE category_name = 'Salad';
+UPDATE categories SET icon = 'images/categories/ic_noodles.png' WHERE category_name = 'Noodles';
+UPDATE categories SET icon = 'images/categories/ic_Sandwich.png' WHERE category_name = 'Sandwich';
+UPDATE categories SET icon = 'images/categories/ic_Pasta.png' WHERE category_name = 'Pasta';
+UPDATE categories SET icon = 'images/categories/ic_iceCream.png' WHERE category_name IN ('Ice Cream', 'IceCream');
+UPDATE categories SET icon = 'images/categories/ic_fried-rice.png' WHERE category_name = 'Rice';
+UPDATE categories SET icon = 'images/categories/ic_takoyaki.png' WHERE category_name = 'Takoyaki';
+UPDATE categories SET icon = 'images/categories/ic_fruits.png' WHERE category_name = 'Fruit';
+UPDATE categories SET icon = 'images/categories/ic_sausage.png' WHERE category_name = 'Sausage';
+UPDATE categories SET icon = 'images/categories/ic_goi-cuon.png' WHERE category_name = 'Gỏi cuốn';
+UPDATE categories SET icon = 'images/categories/ic_christmas-cookie.png' WHERE category_name = 'Cookie';
+UPDATE categories SET icon = 'images/categories/ic_pudding.png' WHERE category_name = 'Pudding';
+UPDATE categories SET icon = 'images/categories/ic_banhMi.png' WHERE category_name LIKE '%Bánh Mì%';
+UPDATE categories SET icon = 'images/categories/ic_dumpling.png' WHERE category_name = 'Dumpling';
+
+-- Mặc định
+UPDATE categories SET icon = 'images/categories/ic_more.png' WHERE icon IS NULL OR icon = '';
+GO
 -- ============================================
 -- KẾT THÚC SCHEMA VÀ DỮ LIỆU MẪU
 -- ============================================

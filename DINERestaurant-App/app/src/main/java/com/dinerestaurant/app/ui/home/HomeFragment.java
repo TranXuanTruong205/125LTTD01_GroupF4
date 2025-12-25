@@ -81,12 +81,15 @@ public class HomeFragment extends Fragment {
     }
 
     // ========================= CATEGORIES =========================
+    // Trong HomeFragment.java
+
+    // 1. Sửa setupCategoriesRecycler: Xóa tham số assetManager
     private void setupCategoriesRecycler() {
         rvCategories.setLayoutManager(new GridLayoutManager(getContext(), 4));
 
         categoryAdapter = new CategoryAdapter(
                 categoryItems,
-                requireContext().getAssets(),
+                // XÓA DÒNG NÀY: requireContext().getAssets(),
                 item -> {
                     if ("More".equals(item.getName())) {
                         Navigation.findNavController(requireView())
@@ -105,29 +108,35 @@ public class HomeFragment extends Fragment {
         rvCategories.setAdapter(categoryAdapter);
     }
 
+    // 2. Sửa loadCategories: Lấy icon trực tiếp từ API (DB)
     private void loadCategories() {
         apiService.getCategories().enqueue(new Callback<List<CategoryDto>>() {
             @Override
             public void onResponse(Call<List<CategoryDto>> call,
                                    Response<List<CategoryDto>> response) {
                 if (!response.isSuccessful() || response.body() == null) {
-                    Toast.makeText(getContext(), "Failed to load categories",
-                            Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 List<CategoryItem> list = new ArrayList<>();
 
+                // Giới hạn hiển thị 7 item đầu tiên cho Home, item thứ 8 là "More"
+                int limit = 7;
+                int count = 0;
+
                 for (CategoryDto dto : response.body()) {
-                    String iconPath = getIconPathForCategory(dto.getCategoryName());
+                    if (count >= limit) break; // Chỉ lấy 7 cái đầu
+
+                    // Lấy trực tiếp icon từ DB (vì bạn đã update SQL rồi)
                     list.add(new CategoryItem(
                             dto.getCategoryId(),
                             dto.getCategoryName(),
-                            iconPath
+                            dto.getIcon()
                     ));
+                    count++;
                 }
 
-                // Thêm item "More"
+                // Luôn thêm item "More" ở cuối
                 list.add(new CategoryItem(
                         -1,
                         "More",
@@ -139,46 +148,10 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onFailure(Call<List<CategoryDto>> call, Throwable t) {
-                Toast.makeText(getContext(), "Error: " + t.getMessage(),
-                        Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
-
-    private String getIconPathForCategory(String name) {
-        if (name == null) return "images/categories/ic_more.png";
-
-        String lower = name.toLowerCase();
-
-        switch (lower) {
-            case "burger":
-                return "images/categories/ic_burger.png";
-            case "taco":
-                return "images/categories/ic_taco.png";
-            case "burrito":
-                return "images/categories/ic_burrito.png";
-            case "drink":
-                return "images/categories/ic_drink.png";
-            case "pizza":
-                return "images/categories/ic_pizza.png";
-            case "donut":
-                return "images/categories/ic_donut.png";
-            case "salad":
-                return "images/categories/ic_salad.png";
-            case "noodles":
-                return "images/categories/ic_noodles.png";
-            case "sandwich":
-                return "images/categories/ic_Sandwich.png";
-            case "pasta":
-                return "images/categories/ic_Pasta.png";
-            case "ice cream":
-            case "icecream":
-                return "images/categories/ic_iceCream.png";
-            default:
-                return "images/categories/ic_more.png";
-        }
-    }
-
     // ========================= BANNER =========================
     private void setupBanner() {
         List<String> bannerList = new ArrayList<>();

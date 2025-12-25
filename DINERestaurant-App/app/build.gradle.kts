@@ -32,32 +32,40 @@ android {
 }
 
 dependencies {
-    implementation("androidx.navigation:navigation-fragment:2.7.7")
-    implementation("androidx.navigation:navigation-ui:2.7.7")
-    implementation("com.google.android.material:material:1.11.0")
-    implementation(libs.appcompat)
-    implementation(libs.material)
-    implementation(libs.activity)
-    implementation(libs.constraintlayout)
-    implementation(libs.fragment)
-    implementation(libs.recyclerview)
-    implementation(libs.cardview)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.ext.junit)
-    androidTestImplementation(libs.espresso.core)
-    implementation("com.google.mlkit:barcode-scanning:17.2.0")
-    implementation("androidx.camera:camera-core:1.3.1")
-    implementation("androidx.camera:camera-camera2:1.3.1")
-    implementation("androidx.camera:camera-lifecycle:1.3.1")
-    implementation("androidx.camera:camera-view:1.3.1")
+    dependencies {
+        implementation("androidx.navigation:navigation-fragment:2.7.7")
+        implementation("androidx.navigation:navigation-ui:2.7.7")
+        implementation("com.google.android.material:material:1.11.0")
+        implementation(libs.appcompat)
+        implementation(libs.material)
+        implementation(libs.activity)
+        implementation(libs.constraintlayout)
+        implementation(libs.fragment)
+        implementation(libs.recyclerview)
+        implementation(libs.cardview)
+        testImplementation(libs.junit)
+        androidTestImplementation(libs.ext.junit)
+        androidTestImplementation(libs.espresso.core)
+        implementation("com.google.mlkit:barcode-scanning:17.2.0")
+        implementation("androidx.camera:camera-core:1.3.1")
+        implementation("androidx.camera:camera-camera2:1.3.1")
+        implementation("androidx.camera:camera-lifecycle:1.3.1")
+        implementation("androidx.camera:camera-view:1.3.1")
+        implementation("com.google.android.gms:play-services-auth:21.0.0")
 
-    // Retrofit - Gọi API
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+        // SwipeRefreshLayout (Fix lỗi unresolved reference)
+        implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 
-    // Gson Converter - Parse JSON -> Object Java
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+        // CircleImageView
+        implementation("de.hdodenhof:circleimageview:3.1.0")
 
-    // OkHttp logging (in logcat xem request/response)
-    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+        // Retrofit (Giữ bản 2.9.0 ổn định)
+        implementation("com.squareup.retrofit2:retrofit:2.9.0")
+        implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+        implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
+        // Glide (Quan trọng để load ảnh)
+        implementation("com.github.bumptech.glide:glide:4.16.0")
+        annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
+    }
 }

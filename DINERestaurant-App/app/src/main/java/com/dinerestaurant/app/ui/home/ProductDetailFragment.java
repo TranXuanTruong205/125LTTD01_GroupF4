@@ -9,13 +9,10 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
-
 import com.dinerestaurant.app.R;
 import com.dinerestaurant.app.data.remote.api.ApiClient;
-import com.dinerestaurant.app.model.Cart;
 import com.dinerestaurant.app.model.CategoryProductItem;
 
 import java.util.HashMap;
