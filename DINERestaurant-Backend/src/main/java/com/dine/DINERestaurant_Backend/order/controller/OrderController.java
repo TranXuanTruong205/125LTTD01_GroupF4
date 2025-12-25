@@ -19,80 +19,107 @@ import java.util.Map;
 @RequestMapping("/api/orders")
 @CrossOrigin(origins = "*")
 public class OrderController {
-    @Autowired private JwtUtil jwtUtil;
-    @Autowired private OrderService orderService;
-    @Autowired private CartService cartService; // ← THÊM DÒNG NÀY!!!
+    @Autowired
+    private JwtUtil jwtUtil;
+    @Autowired
+    private OrderService orderService;
+    @Autowired
+    private CartService cartService; // ← THÊM DÒNG NÀY!!!
 
-        private Integer extractUserIdFromToken(String authHeader) {
-            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-                throw new RuntimeException("Token không hợp lệ");
-            }
-            String token = authHeader.substring(7);
-            String userIdStr = jwtUtil.extractUserId(token);
-            return Integer.parseInt(userIdStr);
+    private Integer extractUserIdFromToken(String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new RuntimeException("Token không hợp lệ");
         }
+        String token = authHeader.substring(7);
+        String userIdStr = jwtUtil.extractUserId(token);
+        return Integer.parseInt(userIdStr);
+    }
 
-        // ==================== API MỚI: CHECKOUT TỪ GIỎ HÀNG ====================
-        @PostMapping("/checkout")
-        public ResponseEntity<Map<String, Object>> checkoutFromCart(
-                @RequestBody Map<String, Object> request,
-                @RequestHeader("Authorization") String authHeader) {
+    // ==================== API MỚI: CHECKOUT TỪ GIỎ HÀNG ====================
+    @PostMapping("/checkout")
+    public ResponseEntity<Map<String, Object>> checkoutFromCart(
+            @RequestBody Map<String, Object> request,
+            @RequestHeader("Authorization") String authHeader) {
 
-            Map<String, Object> response = new HashMap<>();
-            try {
-                Integer userId = extractUserIdFromToken(authHeader);
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Integer userId = extractUserIdFromToken(authHeader);
 
-                // Lấy danh sách ID các món người dùng đã tích chọn từ Android gửi lên
-                List<Integer> cartItemIds = (List<Integer>) request.get("cartItemIds");
+            // Lấy danh sách ID các món người dùng đã tích chọn từ Android gửi lên
+            List<Integer> cartItemIds = (List<Integer>) request.get("cartItemIds");
 
-                String orderType = (String) request.get("orderType");
-                Integer tableId = request.get("tableId") != null ? (Integer) request.get("tableId") : null;
-                Integer addressId = request.get("addressId") != null ? (Integer) request.get("addressId") : null;
-                String paymentMethod = (String) request.get("paymentMethod");
-                String note = request.get("note") != null ? (String) request.get("note") : null;
+            String orderType = (String) request.get("orderType");
+            Integer tableId = request.get("tableId") != null ? (Integer) request.get("tableId") : null;
+            Integer addressId = request.get("addressId") != null ? (Integer) request.get("addressId") : null;
+            String paymentMethod = (String) request.get("paymentMethod");
+            String note = request.get("note") != null ? (String) request.get("note") : null;
 
-                // Gọi Service với tham số cartItemIds mới
-                Order order = orderService.createOrderFromCart(userId, orderType, tableId, addressId, paymentMethod, note, cartItemIds);
+            // Gọi Service với tham số cartItemIds mới
+            Order order = orderService.createOrderFromCart(userId, orderType, tableId, addressId, paymentMethod, note,
+                    cartItemIds);
 
-                response.put("success", true);
-                response.put("message", "Đặt hàng thành công!");
-                response.put("data", order);
-                response.put("orderNumber", orderService.generateOrderNumber(order.getOrderId()));
+            response.put("success", true);
+            response.put("message", "Đặt hàng thành công!");
+            response.put("data", order);
+            response.put("orderNumber", orderService.generateOrderNumber(order.getOrderId()));
 
-                return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
-            } catch (Exception e) {
-                response.put("success", false);
-                response.put("message", e.getMessage());
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-            }
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
+    }
     // ==================== ĐẶT ĐƠN HÀNG (3 loại) ====================
 
     @PostMapping("/onsite")
-    public ResponseEntity<Map<String, Object>> createOnsiteOrder(@RequestBody Map<String, Object> request) {
-        return createOrderResponse(request, "Tại chỗ");
+    public ResponseEntity<Map<String, Object>> createOnsiteOrder(
+            @RequestBody Map<String, Object> request,
+            @RequestHeader("Authorization") String authHeader) {
+        return createOrderResponse(request, "Tại chỗ", authHeader);
     }
 
     @PostMapping("/delivery")
-    public ResponseEntity<Map<String, Object>> createDeliveryOrder(@RequestBody Map<String, Object> request) {
-        return createOrderResponse(request, "Giao hàng");
+    public ResponseEntity<Map<String, Object>> createDeliveryOrder(
+            @RequestBody Map<String, Object> request,
+            @RequestHeader("Authorization") String authHeader) {
+        return createOrderResponse(request, "Giao hàng", authHeader);
     }
 
     @PostMapping("/pickup")
-    public ResponseEntity<Map<String, Object>> createPickupOrder(@RequestBody Map<String, Object> request) {
-        return createOrderResponse(request, "Mang về");
+    public ResponseEntity<Map<String, Object>> createPickupOrder(
+            @RequestBody Map<String, Object> request,
+            @RequestHeader("Authorization") String authHeader) {
+        return createOrderResponse(request, "Mang về", authHeader);
     }
 
     // Hàm chung cho 3 loại đơn hàng
-    private ResponseEntity<Map<String, Object>> createOrderResponse(Map<String, Object> request, String orderType) {
+    private ResponseEntity<Map<String, Object>> createOrderResponse(
+            Map<String, Object> request, String orderType, String authHeader) {
         Map<String, Object> response = new HashMap<>();
         try {
-            Order order = orderService.createOrder(request, orderType);
+            Integer userId = extractUserIdFromToken(authHeader);
+
+            // Lấy danh sách ID các món người dùng đã tích chọn
+            List<Integer> cartItemIds = (List<Integer>) request.get("cartItemIds");
+
+            Integer tableId = request.get("tableId") != null
+                    ? ((Number) request.get("tableId")).intValue()
+                    : null;
+            Integer addressId = request.get("addressId") != null
+                    ? ((Number) request.get("addressId")).intValue()
+                    : null;
+            String paymentMethod = (String) request.get("paymentMethod");
+            String note = request.get("note") != null ? (String) request.get("note") : null;
+
+            // Gọi Service với cartItemIds
+            Order order = orderService.createOrderFromCart(
+                    userId, orderType, tableId, addressId, paymentMethod, note, cartItemIds);
 
             response.put("success", true);
             response.put("message", "Đặt hàng thành công");
-            response.put("data", order);                    // Trả thẳng Entity
+            response.put("data", order);
             response.put("orderNumber", orderService.generateOrderNumber(order.getOrderId()));
 
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -103,7 +130,8 @@ public class OrderController {
         }
     }
 
-    // ==================== CÁC API KHÁC (trả Entity trong data) ====================
+    // ==================== CÁC API KHÁC (trả Entity trong data)
+    // ====================
     private Integer getCurrentUserId(String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             throw new RuntimeException("Token không hợp lệ");
@@ -113,7 +141,8 @@ public class OrderController {
         // Giải mã token (dùng cách bạn đang có trong dự án)
         try {
             Claims claims = Jwts.parser()
-                    .setSigningKey("${jwt.secret}") // ← thay bằng key thật của bạn (tìm trong JwtTokenProvider hoặc application.yml)
+                    .setSigningKey("${jwt.secret}") // ← thay bằng key thật của bạn (tìm trong JwtTokenProvider hoặc
+                                                    // application.yml)
                     .parseClaimsJws(token)
                     .getBody();
 
@@ -168,12 +197,12 @@ public class OrderController {
                 response.put("success", false);
                 response.put("message", "Đơn hàng không tồn tại");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-           } }
-        catch(Exception e){
-                response.put("success", false);
-                response.put("message", "Token hết hạn hoặc không hợp lệ: " + e.getMessage());
-                return ResponseEntity.status(401).body(response);
             }
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Token hết hạn hoặc không hợp lệ: " + e.getMessage());
+            return ResponseEntity.status(401).body(response);
+        }
     }
 
     @GetMapping("{id}/status")
@@ -239,9 +268,9 @@ public class OrderController {
         }
     }
 
-
     @PutMapping("/status")
-    public ResponseEntity<Map<String, Object>> updateOrderStatus(@RequestHeader("Authorization") String authHeader,@RequestBody Map<String, String> body) {
+    public ResponseEntity<Map<String, Object>> updateOrderStatus(@RequestHeader("Authorization") String authHeader,
+            @RequestBody Map<String, String> body) {
         Map<String, Object> response = new HashMap<>();
 
         try {
@@ -267,8 +296,7 @@ public class OrderController {
                 response.put("message", "Đơn hàng không tồn tại");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             response.put("success", false);
             response.put("message", "Token hết hạn hoặc không hợp lệ: " + e.getMessage());
             return ResponseEntity.status(401).body(response);

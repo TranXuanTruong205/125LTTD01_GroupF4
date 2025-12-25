@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Codes các bàn - DINE Restaurant</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .qr-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .qr-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .qr-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+        }
+        
+        .table-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+        
+        .table-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .table-info {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .qr-container {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        
+        .qr-container canvas {
+            border-radius: 10px;
+        }
+        
+        .qr-value {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            color: #FF6B35;
+            background: #fff3e0;
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        
+        .scan-instruction {
+            font-size: 0.85rem;
+            color: #888;
+            margin-top: 15px;
+        }
+        
+        .print-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #FF6B35;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(255, 107, 53, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .print-btn:hover {
+            background: #e55a2b;
+            transform: scale(1.05);
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 10px;
+            }
+            
+            .header {
+                color: black;
+                page-break-after: avoid;
+            }
+            
+            .qr-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            
+            .qr-card {
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                page-break-inside: avoid;
+            }
+            
+            .print-btn {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🍽 DINE Restaurant</h1>
+        <p>Quét mã QR để order món ăn</p>
+    </div>
+    
+    <div class="qr-grid" id="qrGrid">
+        <!-- QR Cards sẽ được tạo bằng JavaScript -->
+    </div>
+    
+    <button class="print-btn" onclick="window.print()">🖨 In QR Codes</button>
+    
+    <script>
+        // Danh sách các bàn
+        const tables = [
+            { id: 1, name: "Table 01", capacity: 4 },
+            { id: 2, name: "Table 02", capacity: 2 },
+            { id: 3, name: "Table 03", capacity: 6 },
+            { id: 4, name: "Table 04", capacity: 4 },
+            { id: 5, name: "Table 05", capacity: 4 },
+            { id: 6, name: "Table 06", capacity: 8 },
+            { id: 7, name: "Table 07", capacity: 2 },
+            { id: 8, name: "Table 08", capacity: 4 }
+        ];
+        
+        // Tạo QR cards
+        const qrGrid = document.getElementById('qrGrid');
+        
+        tables.forEach(table => {
+            const qrValue = `TABLE:${table.id}`;
+            
+            const card = document.createElement('div');
+            card.className = 'qr-card';
+            card.innerHTML = `
+                <div class="table-icon">🪑</div>
+                <div class="table-name">${table.name}</div>
+                <div class="table-info">${table.capacity} chỗ ngồi</div>
+                <div class="qr-container">
+                    <canvas id="qr-${table.id}"></canvas>
+                </div>
+                <div class="qr-value">${qrValue}</div>
+                <div class="scan-instruction">Quét để đặt món</div>
+            `;
+            
+            qrGrid.appendChild(card);
+            
+            // Tạo QR code
+            QRCode.toCanvas(document.getElementById(`qr-${table.id}`), qrValue, {
+                width: 180,
+                margin: 2,
+                color: {
+                    dark: '#333333',
+                    light: '#f8f9fa'
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -21,10 +21,12 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/reservations")
 @CrossOrigin(origins = "*")
-public class    ReservationController {
+public class ReservationController {
 
-    @Autowired  private ReservationService reservationService;
-    @Autowired private JwtUtil jwtUtil;
+    @Autowired
+    private ReservationService reservationService;
+    @Autowired
+    private JwtUtil jwtUtil;
 
     /**
      * Kiểm tra bàn trống
@@ -51,6 +53,7 @@ public class    ReservationController {
             return ResponseEntity.status(500).body(response);
         }
     }
+
     private Integer getCurrentUserId(String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             throw new RuntimeException("Token không hợp lệ");
@@ -60,7 +63,8 @@ public class    ReservationController {
         // Giải mã token (dùng cách bạn đang có trong dự án)
         try {
             Claims claims = Jwts.parser()
-                    .setSigningKey("${jwt.secret}") // ← thay bằng key thật của bạn (tìm trong JwtTokenProvider hoặc application.yml)
+                    .setSigningKey("${jwt.secret}") // ← thay bằng key thật của bạn (tìm trong JwtTokenProvider hoặc
+                                                    // application.yml)
                     .parseClaimsJws(token)
                     .getBody();
 
@@ -70,13 +74,14 @@ public class    ReservationController {
             throw new RuntimeException("Token hết hạn hoặc không hợp lệ");
         }
     }
+
     /**
      * Đặt bàn mới
      * POST /reservations
      */
     @PostMapping
     public ResponseEntity<Map<String, Object>> createReservation(@RequestHeader("Authorization") String authHeader,
-                                                                 @RequestBody Reservation reservation) {
+            @RequestBody Reservation reservation) {
         Map<String, Object> response = new HashMap<>();
 
         try {
@@ -129,33 +134,33 @@ public class    ReservationController {
         }
     }
 
-//    /**
-//     * Chi tiết đặt bàn
-//     * GET /reservations/{id}
-//     */
-//    @GetMapping("/{id}")
-//    public ResponseEntity<Map<String, Object>> getReservationById(@PathVariable Integer id) {
-//        Map<String, Object> response = new HashMap<>();
-//
-//        try {
-//            Reservation reservation = reservationService.getReservationById(id);
-//
-//            if (reservation == null) {
-//                response.put("success", false);
-//                response.put("message", "Reservation not found");
-//                return ResponseEntity.status(404).body(response);
-//            }
-//
-//            response.put("success", true);
-//            response.put("data", reservation);
-//            return ResponseEntity.ok(response);
-//
-//        } catch (Exception e) {
-//            response.put("success", false);
-//            response.put("message", e.getMessage());
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-//        }
-//    }
+    /**
+     * Chi tiết đặt bàn
+     * GET /reservations/{id}
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<Map<String, Object>> getReservationById(@PathVariable Integer id) {
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            Reservation reservation = reservationService.getReservationById(id);
+
+            if (reservation == null) {
+                response.put("success", false);
+                response.put("message", "Reservation not found");
+                return ResponseEntity.status(404).body(response);
+            }
+
+            response.put("success", true);
+            response.put("data", reservation);
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
 
     /**
      * Sửa đặt bàn

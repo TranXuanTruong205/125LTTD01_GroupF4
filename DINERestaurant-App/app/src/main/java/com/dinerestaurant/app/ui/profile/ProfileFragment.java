@@ -29,17 +29,17 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import com.dinerestaurant.app.data.local.TokenManager;
+import com.dinerestaurant.app.data.local.TableSessionManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.dinerestaurant.app.ui.auth.LoginActivity;
 
-
 public class ProfileFragment extends Fragment {
     private ImageView imgAvatar;
     private TextView tvFullName, tvPhone, tvEmail;
     private ImageButton editProfileButton, btnBack;
-    private LinearLayout btnMessages,btnLogout;
+    private LinearLayout btnMessages, btnLogout;
 
     private UserApi userApi;
 
@@ -77,27 +77,17 @@ public class ProfileFragment extends Fragment {
         // ===== Listeners =====
         btnLogout.setOnClickListener(v -> logout());
 
-        editProfileButton.setOnClickListener(v ->
-                startActivity(new Intent(getActivity(), ProfileSetupActivity.class))
-        );
+        editProfileButton.setOnClickListener(v -> startActivity(new Intent(getActivity(), ProfileSetupActivity.class)));
 
-        btnBack.setOnClickListener(v ->
-                Navigation.findNavController(v).navigateUp()
-        );
+        btnBack.setOnClickListener(v -> Navigation.findNavController(v).navigateUp());
 
-        btnMessages.setOnClickListener(v ->
-                Navigation.findNavController(v)
-                        .navigate(R.id.action_profileFragment_to_messageFragment)
-        );
+        btnMessages.setOnClickListener(v -> Navigation.findNavController(v)
+                .navigate(R.id.action_profileFragment_to_messageFragment));
 
-        llMyLocations.setOnClickListener(v ->
-                Navigation.findNavController(v)
-                        .navigate(R.id.action_profileFragment_to_myLocationsFragment)
-        );
+        llMyLocations.setOnClickListener(v -> Navigation.findNavController(v)
+                .navigate(R.id.action_profileFragment_to_myLocationsFragment));
 
-        llLiked.setOnClickListener(v ->
-                replaceFragment(new LikedFragment())
-        );
+        llLiked.setOnClickListener(v -> replaceFragment(new LikedFragment()));
 
         return view;
     }
@@ -128,13 +118,14 @@ public class ProfileFragment extends Fragment {
         // 1. Xoá token JWT
         new TokenManager(requireContext()).clear();
 
+        // 2. Xoá table session (đặt bàn đã quét QR)
+        TableSessionManager.getInstance(requireContext()).clearAll();
+
         // 2. Logout Google (nếu user login Google)
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(
-                GoogleSignInOptions.DEFAULT_SIGN_IN
-        ).build();
+                GoogleSignInOptions.DEFAULT_SIGN_IN).build();
 
-        GoogleSignInClient googleSignInClient =
-                GoogleSignIn.getClient(requireContext(), gso);
+        GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(requireContext(), gso);
 
         googleSignInClient.signOut().addOnCompleteListener(task -> {
 
@@ -144,8 +135,7 @@ public class ProfileFragment extends Fragment {
             // Xoá toàn bộ back stack
             intent.setFlags(
                     Intent.FLAG_ACTIVITY_NEW_TASK |
-                            Intent.FLAG_ACTIVITY_CLEAR_TASK
-            );
+                            Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
             startActivity(intent);
             requireActivity().finish();

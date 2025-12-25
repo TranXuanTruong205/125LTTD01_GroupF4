@@ -30,6 +30,8 @@ public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.
 
     public interface OnReservationActionListener {
         void onCancelClick(ReservationItem reservation, int position);
+
+        void onEditClick(ReservationItem reservation, int position);
     }
 
     public ReservationAdapter(Context context, OnReservationActionListener listener) {
@@ -116,10 +118,20 @@ public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.
             holder.layoutNote.setVisibility(View.GONE);
         }
 
-        // Cancel button - chỉ hiển thị khi có thể hủy
+        // Actions - chỉ hiển thị khi có thể sửa/hủy
         if (item.canCancel()) {
-            holder.btnCancel.setVisibility(View.VISIBLE);
             holder.layoutActions.setVisibility(View.VISIBLE);
+
+            // Nút Sửa
+            holder.btnEdit.setVisibility(View.VISIBLE);
+            holder.btnEdit.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onEditClick(item, holder.getAdapterPosition());
+                }
+            });
+
+            // Nút Hủy
+            holder.btnCancel.setVisibility(View.VISIBLE);
             holder.btnCancel.setOnClickListener(v -> {
                 if (listener != null) {
                     listener.onCancelClick(item, holder.getAdapterPosition());
@@ -180,7 +192,7 @@ public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.
         TextView tvTableName, tvQrCode, tvStatus;
         TextView tvDate, tvTime, tvGuestCount, tvNote;
         LinearLayout layoutNote, layoutActions;
-        MaterialButton btnCancel;
+        MaterialButton btnCancel, btnEdit;
 
         ReservationViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -195,6 +207,7 @@ public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.
             layoutNote = itemView.findViewById(R.id.layout_note);
             layoutActions = itemView.findViewById(R.id.layout_actions);
             btnCancel = itemView.findViewById(R.id.btn_cancel);
+            btnEdit = itemView.findViewById(R.id.btn_edit);
         }
     }
 }

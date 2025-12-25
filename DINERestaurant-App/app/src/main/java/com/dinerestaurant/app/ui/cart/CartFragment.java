@@ -13,11 +13,13 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dinerestaurant.app.R;
+import com.dinerestaurant.app.data.local.TableSessionManager;
 import com.dinerestaurant.app.data.remote.api.ApiClient;
 import com.dinerestaurant.app.data.remote.dto.ApplyPromotionRequest;
 import com.dinerestaurant.app.data.remote.dto.ApplyPromotionResponse;
@@ -51,21 +53,21 @@ public class CartFragment extends Fragment {
     private Integer cartId;
     private Long appliedPromotionId = null;
     private double discountAmount = 0;
+    private String selectedPaymentMethod = "Cash"; // Default
+    private double totalAmount = 0;
 
     @Override
     public View onCreateView(
             LayoutInflater inflater,
             ViewGroup container,
-            Bundle savedInstanceState
-    ) {
+            Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_cart, container, false);
     }
 
     @Override
     public void onViewCreated(
             @NonNull View view,
-            @Nullable Bundle savedInstanceState
-    ) {
+            @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         initViews(view);
@@ -73,7 +75,8 @@ public class CartFragment extends Fragment {
         setupListeners();
 
         loadCartData();
-        loadDefaultAddress();
+        loadLocationFromSession(); // Đọc từ session trước
+        loadDefaultAddress(); // Fallback nếu không có session
 
         // Nhận promotion từ PromotionsFragment
         getParentFragmentManager().setFragmentResultListener(
@@ -82,8 +85,21 @@ public class CartFragment extends Fragment {
                 (key, bundle) -> {
                     appliedPromotionId = bundle.getLong("promotionId");
                     applyPromotionPreview();
-                }
-        );
+                });
+
+        // Nhận payment method từ PaymentFragment
+        NavController navController = Navigation.findNavController(view);
+        navController.getCurrentBackStackEntry()
+                .getSavedStateHandle()
+                .getLiveData("selected_payment_method", "Cash")
+                .observe(getViewLifecycleOwner(), method -> {
+                    selectedPaymentMethod = (String) method;
+                    // Update UI nếu cần
+                    TextView tvPayment = view.findViewById(R.id.tvPaymentMethod);
+                    if (tvPayment != null) {
+                        tvPayment.setText(selectedPaymentMethod);
+                    }
+                });
     }
 
     // =====================================================
@@ -136,8 +152,7 @@ public class CartFragment extends Fragment {
                     public void onSelectionChanged() {
                         calculateAndRenderPrice();
                     }
-                }
-        );
+                });
 
         rvCartItems.setLayoutManager(new LinearLayoutManager(getContext()));
         rvCartItems.setAdapter(adapter);
@@ -145,23 +160,188 @@ public class CartFragment extends Fragment {
 
     private void setupListeners() {
         viewRequire(R.id.llMyLocations)
-                .setOnClickListener(v ->
-                        Navigation.findNavController(v)
-                                .navigate(R.id.action_cartFragment_to_myLocationsFragment));
+                .setOnClickListener(v -> Navigation.findNavController(v)
+                        .navigate(R.id.action_cartFragment_to_myLocationsFragment));
 
         viewRequire(R.id.llPromotions)
-                .setOnClickListener(v ->
-                        Navigation.findNavController(v)
-                                .navigate(R.id.action_cartFragment_to_promotionsFragment));
+                .setOnClickListener(v -> Navigation.findNavController(v)
+                        .navigate(R.id.action_cartFragment_to_promotionsFragment));
 
         viewRequire(R.id.llPaymentMethod)
-                .setOnClickListener(v ->
-                        Navigation.findNavController(v)
-                                .navigate(R.id.action_cartFragment_to_paymentFragment));
+                .setOnClickListener(v -> Navigation.findNavController(v)
+                        .navigate(R.id.action_cartFragment_to_paymentFragment));
 
-        btnConfirm.setOnClickListener(v ->
-                Toast.makeText(getContext(), "Place order", Toast.LENGTH_SHORT).show()
-        );
+        btnConfirm.setOnClickListener(v -> placeOrder());
+    }
+
+    /**
+     * Xử lý đặt hàng
+     */
+    private void placeOrder() {
+        if (adapter.getItems().isEmpty()) {
+            Toast.makeText(getContext(), "Giỏ hàng trống", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Kiểm tra đã chọn địa chỉ chưa
+        TableSessionManager session = TableSessionManager.getInstance(requireContext());
+        if (!session.hasOrderSelection()) {
+            Toast.makeText(getContext(), "Vui lòng chọn phương thức nhận hàng", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Kiểm tra payment method - nếu null/empty thì mặc định là Cash
+        if (selectedPaymentMethod == null || selectedPaymentMethod.isEmpty()) {
+            selectedPaymentMethod = "Cash";
+        }
+
+        // Nếu thanh toán bằng Cash -> gọi API checkout rồi chuyển Success
+        // - "Cash" hoặc "Tiền mặt" đều là tiền mặt
+        if ("Cash".equalsIgnoreCase(selectedPaymentMethod) ||
+                "Tiền mặt".equalsIgnoreCase(selectedPaymentMethod)) {
+            callCheckoutApi(false);
+        } else {
+            // Thanh toán online -> hiển màn hình QR (API được gọi sau khi QR hoàn thành)
+            navigateToQRPayment();
+        }
+    }
+
+    /**
+     * Gọi API để tạo đơn hàng theo loại order type
+     */
+    private void callCheckoutApi(boolean fromQRPayment) {
+        TableSessionManager session = TableSessionManager.getInstance(requireContext());
+
+        // Build request body
+        Map<String, Object> request = new HashMap<>();
+
+        // Lấy danh sách cart item IDs được chọn
+        java.util.List<Integer> cartItemIds = new java.util.ArrayList<>();
+        for (CartItem item : adapter.getItems()) {
+            if (item.isSelected()) {
+                cartItemIds.add(item.getCartItemId());
+            }
+        }
+        request.put("cartItemIds", cartItemIds);
+
+        // Payment method - map về giá trị database chấp nhận
+        request.put("paymentMethod", mapPaymentMethodForDb(selectedPaymentMethod));
+
+        // Table ID (nếu có)
+        if (session.hasTableReservation()) {
+            try {
+                request.put("tableId", Integer.parseInt(session.getTableId()));
+            } catch (NumberFormatException e) {
+                // ignore
+            }
+        }
+
+        // Address ID (nếu delivery)
+        String orderType = session.getOrderType();
+        if ("delivery".equals(orderType) && session.getAddressId() > 0) {
+            request.put("addressId", session.getAddressId());
+        }
+
+        // Show loading
+        btnConfirm.setEnabled(false);
+        btnConfirm.setText("Đang xử lý...");
+
+        // Chọn API endpoint theo order type
+        Call<Map<String, Object>> apiCall;
+        if ("dine_in".equals(orderType)) {
+            // Ăn tại bàn -> /api/orders/onsite
+            apiCall = ApiClient.getOrderApi().createOnsiteOrder(request);
+        } else if ("takeaway".equals(orderType)) {
+            // Mang về -> /api/orders/pickup
+            apiCall = ApiClient.getOrderApi().createPickupOrder(request);
+        } else {
+            // Giao hàng -> /api/orders/delivery
+            apiCall = ApiClient.getOrderApi().createDeliveryOrder(request);
+        }
+
+        // Call API
+        apiCall.enqueue(new Callback<Map<String, Object>>() {
+            @Override
+            public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
+                btnConfirm.setEnabled(true);
+                btnConfirm.setText("Place Order");
+
+                if (response.isSuccessful() && response.body() != null) {
+                    Boolean success = (Boolean) response.body().get("success");
+                    if (Boolean.TRUE.equals(success)) {
+                        // Lấy order number từ response
+                        String orderNumber = (String) response.body().get("orderNumber");
+                        navigateToOrderSuccess(orderNumber);
+                    } else {
+                        String msg = (String) response.body().get("message");
+                        Toast.makeText(getContext(), msg != null ? msg : "Đặt hàng thất bại", Toast.LENGTH_SHORT)
+                                .show();
+                    }
+                } else {
+                    Toast.makeText(getContext(), "Lỗi đặt hàng", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Map<String, Object>> call, Throwable t) {
+                btnConfirm.setEnabled(true);
+                btnConfirm.setText("Place Order");
+                Toast.makeText(getContext(), "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void navigateToQRPayment() {
+        try {
+            NavController navController = Navigation.findNavController(requireView());
+
+            Bundle bundle = new Bundle();
+            bundle.putLong(QRPaymentFragment.ARG_AMOUNT, (long) totalAmount);
+            bundle.putString(QRPaymentFragment.ARG_PAYMENT_METHOD, selectedPaymentMethod);
+
+            // Truyền cart item IDs để QRPaymentFragment gọi checkout sau
+            java.util.ArrayList<Integer> cartItemIds = new java.util.ArrayList<>();
+            for (CartItem item : adapter.getItems()) {
+                if (item.isSelected()) {
+                    cartItemIds.add(item.getCartItemId());
+                }
+            }
+            bundle.putIntegerArrayList("cart_item_ids", cartItemIds);
+
+            navController.navigate(R.id.qrPaymentFragment, bundle);
+        } catch (Exception e) {
+            Toast.makeText(getContext(), "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void navigateToOrderSuccess(String orderNumber) {
+        try {
+            TableSessionManager session = TableSessionManager.getInstance(requireContext());
+            NavController navController = Navigation.findNavController(requireView());
+
+            Bundle bundle = new Bundle();
+            bundle.putLong(OrderSuccessFragment.ARG_AMOUNT, (long) totalAmount);
+            bundle.putString(OrderSuccessFragment.ARG_PAYMENT_METHOD, selectedPaymentMethod);
+            bundle.putString("order_number", orderNumber);
+
+            if (session.hasOrderSelection()) {
+                bundle.putString(OrderSuccessFragment.ARG_ORDER_TYPE, session.getOrderType());
+                bundle.putString("display_address", session.getDisplayAddress());
+            }
+
+            if (session.hasTableReservation()) {
+                bundle.putString(OrderSuccessFragment.ARG_TABLE_ID, session.getTableId());
+            }
+
+            navController.navigate(R.id.orderSuccessFragment, bundle);
+
+            // Clear session sau khi đặt hàng
+            session.clearOrderSelection();
+            session.clearTableReservation();
+
+        } catch (Exception e) {
+            Toast.makeText(getContext(), "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 
     // =====================================================
@@ -171,7 +351,8 @@ public class CartFragment extends Fragment {
         ApiClient.getCartApi().getCart().enqueue(new Callback<Cart>() {
             @Override
             public void onResponse(Call<Cart> call, Response<Cart> response) {
-                if (!response.isSuccessful() || response.body() == null) return;
+                if (!response.isSuccessful() || response.body() == null)
+                    return;
 
                 Cart cart = response.body();
                 cartId = cart.getCartId();
@@ -187,7 +368,41 @@ public class CartFragment extends Fragment {
         });
     }
 
+    /**
+     * Đọc location đã chọn từ session (MyLocations)
+     */
+    private void loadLocationFromSession() {
+        TableSessionManager session = TableSessionManager.getInstance(requireContext());
+
+        if (session.hasOrderSelection()) {
+            String orderType = session.getOrderType();
+            String displayAddress = session.getDisplayAddress();
+
+            // Hiển thị theo loại order
+            switch (orderType) {
+                case "dine_in":
+                    tvAddressTitle.setText("Ăn tại quán");
+                    tvAddressDetail.setText(displayAddress);
+                    break;
+                case "takeaway":
+                    tvAddressTitle.setText("Mang về");
+                    tvAddressDetail.setText(displayAddress);
+                    break;
+                case "delivery":
+                    tvAddressTitle.setText("Giao tận nơi");
+                    tvAddressDetail.setText(displayAddress);
+                    break;
+            }
+        }
+    }
+
     private void loadDefaultAddress() {
+        // Nếu đã có selection từ session thì không cần load default
+        TableSessionManager session = TableSessionManager.getInstance(requireContext());
+        if (session.hasOrderSelection()) {
+            return;
+        }
+
         ApiClient.getUserAddressApi()
                 .getDefaultAddress()
                 .enqueue(new Callback<UserAddress>() {
@@ -195,15 +410,15 @@ public class CartFragment extends Fragment {
                     public void onResponse(Call<UserAddress> call, Response<UserAddress> response) {
                         if (response.isSuccessful() && response.body() != null) {
                             UserAddress address = response.body();
-                            tvAddressTitle.setText("Delivery to  →  " + address.getLabel());
+                            tvAddressTitle.setText("Giao tận nơi → " + address.getLabel());
                             tvAddressDetail.setText(address.getAddressText());
                         }
                     }
 
                     @Override
                     public void onFailure(Call<UserAddress> call, Throwable t) {
-                        tvAddressTitle.setText("Delivery to");
-                        tvAddressDetail.setText("Select Your Location");
+                        tvAddressTitle.setText("Chọn địa chỉ");
+                        tvAddressDetail.setText("Nhấn để chọn phương thức nhận hàng");
                     }
                 });
     }
@@ -212,10 +427,10 @@ public class CartFragment extends Fragment {
     // PROMOTION PREVIEW (KHÔNG GHI DB)
     // =====================================================
     private void applyPromotionPreview() {
-        if (appliedPromotionId == null || cartId == null) return;
+        if (appliedPromotionId == null || cartId == null)
+            return;
 
-        ApplyPromotionRequest request =
-                new ApplyPromotionRequest(cartId, appliedPromotionId.intValue());
+        ApplyPromotionRequest request = new ApplyPromotionRequest(cartId, appliedPromotionId.intValue());
 
         ApiClient.getPromotionApi()
                 .applyPromotion(request)
@@ -223,12 +438,11 @@ public class CartFragment extends Fragment {
                     @Override
                     public void onResponse(
                             Call<ApplyPromotionResponse> call,
-                            Response<ApplyPromotionResponse> response
-                    ) {
-                        if (!response.isSuccessful() || response.body() == null) return;
+                            Response<ApplyPromotionResponse> response) {
+                        if (!response.isSuccessful() || response.body() == null)
+                            return;
 
-                        discountAmount =
-                                response.body().getDiscountAmount().doubleValue();
+                        discountAmount = response.body().getDiscountAmount().doubleValue();
 
                         calculateAndRenderPrice();
                     }
@@ -265,6 +479,9 @@ public class CartFragment extends Fragment {
         // Total
         double total = Math.max(0, subtotal - discountAmount);
         tvTotalValue.setText(String.format("£ %.2f", total));
+
+        // Lưu total để dùng khi place order
+        this.totalAmount = total;
 
         // Bottom bar price
         btnCancel.setText(String.format("£ %.2f", total));
@@ -308,5 +525,23 @@ public class CartFragment extends Fragment {
     // Helper
     private View viewRequire(int id) {
         return requireView().findViewById(id);
+    }
+
+    /**
+     * Map payment method từ UI sang giá trị database chấp nhận
+     * Database chỉ cho phép: "Tiền mặt" hoặc "Chuyển khoản"
+     */
+    private String mapPaymentMethodForDb(String uiPaymentMethod) {
+        if (uiPaymentMethod == null || uiPaymentMethod.isEmpty()) {
+            return "Tiền mặt";
+        }
+
+        String lower = uiPaymentMethod.toLowerCase();
+        if (lower.contains("cash") || lower.contains("tiền mặt")) {
+            return "Tiền mặt";
+        } else {
+            // Momo, PayPal, Apple Pay, Google Pay, MasterCard... -> Chuyển khoản
+            return "Chuyển khoản";
+        }
     }
 }

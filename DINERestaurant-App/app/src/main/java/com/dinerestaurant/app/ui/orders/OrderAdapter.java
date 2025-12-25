@@ -55,9 +55,10 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
         // Set status color
         setStatusColor(holder, order.getStatus());
 
-        // Hiện / ẩn stepper
+        // Hiện / ẩn stepper và cập nhật màu theo trạng thái
         if (order.isShowStepper()) {
             holder.stepperLayout.setVisibility(View.VISIBLE);
+            updateStepperByApiStatus(holder, order.getApiStatus());
         } else {
             holder.stepperLayout.setVisibility(View.GONE);
         }
@@ -80,6 +81,79 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
                 listener.onOrderClick(order);
             }
         });
+    }
+
+    /**
+     * Cập nhật màu stepper theo trạng thái API
+     */
+    private void updateStepperByApiStatus(OrderViewHolder holder, String apiStatus) {
+        if (apiStatus == null)
+            apiStatus = "Đã đặt";
+
+        int activeColor = Color.parseColor("#FF6B35");
+        int grayColor = Color.parseColor("#E0E0E0");
+
+        // Reset all to gray first
+        if (holder.step1 != null)
+            holder.step1.setCardBackgroundColor(grayColor);
+        if (holder.step2 != null)
+            holder.step2.setCardBackgroundColor(grayColor);
+        if (holder.step3 != null)
+            holder.step3.setCardBackgroundColor(grayColor);
+        if (holder.step4 != null)
+            holder.step4.setCardBackgroundColor(grayColor);
+        if (holder.line1 != null)
+            holder.line1.setBackgroundColor(grayColor);
+        if (holder.line2 != null)
+            holder.line2.setBackgroundColor(grayColor);
+        if (holder.line3 != null)
+            holder.line3.setBackgroundColor(grayColor);
+
+        // Xác định step dựa theo trạng thái
+        int step = 1;
+        switch (apiStatus) {
+            case "Đã đặt":
+                step = 1;
+                break;
+            case "Đã xác nhận":
+            case "Đang chuẩn bị":
+                step = 2;
+                break;
+            case "Đang giao":
+                step = 3;
+                break;
+            case "Hoàn thành":
+            case "Đã giao":
+                step = 4;
+                break;
+            case "Đã hủy":
+                step = 0;
+                break;
+        }
+
+        // Tô màu active cho các step đã hoàn thành
+        if (step >= 1) {
+            if (holder.step1 != null)
+                holder.step1.setCardBackgroundColor(activeColor);
+            if (holder.line1 != null)
+                holder.line1.setBackgroundColor(activeColor);
+        }
+        if (step >= 2) {
+            if (holder.step2 != null)
+                holder.step2.setCardBackgroundColor(activeColor);
+            if (holder.line2 != null)
+                holder.line2.setBackgroundColor(activeColor);
+        }
+        if (step >= 3) {
+            if (holder.step3 != null)
+                holder.step3.setCardBackgroundColor(activeColor);
+            if (holder.line3 != null)
+                holder.line3.setBackgroundColor(activeColor);
+        }
+        if (step >= 4) {
+            if (holder.step4 != null)
+                holder.step4.setCardBackgroundColor(activeColor);
+        }
     }
 
     private String getVietnameseStatus(String status) {
@@ -148,6 +222,10 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
         View stepperLayout;
         MaterialButton btnCancelOrder;
 
+        // Stepper views
+        androidx.cardview.widget.CardView step1, step2, step3, step4;
+        View line1, line2, line3;
+
         public OrderViewHolder(@NonNull View itemView) {
             super(itemView);
             ivFood = itemView.findViewById(R.id.iv_food);
@@ -161,6 +239,15 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
             tvStar5 = itemView.findViewById(R.id.tv_star5);
             stepperLayout = itemView.findViewById(R.id.layout_stepper);
             btnCancelOrder = itemView.findViewById(R.id.btn_cancel_order);
+
+            // Stepper
+            step1 = itemView.findViewById(R.id.step1);
+            step2 = itemView.findViewById(R.id.step2);
+            step3 = itemView.findViewById(R.id.step3);
+            step4 = itemView.findViewById(R.id.step4);
+            line1 = itemView.findViewById(R.id.line1);
+            line2 = itemView.findViewById(R.id.line2);
+            line3 = itemView.findViewById(R.id.line3);
         }
     }
 }

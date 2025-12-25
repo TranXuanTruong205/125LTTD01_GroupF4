@@ -22,11 +22,12 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.ViewHold
 
     public interface OnAddressSelectedListener {
         void onSelected(UserAddress address);
+
         void onEdit(UserAddress address);
     }
 
     public AddressAdapter(List<UserAddress> addressList,
-                          OnAddressSelectedListener listener) {
+            OnAddressSelectedListener listener) {
         this.addressList = addressList;
         this.listener = listener;
 
@@ -58,8 +59,7 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.ViewHold
         holder.imgRadio.setImageResource(
                 position == selectedPosition
                         ? R.drawable.bg_radio_checked
-                        : R.drawable.bg_radio_unchecked
-        );
+                        : R.drawable.bg_radio_unchecked);
 
         holder.itemView.setOnClickListener(v -> {
             int oldPos = selectedPosition;
@@ -80,6 +80,17 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.ViewHold
     @Override
     public int getItemCount() {
         return addressList.size();
+    }
+
+    /**
+     * Bỏ chọn tất cả địa chỉ
+     */
+    public void clearSelection() {
+        int oldPos = selectedPosition;
+        selectedPosition = -1;
+        if (oldPos >= 0 && oldPos < addressList.size()) {
+            notifyItemChanged(oldPos);
+        }
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {

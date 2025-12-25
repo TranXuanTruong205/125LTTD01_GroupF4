@@ -33,4 +33,16 @@ public class ReservationRepository {
     public Call<Map<String, Object>> cancelReservation(int reservationId) {
         return api.cancelReservation(reservationId);
     }
+
+    public Call<Map<String, Object>> updateReservation(int reservationId, Map<String, Object> request) {
+        return api.updateReservation(reservationId, request);
+    }
+
+    public Call<Map<String, Object>> getReservationById(int reservationId) {
+        return api.getReservationById(reservationId);
+    }
+
+    public Call<Map<String, Object>> checkInWithQR(Map<String, String> request) {
+        return api.checkInWithQR(request);
+    }
 }

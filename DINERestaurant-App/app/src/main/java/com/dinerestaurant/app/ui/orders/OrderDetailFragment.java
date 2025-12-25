@@ -39,6 +39,7 @@ public class OrderDetailFragment extends Fragment {
     // Stepper views
     private CardView step1, step2, step3, step4;
     private View line1, line2, line3;
+    private View layoutStepper;
 
     // Delivery & Payment views
     private TextView tvAddress, tvAddressLabel;
@@ -104,6 +105,7 @@ public class OrderDetailFragment extends Fragment {
         line1 = view.findViewById(R.id.line1);
         line2 = view.findViewById(R.id.line2);
         line3 = view.findViewById(R.id.line3);
+        layoutStepper = view.findViewById(R.id.layout_stepper);
 
         // Delivery & Payment
         tvAddress = view.findViewById(R.id.tv_address);
@@ -359,11 +361,18 @@ public class OrderDetailFragment extends Fragment {
 
         resetStepperColors();
 
+        // Map 6 trạng thái database vào 4 bước stepper:
+        // Bước 1: Đã đặt
+        // Bước 2: Đã xác nhận / Đang chuẩn bị
+        // Bước 3: Đang giao
+        // Bước 4: Hoàn thành
+        // Bước 0: Đã hủy (không hiển thị)
         int step = 1;
         switch (status) {
             case "Đã đặt":
                 step = 1;
                 break;
+            case "Đã xác nhận":
             case "Đang chuẩn bị":
                 step = 2;
                 break;
@@ -375,7 +384,10 @@ public class OrderDetailFragment extends Fragment {
                 step = 4;
                 break;
             case "Đã hủy":
-                step = 0; // Không hiển thị stepper
+                step = 0; // Ẩn stepper
+                break;
+            default:
+                step = 1;
                 break;
         }
 
@@ -401,6 +413,14 @@ public class OrderDetailFragment extends Fragment {
     }
 
     private void updateStepperToStep(int step) {
+        // Ẩn stepper nếu step = 0 (Đã hủy)
+        if (layoutStepper != null) {
+            layoutStepper.setVisibility(step > 0 ? View.VISIBLE : View.GONE);
+        }
+
+        if (step <= 0)
+            return; // Không cần cập nhật màu nếu đã ẩn
+
         int activeColor = getResources().getColor(android.R.color.holo_orange_dark);
 
         if (step >= 1) {
