@@ -1,18 +1,33 @@
 package com.dinerestaurant.app.model;
+import java.io.Serializable;
+public class CategoryProductItem implements  Serializable {
 
-public class CategoryProductItem {
+    private int itemId;
     private String imagePath;
     private String name;
+    private String description;
     private double rating;
-    private String originalPrice;
-    private String discountPrice;
+    private double price;
+    private Double discountPrice;
 
-    public CategoryProductItem(String imagePath, String name, double rating, String originalPrice, String discountPrice) {
+    public CategoryProductItem(int itemId,
+                               String imagePath,
+                               String name,
+                               String description,
+                               double rating,
+                               double price,
+                               Double discountPrice) {
+        this.itemId = itemId;
         this.imagePath = imagePath;
         this.name = name;
+        this.description = description;
         this.rating = rating;
-        this.originalPrice = originalPrice;
+        this.price = price;
         this.discountPrice = discountPrice;
+    }
+
+    public int getItemId() {
+        return itemId;
     }
 
     public String getImagePath() {
@@ -22,16 +37,22 @@ public class CategoryProductItem {
     public String getName() {
         return name;
     }
+    public String getDescription() { return description;}
 
     public double getRating() {
         return rating;
     }
 
-    public String getOriginalPrice() {
-        return originalPrice;
+    public double getPrice() {
+        return price;
     }
 
-    public String getDiscountPrice() {
+    public Double getDiscountPrice() {
         return discountPrice;
+    }
+
+    // Giá hiển thị (nếu có giảm thì dùng giảm, không thì dùng price)
+    public double getDisplayPrice() {
+        return discountPrice != null ? discountPrice : price;
     }
 }

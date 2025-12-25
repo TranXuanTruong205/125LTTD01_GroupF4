@@ -28,13 +28,12 @@ public class AuthInterceptor implements Interceptor {
         }
 
         String token = tokenManager.getToken();
+
         if (token == null || token.isEmpty()) {
             // Không có token -> gửi request như bình thường
             return chain.proceed(original);
         }
 
-        // Gắn header Authorization (dùng header() thay vì addHeader() để tránh
-        // duplicate)
         Request newRequest = original.newBuilder()
                 .header("Authorization", "Bearer " + token)
                 .build();

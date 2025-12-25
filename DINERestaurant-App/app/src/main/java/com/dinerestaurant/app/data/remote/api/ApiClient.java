@@ -9,13 +9,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ApiClient {
 
     private static Retrofit retrofit;
-    private static final String BASE_URL = "http://10.0.2.2:8080/";
-
     private static ReservationApi reservationApi;
 
+    private static final String BASE_URL = "http://10.0.2.2:8080/";
+
     public static void init(Context context) {
-        if (retrofit != null)
-            return;
+        if (retrofit != null) return;
 
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -35,7 +34,44 @@ public class ApiClient {
     public static AuthApi getAuthApi() {
         return retrofit.create(AuthApi.class);
     }
+    public static UserApi getUserApi() {
+        return retrofit.create(UserApi.class);
+    }
+    public static ApiService getApiService() {
+        checkInit();
+        return retrofit.create(ApiService.class);
+    }
+    private static void checkInit() {
+        if (retrofit == null) {
+            throw new IllegalStateException("ApiClient chưa init");
+        }
+    }
 
+    public static CartApi getCartApi() {
+        return retrofit.create(CartApi.class);
+    }
+
+    public static ApiNotification getNotificationApi() {
+        return retrofit.create(ApiNotification.class);
+    }
+    public static PromotionApi getPromotionApi() {
+        return retrofit.create(PromotionApi.class);
+    }
+
+    public static Retrofit getClient() {
+        if (retrofit == null) {
+            retrofit = new Retrofit.Builder()
+                    .baseUrl(BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+        }
+        return retrofit;
+
+    }
+    public static UserAddressApi getUserAddressApi() {
+        checkInit();
+        return retrofit.create(UserAddressApi.class);
+    }
     public static ReservationApi getReservationApi() {
         if (reservationApi == null) {
             reservationApi = retrofit.create(ReservationApi.class);

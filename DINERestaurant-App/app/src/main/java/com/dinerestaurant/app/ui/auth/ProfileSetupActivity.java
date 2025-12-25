@@ -1,60 +1,129 @@
 package com.dinerestaurant.app.ui.auth;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
-import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.*;
 
+import com.bumptech.glide.Glide;
 import com.dinerestaurant.app.R;
-import com.dinerestaurant.app.data.local.StaticData;
-import com.dinerestaurant.app.ui.MainActivity;
+import com.dinerestaurant.app.model.User;
+import com.dinerestaurant.app.data.remote.api.ApiClient;
+import com.dinerestaurant.app.data.remote.api.UserApi;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ProfileSetupActivity extends AppCompatActivity {
 
+    // ===== Views =====
     EditText edtPhone, edtEmail, edtFullName, edtLocation;
     TextView edtDob, edtGender;
     Button btnContinue;
+    ImageView btnBack, imgAvatar, btnEditAvatar;
+
+    // ===== Data =====
+    UserApi userApi;
+    Uri selectedAvatarUri;
+
+    // ===== Image Picker =====
+    private final ActivityResultLauncher<String> imagePickerLauncher =
+            registerForActivityResult(
+                    new ActivityResultContracts.GetContent(),
+                    uri -> {
+                        if (uri != null) {
+                            selectedAvatarUri = uri;
+
+                            Glide.with(this)
+                                    .load(uri)
+                                    .placeholder(R.drawable.ic_profile_placeholder)
+                                    .error(R.drawable.ic_profile_placeholder)
+                                    .into(imgAvatar);
+                        }
+                    }
+            );
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_setup);
 
-        // ánh xạ
+        // ===== Init API =====
+        userApi = ApiClient.getUserApi();
+
+        // ===== Bind Views =====
+        bindViews();
+
+        // ===== Load Profile =====
+        loadProfile();
+        String savedAvatar = getSharedPreferences("profile", MODE_PRIVATE)
+                .getString("avatar_uri", null);
+
+        if (savedAvatar != null) {
+            Glide.with(this)
+                    .load(Uri.parse(savedAvatar))
+                    .placeholder(R.drawable.ic_profile_placeholder)
+                    .into(imgAvatar);
+        }
+
+        // ===== Init UI =====
+        setupListeners();
+        disableContinueButton();
+    }
+
+    // ==========================
+    // BIND VIEWS
+    // ==========================
+    private void bindViews() {
         edtPhone = findViewById(R.id.edtPhone);
         edtEmail = findViewById(R.id.edtEmail);
         edtFullName = findViewById(R.id.edtFullName);
         edtLocation = findViewById(R.id.edtLocation);
-
         edtDob = findViewById(R.id.edtDob);
         edtGender = findViewById(R.id.edtGender);
         btnContinue = findViewById(R.id.btnContinue);
+        btnBack = findViewById(R.id.btnBack);
+        imgAvatar = findViewById(R.id.imgAvatar);
+        btnEditAvatar = findViewById(R.id.btnEditAvatar);
+    }
 
-        // Gán dữ liệu ban đầu (kiểm tra null để tránh lỗi crash)
-        if (StaticData.tempUser != null) {
-            edtPhone.setText(StaticData.tempUser.getPhone());
-            edtEmail.setText(StaticData.tempUser.getEmail());
-            edtFullName.setText(StaticData.tempUser.getFullName());
-        }
+    // ==========================
+    // LISTENERS
+    // ==========================
+    private void setupListeners() {
 
-        // Mặc định: nút xám (disabled)
-        btnContinue.setEnabled(false);
-        btnContinue.setAlpha(1f);
-        btnContinue.setBackgroundResource(R.drawable.bg_btn_signin);
+        btnBack.setOnClickListener(v -> finish());
 
-        // CLICK DOB → DatePicker
+        btnEditAvatar.setOnClickListener(v ->
+                imagePickerLauncher.launch("image/*")
+        );
+
         edtDob.setOnClickListener(v -> showDatePicker());
 
-        // CLICK Gender → Dialog chọn gender
         edtGender.setOnClickListener(v -> showGenderDialog());
 
-        // Listen thay đổi nhập liệu
+        btnContinue.setOnClickListener(v -> uploadAvatarThenUpdateProfile());
+
+
         TextWatcher watcher = new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -65,88 +134,208 @@ public class ProfileSetupActivity extends AppCompatActivity {
 
         edtFullName.addTextChangedListener(watcher);
         edtLocation.addTextChangedListener(watcher);
-        // Lưu ý: edtDob và edtGender không cần TextWatcher vì chúng được set text từ Dialog
-
-        // Nút Continue
-        btnContinue.setOnClickListener(v -> {
-            // Lưu thông tin vào currentUser
-            StaticData.currentUser.setPhone(edtPhone.getText().toString());
-            StaticData.currentUser.setEmail(edtEmail.getText().toString());
-            StaticData.currentUser.setFullName(edtFullName.getText().toString());
-            StaticData.currentUser.setDob(edtDob.getText().toString());
-            StaticData.currentUser.setGender(edtGender.getText().toString());
-            StaticData.currentUser.setLocation(edtLocation.getText().toString());
-
-            Toast.makeText(this, "Profile Completed!", Toast.LENGTH_SHORT).show();
-
-            Intent intent = new Intent(this, MainActivity.class);
-            // Xóa back stack để ngăn người dùng quay lại màn hình setup
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-
-            // Đóng Activity hiện tại
-            finish();
-        });
     }
 
     // ==========================
-    // CHỌN NGÀY SINH
+    // LOAD PROFILE
+    // ==========================
+    private void loadProfile() {
+        userApi.getProfile().enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    bindUser(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                Toast.makeText(ProfileSetupActivity.this,
+                        "Không kết nối được server",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void bindUser(User user) {
+
+        edtPhone.setText(user.getPhoneNumber());
+        edtEmail.setText(user.getEmail());
+        edtFullName.setText(user.getFullName());
+        edtLocation.setText(user.getAddress());
+        edtGender.setText(user.getGender());
+        edtDob.setText(user.getDateOfBirth());
+
+        if (user.getProfilePicture() != null) {
+            try {
+                if (user.getProfilePicture() != null) {
+                    Glide.with(this)
+                            .load(user.getProfilePicture())
+                            .placeholder(R.drawable.ic_profile_placeholder)
+                            .error(R.drawable.ic_profile_placeholder)
+                            .into(imgAvatar);
+                }
+
+            } catch (Exception ignored) {}
+        }
+
+        validateInputs();
+    }
+    private void uploadAvatarThenUpdateProfile() {
+
+        if (selectedAvatarUri == null) {
+            updateProfile();
+            return;
+        }
+
+        try {
+            File file = uriToFile(selectedAvatarUri);
+
+            RequestBody requestBody =
+                    RequestBody.create(file, MediaType.parse("image/*"));
+
+            MultipartBody.Part part =
+                    MultipartBody.Part.createFormData(
+                            "file",
+                            file.getName(),
+                            requestBody
+                    );
+
+            userApi.uploadAvatar(part).enqueue(new Callback<Map<String, String>>() {
+                @Override
+                public void onResponse(Call<Map<String, String>> call,
+                                       Response<Map<String, String>> response) {
+
+                    if (response.isSuccessful()) {
+                        // backend đã lưu avatarUrl vào DB
+                        updateProfile(); // chỉ update text
+                    } else {
+                        Toast.makeText(ProfileSetupActivity.this,
+                                "Upload avatar thất bại",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Map<String, String>> call, Throwable t) {
+                    Toast.makeText(ProfileSetupActivity.this,
+                            "Không upload được avatar",
+                            Toast.LENGTH_SHORT).show();
+                }
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private File uriToFile(Uri uri) throws IOException {
+
+        InputStream inputStream = getContentResolver().openInputStream(uri);
+        File tempFile = new File(getCacheDir(), "avatar_upload.jpg");
+
+        FileOutputStream outputStream = new FileOutputStream(tempFile);
+
+        byte[] buffer = new byte[1024];
+        int len;
+        while ((len = inputStream.read(buffer)) > 0) {
+            outputStream.write(buffer, 0, len);
+        }
+
+        outputStream.close();
+        inputStream.close();
+
+        return tempFile;
+    }
+
+    // ==========================
+    // UPDATE PROFILE
+    // ==========================
+    private void updateProfile() {
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("fullName", edtFullName.getText().toString().trim());
+        body.put("gender", edtGender.getText().toString().trim());
+        body.put("address", edtLocation.getText().toString().trim());
+        body.put("dateOfBirth", edtDob.getText().toString().trim());
+
+        userApi.updateProfile(body).enqueue(new Callback<Map<String, String>>() {
+            @Override
+            public void onResponse(Call<Map<String, String>> call,
+                                   Response<Map<String, String>> response) {
+
+                if (response.isSuccessful()) {
+                    Toast.makeText(ProfileSetupActivity.this,
+                            "Cập nhật thành công",
+                            Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Map<String, String>> call, Throwable t) {
+                Toast.makeText(ProfileSetupActivity.this,
+                        "Cập nhật thất bại",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
+    // ==========================
+    // DATE PICKER
     // ==========================
     private void showDatePicker() {
         Calendar cal = Calendar.getInstance();
-        int y = cal.get(Calendar.YEAR);
-        int m = cal.get(Calendar.MONTH);
-        int d = cal.get(Calendar.DAY_OF_MONTH);
 
-        DatePickerDialog dialog = new DatePickerDialog(
+        new DatePickerDialog(
                 this,
                 (view, year, month, dayOfMonth) -> {
-                    edtDob.setText(dayOfMonth + "/" + (month + 1) + "/" + year);
-                    validateInputs(); // Kiểm tra ngay sau khi chọn
+                    String date = String.format(
+                            "%04d-%02d-%02d",
+                            year, month + 1, dayOfMonth
+                    );
+                    edtDob.setText(date);
+                    validateInputs();
                 },
-                y, m, d
-        );
-        dialog.show();
+                cal.get(Calendar.YEAR),
+                cal.get(Calendar.MONTH),
+                cal.get(Calendar.DAY_OF_MONTH)
+        ).show();
     }
 
     // ==========================
-    // CHỌN GIỚI TÍNH
+    // GENDER DIALOG
     // ==========================
     private void showGenderDialog() {
-        String[] genders = {"Male", "Female", "Other"};
+        String[] genders = {"Nam", "Nữ", "Khác"};
 
-        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
-        builder.setTitle("Select Gender");
-        builder.setItems(genders, (dialog, which) -> {
-            edtGender.setText(genders[which]);
-            validateInputs(); // Kiểm tra ngay sau khi chọn
-        });
-        builder.show();
+        new android.app.AlertDialog.Builder(this)
+                .setTitle("Chọn giới tính")
+                .setItems(genders, (dialog, which) -> {
+                    edtGender.setText(genders[which]);
+                    validateInputs();
+                })
+                .show();
     }
 
     // ==========================
-    // ENABLE / DISABLE BUTTON
+    // VALIDATION
     // ==========================
     private void validateInputs() {
-
-        String fullName = edtFullName.getText().toString().trim();
-        String dob = edtDob.getText().toString().trim();
-        String gender = edtGender.getText().toString().trim();
-
-        // tất cả phải có dữ liệu
         boolean isValid =
-                !fullName.isEmpty() &&
-                        !dob.isEmpty() &&
-                        !gender.isEmpty();
+                !edtFullName.getText().toString().trim().isEmpty() &&
+                        !edtDob.getText().toString().trim().isEmpty() &&
+                        !edtGender.getText().toString().trim().isEmpty();
 
-        if (isValid) {
-            btnContinue.setEnabled(true);
-            btnContinue.setAlpha(1f);
-            btnContinue.setBackgroundResource(R.drawable.gb_btn_enable);
-        } else {
-            btnContinue.setEnabled(false);
-            btnContinue.setAlpha(1f);
-            btnContinue.setBackgroundResource(R.drawable.bg_btn_signin);
-        }
+        btnContinue.setEnabled(isValid);
+        btnContinue.setBackgroundResource(
+                isValid ? R.drawable.gb_btn_enable : R.drawable.bg_btn_signin
+        );
+    }
+
+    private void disableContinueButton() {
+        btnContinue.setEnabled(false);
+        btnContinue.setBackgroundResource(R.drawable.bg_btn_signin);
     }
 }

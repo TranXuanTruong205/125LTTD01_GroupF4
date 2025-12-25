@@ -6,12 +6,14 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.dinerestaurant.app.R;
 import com.dinerestaurant.app.data.local.StaticData;
+import com.dinerestaurant.app.data.local.TokenManager;
 import com.dinerestaurant.app.data.remote.api.ApiClient;
 import com.dinerestaurant.app.data.repository.AuthRepository;
 import com.dinerestaurant.app.model.LoginRequest;
@@ -22,18 +24,37 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import com.dinerestaurant.app.ui.MainActivity;
+import com.google.android.gms.auth.api.signin.*;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
+
+
 public class LoginActivity extends AppCompatActivity {
 
     EditText edtPhone;
     Button btnSignIn;
+    ImageView btnGoogleLogin;
+    GoogleSignInClient googleSignInClient;
+    private static final int RC_GOOGLE = 1001;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ApiClient.init(getApplicationContext());
+
 
         setContentView(R.layout.activity_login);
+
+        btnGoogleLogin = findViewById(R.id.btnGoogleLogin);
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(
+                GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.google_client_id))
+                .requestEmail()
+                .build();
+
+        googleSignInClient = GoogleSignIn.getClient(this, gso);
 
         edtPhone = findViewById(R.id.edtPhone);
         btnSignIn = findViewById(R.id.btnSignIn);
@@ -115,10 +136,86 @@ public class LoginActivity extends AppCompatActivity {
         findViewById(R.id.tvRegister2).setOnClickListener(v ->
                 startActivity(new Intent(this, SignUpActivity.class))
         );
+        btnGoogleLogin.setOnClickListener(v -> {
+            Intent signInIntent = googleSignInClient.getSignInIntent();
+            startActivityForResult(signInIntent, RC_GOOGLE);
+        });
+
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_GOOGLE) {
+            Task<GoogleSignInAccount> task =
+                    GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                String idToken = account.getIdToken();
+
+                loginGoogleToBackend(idToken);
+
+            } catch (ApiException e) {
+                Toast.makeText(this, "Google login failed", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     private void showError(String message) {
         Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
+    }
+    private void loginGoogleToBackend(String idToken) {
+
+        Map<String, String> body = Map.of("idToken", idToken);
+
+        new AuthRepository().loginGoogle(body)
+                .enqueue(new Callback<Map<String, Object>>() {
+                    @Override
+                    public void onResponse(Call<Map<String, Object>> call,
+                                           Response<Map<String, Object>> response) {
+
+                        if (!response.isSuccessful() || response.body() == null) {
+                            showError("Login failed");
+                            return;
+                        }
+
+                        Map<String, Object> res = response.body();
+
+                        if (res.containsKey("token") && res.get("token") != null) {
+
+                            String token = String.valueOf(res.get("token"));
+
+                            // Lưu token
+                            new TokenManager(LoginActivity.this).saveToken(token);
+
+                            // Chuyển sang Main
+                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+                            finish();
+                            return;
+                        }
+
+                        // CASE 2: chưa có SĐT
+                        else if (Boolean.TRUE.equals(res.get("requirePhoneNumber"))) {
+
+                            Intent i = new Intent(LoginActivity.this, SignUpActivity.class);
+
+                            i.putExtra("fromGoogle", true);
+                            i.putExtra("email", res.get("email").toString());
+                            i.putExtra("fullName", res.get("fullName").toString());
+                            i.putExtra("picture", res.get("profilePicture").toString());
+
+                            startActivity(i);
+                        }
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<Map<String, Object>> call, Throwable t) {
+                        showError("Network error");
+                    }
+                });
     }
 
 }

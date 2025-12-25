@@ -21,5 +21,7 @@ public interface AuthApi {
     Call<Map<String, Object>> loginRequestOtp(@Body LoginRequest request);
     @POST("api/auth/login/verify")
     Call<Map<String, Object>> verifyLoginOtp(@Body LoginVerifyRequest request);
+    @POST("api/auth/login/google")
+    Call<Map<String, Object>> loginGoogle(@Body Map<String, String> body);
 
 }

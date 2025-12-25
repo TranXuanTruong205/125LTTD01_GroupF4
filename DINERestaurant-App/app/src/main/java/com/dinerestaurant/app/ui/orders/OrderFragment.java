@@ -74,7 +74,7 @@ public class OrderFragment extends Fragment implements OrderAdapter.OnOrderClick
         // Setup filter buttons
         setupFilterButtons(view);
 
-        btnBack = view.findViewById(R.id.imageButton3);
+        btnBack = view.findViewById(R.id.btnBack);
         setupBackButton();
 
         // Setup SwipeRefresh

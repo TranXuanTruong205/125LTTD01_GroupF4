@@ -1,19 +1,24 @@
 package com.dinerestaurant.app.model;
 
 public class CategoryItem {
-    private String imagePath; // Đường dẫn ảnh trong assets
+    private int id;
     private String name;
+    private String imagePath;
 
-    public CategoryItem(String imagePath, String name) {
-        this.imagePath = imagePath;
+    // Dùng cho dữ liệu từ BE
+    public CategoryItem(int id, String name, String imagePath) {
+        this.id = id;
         this.name = name;
+        this.imagePath = imagePath;
     }
 
-    public String getImagePath() {
-        return imagePath;
+    // Dùng cho dữ liệu tĩnh cũ (CategoryFragment, HomeFragment cũ)
+    // imagePath, name -> id mặc định -1
+    public CategoryItem(String imagePath, String name) {
+        this(-1, name, imagePath);
     }
 
-    public String getName() {
-        return name;
-    }
+    public int getId() { return id; }
+    public String getName() { return name; }
+    public String getImagePath() { return imagePath; }
 }

@@ -39,15 +39,22 @@ public class CategoryProductAdapter extends RecyclerView.Adapter<CategoryProduct
                 .inflate(R.layout.item_category_product, parent, false);
         return new ViewHolder(view);
     }
-
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         CategoryProductItem item = items.get(position);
+
         holder.tvProductName.setText(item.getName());
         holder.tvRating.setText(String.valueOf(item.getRating()));
-        holder.tvOriginalPrice.setText(item.getOriginalPrice() + "đ");
-        holder.tvDiscountPrice.setText(item.getDiscountPrice() + "đ");
-        
+
+        holder.tvOriginalPrice.setText(item.getPrice() + "đ");
+
+        if (item.getDiscountPrice() != null) {
+            holder.tvDiscountPrice.setText(item.getDiscountPrice() + "đ");
+        } else {
+            holder.tvDiscountPrice.setText(""); // hoặc ẩn TextView nếu muốn
+        }
+
+
         // Load ảnh từ assets
         try {
             InputStream is = assetManager.open(item.getImagePath());
@@ -61,17 +68,21 @@ public class CategoryProductAdapter extends RecyclerView.Adapter<CategoryProduct
 
         // Xử lý click
         holder.itemView.setOnClickListener(v -> {
-            if(listener != null){
+            if (listener != null) {
                 listener.onItemClick(item);
             }
         });
     }
 
+    /** Định dạng giá đơn giản */
+    private String formatPrice(double value) {
+        // Nếu muốn đơn giản: 50000.0 -> "50000đ"
+        return ((int) value) + "đ";
+    }
     @Override
     public int getItemCount() {
         return items.size();
     }
-
     static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView ivProductImage, ivFavorite;
         TextView tvProductName, tvRating, tvOriginalPrice, tvDiscountPrice;
