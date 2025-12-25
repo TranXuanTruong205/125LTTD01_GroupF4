@@ -40,5 +40,7 @@ public class OrderDetail {
     @JoinColumn(name = "order_id", insertable = false, updatable = false)
     @JsonIgnore  // Thêm dòng này
     private Order order;
-
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "item_id", insertable = false, updatable = false)
+    private com.dine.DINERestaurant_Backend.menu.entity.MenuItem menuItem;
 }

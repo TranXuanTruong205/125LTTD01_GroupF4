@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -15,83 +14,171 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.dinerestaurant.app.R;
+import com.dinerestaurant.app.data.remote.api.ApiClient;
+import com.dinerestaurant.app.data.remote.api.PromotionApi;
+import com.dinerestaurant.app.data.remote.dto.PromotionResponse;
 import com.google.android.material.button.MaterialButton;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class PromotionsFragement extends Fragment {
 
+    // ================== UI ==================
     private ImageButton btnBack;
     private EditText edtPromoCode;
     private Button btnApplyCode;
-    private CheckBox cbFreeShipping, cbShipping20, cbOrder20, cbOrder10;
     private LinearLayout btnGetMore;
     private MaterialButton btnApply;
 
+    // ================== RecyclerView ==================
+    private RecyclerView rvPromotions;
+    private PromotionAdapter promotionAdapter;
+
+    ;
+
     public PromotionsFragement() {
-        // constructor rỗng là bắt buộc cho Fragment
+        // constructor rỗng
     }
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
 
-        // inflate layout fragment_promotions
-        View view = inflater.inflate(R.layout.fragment_promotions, container, false);
+        View view = inflater.inflate(
+                R.layout.fragment_promotions,
+                container,
+                false
+        );
 
-        // Initialize views (dùng view.findViewById)
-        btnBack        = view.findViewById(R.id.btn_back);
-        edtPromoCode   = view.findViewById(R.id.edt_promo_code);
-        btnApplyCode   = view.findViewById(R.id.btn_apply_code);
-        cbFreeShipping = view.findViewById(R.id.cb_free_shipping);
-        cbShipping20   = view.findViewById(R.id.cb_shipping_20);
-        cbOrder20      = view.findViewById(R.id.cb_order_20);
-        cbOrder10      = view.findViewById(R.id.cb_order_10);
-        btnGetMore     = view.findViewById(R.id.btn_get_more);
-        btnApply       = view.findViewById(R.id.btn_apply);
+        // ================== FIND VIEW ==================
+        btnBack      = view.findViewById(R.id.btn_back);
+        edtPromoCode = view.findViewById(R.id.edt_promo_code);
+        btnApplyCode = view.findViewById(R.id.btn_apply_code);
+        btnGetMore   = view.findViewById(R.id.btn_get_more);
+        btnApply     = view.findViewById(R.id.btn_apply);
 
-        // Back button: quay lại bằng NavController
+        rvPromotions = view.findViewById(R.id.rv_promotions);
+        rvPromotions.setLayoutManager(
+                new LinearLayoutManager(requireContext())
+        );
+
+        // ================== ACTION ==================
         btnBack.setOnClickListener(v ->
                 Navigation.findNavController(v).navigateUp()
         );
 
-        // Apply promo code
         btnApplyCode.setOnClickListener(v -> {
             String code = edtPromoCode.getText().toString().trim();
-            if (!code.isEmpty()) {
-                Toast.makeText(requireContext(),
-                        "Applying code: " + code,
-                        Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(requireContext(),
+            if (code.isEmpty()) {
+                Toast.makeText(
+                        requireContext(),
                         "Please enter promo code",
-                        Toast.LENGTH_SHORT).show();
+                        Toast.LENGTH_SHORT
+                ).show();
+            } else {
+                Toast.makeText(
+                        requireContext(),
+                        "Apply later when cart available",
+                        Toast.LENGTH_SHORT
+                ).show();
             }
         });
 
-        // Get more promotions
         btnGetMore.setOnClickListener(v ->
-                Toast.makeText(requireContext(),
-                        "Loading more promotions...",
-                        Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                        requireContext(),
+                        "Load more promotions later",
+                        Toast.LENGTH_SHORT
+                ).show()
         );
 
-        // Apply button
         btnApply.setOnClickListener(v -> {
-            StringBuilder selected = new StringBuilder("Selected: ");
 
-            if (cbFreeShipping.isChecked()) selected.append("FREE SHIPPING, ");
-            if (cbShipping20.isChecked())   selected.append("20% OFF Shipping, ");
-            if (cbOrder20.isChecked())      selected.append("20% OFF Order, ");
-            if (cbOrder10.isChecked())      selected.append("10% OFF Order");
+            if (promotionAdapter == null) {
+                Toast.makeText(
+                        requireContext(),
+                        "No promotion available",
+                        Toast.LENGTH_SHORT
+                ).show();
+                return;
+            }
 
-            Toast.makeText(requireContext(),
-                    selected.toString(),
-                    Toast.LENGTH_LONG).show();
+            PromotionResponse selected =
+                    promotionAdapter.getSelectedPromotion();
+
+            if (selected == null) {
+                Toast.makeText(
+                        requireContext(),
+                        "Please select a promotion",
+                        Toast.LENGTH_SHORT
+                ).show();
+                return;
+            }
+
+            // Trả promotion về CartFragment
+            Bundle result = new Bundle();
+            result.putLong("promotionId", selected.getId());
+            result.putString("promotionName", selected.getTitle());
+
+            getParentFragmentManager()
+                    .setFragmentResult("promotion_result", result);
+
+            // Quay lại Cart
+            Navigation.findNavController(requireView()).navigateUp();
         });
 
+
+        // ================== CALL API ==================
+        loadPromotions();
+
         return view;
+    }
+
+    // ================== CALL API GET PROMOTIONS ==================
+    private void loadPromotions() {
+
+        PromotionApi api =
+                ApiClient.getClient().create(PromotionApi.class);
+
+        api.getPromotions().enqueue(
+                new Callback<List<PromotionResponse>>() {
+
+                    @Override
+                    public void onResponse(
+                            Call<List<PromotionResponse>> call,
+                            Response<List<PromotionResponse>> response) {
+
+                        if (!response.isSuccessful()
+                                || response.body() == null) return;
+
+                        promotionAdapter =
+                                new PromotionAdapter(response.body());
+
+                        rvPromotions.setAdapter(promotionAdapter);
+                    }
+
+                    @Override
+                    public void onFailure(
+                            Call<List<PromotionResponse>> call,
+                            Throwable t) {
+
+                        Toast.makeText(
+                                requireContext(),
+                                "Load promotions failed",
+                                Toast.LENGTH_SHORT
+                        ).show();
+                    }
+                });
     }
 }

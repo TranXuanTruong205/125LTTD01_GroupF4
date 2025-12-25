@@ -19,6 +19,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment; // Đổi từ AppCompatActivity sang Fragment
 
 import com.dinerestaurant.app.R;
+import com.dinerestaurant.app.data.remote.api.ApiClient;
+import com.dinerestaurant.app.data.remote.api.ChatApi;
+import com.dinerestaurant.app.data.remote.dto.ChatMessageDto;
+import com.dinerestaurant.app.data.remote.dto.SendMessageRequest;
 import com.dinerestaurant.app.model.ChatMessage;
 
 import java.text.SimpleDateFormat;
@@ -26,6 +30,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 // Lớp này đã được đổi thành kế thừa từ Fragment
 public class MessageFragment extends Fragment {
@@ -36,16 +44,18 @@ public class MessageFragment extends Fragment {
     private ImageView btnSend, btnBack, btnAdd;
 
     private List<ChatMessage> messageList;
+    private ChatApi chatApi;
+    private int conversationId = -1;
 
     // Sử dụng onCreateView để khởi tạo Fragment
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        chatApi = ApiClient.getChatApi();
 
         // 1. Inflate layout
         View view = inflater.inflate(R.layout.fragment_message, container, false);
-
         // 2. Init views (Sử dụng view.findViewById)
         chatContainer = view.findViewById(R.id.chatContainer);
         scrollView = view.findViewById(R.id.scrollView);
@@ -60,8 +70,6 @@ public class MessageFragment extends Fragment {
         // Xóa tin nhắn mẫu trong XML
         chatContainer.removeAllViews();
 
-        // 4. Load tin nhắn mẫu
-        loadSampleMessages();
 
         // 5. Back button
         btnBack.setOnClickListener(v -> {
@@ -81,48 +89,95 @@ public class MessageFragment extends Fragment {
 
         // 8. Focus vào EditText để mở bàn phím
         edtMessage.requestFocus();
+        initConversation();
 
         return view;
     }
 
-    // Tất cả các phương thức hỗ trợ phải được cập nhật để sử dụng Context/Resources đúng cách
 
-    private void loadSampleMessages() {
-        // Tin nhắn từ admin
-        addMessageToUI(new ChatMessage("Hello!", "10:10", false, true));
+    private void initConversation() {
+        chatApi.getConversation().enqueue(new Callback<Integer>() {
+            @Override
+            public void onResponse(Call<Integer> call, Response<Integer> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    conversationId = response.body();
+                    loadMessages();
+                }
+            }
 
-        // Tin nhắn của mình
-        addMessageToUI(new ChatMessage("Hi!", "10:11", true, true));
-        addMessageToUI(new ChatMessage("Great! 😊", "10:12", true, true));
+            @Override
+            public void onFailure(Call<Integer> call, Throwable t) {
+                Toast.makeText(getContext(), "Không tạo được chat", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    private void loadMessages() {
+        chatApi.getMessages(conversationId).enqueue(new Callback<List<ChatMessageDto>>() {
+            @Override
+            public void onResponse(Call<List<ChatMessageDto>> call,
+                                   Response<List<ChatMessageDto>> response) {
+
+                if (!response.isSuccessful() || response.body() == null) return;
+
+                chatContainer.removeAllViews();
+
+                for (ChatMessageDto dto : response.body()) {
+                    boolean isMe = "customer".equalsIgnoreCase(dto.getSenderRole());
+
+                    ChatMessage msg = new ChatMessage(
+                            dto.getContent(),
+                            formatTime(dto.getCreatedAt()),
+                            isMe,
+                            true
+                    );
+                    addMessageToUI(msg);
+                }
+
+                scrollView.post(() -> scrollView.fullScroll(View.FOCUS_DOWN));
+            }
+
+            @Override
+            public void onFailure(Call<List<ChatMessageDto>> call, Throwable t) {
+                Toast.makeText(getContext(), "Không tải được tin nhắn", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    private String formatTime(String createdAt) {
+        try {
+            SimpleDateFormat inputFormat =
+                    new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SS", Locale.getDefault());
+
+            Date date = inputFormat.parse(createdAt);
+
+            SimpleDateFormat outputFormat =
+                    new SimpleDateFormat("HH:mm", Locale.getDefault());
+
+            return outputFormat.format(date);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 
     private void sendMessage() {
-        if (getContext() == null) return;
+        String text = edtMessage.getText().toString().trim();
+        if (text.isEmpty() || conversationId == -1) return;
 
-        String messageText = edtMessage.getText().toString().trim();
+        SendMessageRequest request =
+                new SendMessageRequest(conversationId, text);
 
-        if (messageText.isEmpty()) {
-            Toast.makeText(getContext(), "Please enter a message", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        chatApi.sendMessage(request).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                edtMessage.setText("");
+                loadMessages(); // reload
+            }
 
-        // Lấy thời gian hiện tại
-        String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
-
-        // Tạo tin nhắn mới
-        ChatMessage newMessage = new ChatMessage(messageText, currentTime, true, false);
-        messageList.add(newMessage);
-
-        // Thêm tin nhắn vào UI
-        addMessageToUI(newMessage);
-
-        // Xóa nội dung EditText
-        edtMessage.setText("");
-
-        // Cuộn xuống cuối
-        scrollView.post(() -> scrollView.fullScroll(View.FOCUS_DOWN));
-
-        // TODO: Gửi tin nhắn lên server ở đây
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(getContext(), "Gửi tin thất bại", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @SuppressLint("ResourceType")

@@ -24,7 +24,7 @@
             android:orientation="horizontal">
 
             <ImageButton
-                android:id="@+id/imageButton3"
+                android:id="@+id/btnBack"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:background="@drawable/bg_circle_white"
@@ -36,9 +36,9 @@
                 android:layout_height="match_parent"
                 android:layout_width="0dp"
                 android:layout_weight="1"
-                android:text="Orders"
+                android:text="Đơn hàng"
                 android:textAlignment="center"
-                android:textSize="60px"
+                android:textSize="20sp"
                 android:gravity="center"
                 android:textStyle="bold" />
             <TextView
@@ -73,7 +73,7 @@
                 android:background="#F4F3F3"
                 android:ems="10"
                 android:inputType="text"
-                android:text="Search"
+                android:hint="Tìm kiếm đơn hàng..."
                 android:textColor="#544F4F" />
 
             <ImageButton
@@ -100,9 +100,9 @@
                 android:layout_marginRight="15px"
                 android:layout_weight="1"
                 android:background="@drawable/order_nav_color"
-                android:text="All"
+                android:text="Tất cả"
                 android:textColor="#383737"
-                android:textSize="13dp"
+                android:textSize="12dp"
                        app:backgroundTint="@null" />
 
             <Button
@@ -112,9 +112,9 @@
                 android:layout_marginRight="15px"
                 android:layout_weight="1"
                 android:background="@drawable/rounded_bg"
-                android:text="Active"
+                android:text="Đang xử lý"
                 android:textColor="#383737"
-                android:textSize="12dp"
+                android:textSize="11dp"
                 app:backgroundTint="@null" />
 
             <Button
@@ -124,9 +124,9 @@
                 android:layout_marginRight="15px"
                 android:layout_weight="1"
                 android:background="@drawable/rounded_bg"
-                android:text="Completed"
+                android:text="Hoàn thành"
                 android:textColor="#383737"
-                android:textSize="12dp"
+                android:textSize="11dp"
                 app:backgroundTint="@null" />
 
             <Button
@@ -135,19 +135,50 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/rounded_bg"
-                android:text="Cancelled"
+                android:text="Đã hủy"
                 android:textColor="#383737"
-                android:textSize="12dp"
+                android:textSize="11dp"
                 app:backgroundTint="@null" />
         </LinearLayout>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view_orders"
+        <!-- Empty state -->
+        <TextView
+            android:id="@+id/tv_empty"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginRight="20dp" />
+            android:layout_marginTop="60dp"
+            android:gravity="center"
+            android:text="Chưa có đơn hàng nào"
+            android:textSize="16sp"
+            android:textColor="#999999"
+            android:visibility="gone" />
+
+        <!-- SwipeRefreshLayout -->
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_refresh"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view_orders"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="20dp"
+                android:clipToPadding="false"
+                android:paddingBottom="100dp" />
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <!-- ProgressBar -->
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone" />
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

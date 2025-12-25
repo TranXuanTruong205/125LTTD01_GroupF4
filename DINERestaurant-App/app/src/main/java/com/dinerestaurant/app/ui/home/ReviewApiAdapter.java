@@ -1,30 +1,25 @@
 package com.dinerestaurant.app.ui.home;
 
-import android.content.res.AssetManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import com.dinerestaurant.app.R;
-import com.dinerestaurant.app.model.ReviewItem;
 
-import java.io.IOException;
-import java.io.InputStream;
+import com.dinerestaurant.app.R;
+import com.dinerestaurant.app.data.remote.dto.ReviewResponse;
+
 import java.util.List;
 
-public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder> {
+public class ReviewApiAdapter extends RecyclerView.Adapter<ReviewApiAdapter.ViewHolder> {
 
-    private List<ReviewItem> items;
-    private AssetManager assetManager;
+    private final List<ReviewResponse> reviews;
 
-    public ReviewAdapter(List<ReviewItem> items, AssetManager assetManager) {
-        this.items = items;
-        this.assetManager = assetManager;
+    public ReviewApiAdapter(List<ReviewResponse> reviews) {
+        this.reviews = reviews;
     }
 
     @NonNull
@@ -37,36 +32,30 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        ReviewItem item = items.get(position);
-        holder.tvReviewerName.setText(item.getReviewerName());
-        holder.tvReviewDate.setText(item.getReviewDate());
-        holder.tvReviewText.setText(item.getReviewText());
-        
-        // Set rating stars
-        ImageView[] stars = {holder.ivStar1, holder.ivStar2, holder.ivStar3, holder.ivStar4, holder.ivStar5};
-        for (int i = 0; i < stars.length; i++) {
-            if (i < item.getRating()) {
-                stars[i].setColorFilter(0xFFFFC107); // Yellow
-            } else {
-                stars[i].setColorFilter(0xFFCCCCCC); // Gray
-            }
-        }
-        
-        // Load avatar từ assets
-        try {
-            InputStream is = assetManager.open(item.getAvatarPath());
-            Bitmap bitmap = BitmapFactory.decodeStream(is);
-            holder.ivAvatar.setImageBitmap(bitmap);
-            is.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            holder.ivAvatar.setImageResource(android.R.drawable.ic_menu_gallery);
+        ReviewResponse r = reviews.get(position);
+
+        // ❗ API KHÔNG CÓ userName → hiển thị tạm
+        holder.tvReviewerName.setText(r.getUserName());
+
+        holder.tvReviewDate.setText(r.createdAt);
+        holder.tvReviewText.setText(r.comment);
+
+        // Rating stars
+        ImageView[] stars = {
+                holder.ivStar1, holder.ivStar2,
+                holder.ivStar3, holder.ivStar4, holder.ivStar5
+        };
+
+        for (int i = 1; i < stars.length; i++) {
+            stars[i].setColorFilter(
+                    i < r.rating ? 0xFFFFC107 : 0xFFCCCCCC
+            );
         }
     }
 
     @Override
     public int getItemCount() {
-        return items.size();
+        return reviews.size();
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {

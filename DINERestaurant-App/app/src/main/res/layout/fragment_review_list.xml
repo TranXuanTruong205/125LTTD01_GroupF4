@@ -9,10 +9,8 @@
     <!-- Header -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="47dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginRight="20dp"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
         android:orientation="horizontal">
 
         <ImageView
@@ -20,7 +18,6 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:padding="10dp"
-            android:layout_gravity="center"
             android:src="@drawable/ic_arrow_back"
             android:background="@drawable/bg_circle_white"/>
 
@@ -31,7 +28,6 @@
             android:text="Reviews"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="#333333"
             android:gravity="center"/>
 
         <View
@@ -39,9 +35,10 @@
             android:layout_height="40dp"/>
     </LinearLayout>
 
+    <!-- Scroll content -->
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:fillViewport="true">
 
         <LinearLayout
@@ -50,286 +47,35 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Product Name -->
+            <!-- Rating summary -->
             <TextView
-                android:id="@+id/tvProductName"
+                android:id="@+id/tvAverageRating"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Chicken Burger"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="#333333"
-                android:layout_gravity="center"
-                android:layout_marginBottom="16dp"/>
+                android:text="0.0"
+                android:textSize="32sp"
+                android:textStyle="bold"/>
 
-            <!-- Rating Summary Card -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/tvTotalReviews"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="2dp">
+                android:text="(0)"/>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="16dp">
-
-                    <!-- Left: Rating Score -->
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:layout_marginEnd="24dp">
-
-                        <TextView
-                            android:id="@+id/tvAverageRating"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="4.9"
-                            android:textSize="48sp"
-                            android:textStyle="bold"
-                            android:textColor="#333333"/>
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:layout_marginTop="8dp">
-
-                            <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:src="@android:drawable/btn_star_big_on"
-                                app:tint="#FFC107"/>
-
-                            <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:src="@android:drawable/btn_star_big_on"
-                                app:tint="#FFC107"/>
-
-                            <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:src="@android:drawable/btn_star_big_on"
-                                app:tint="#FFC107"/>
-
-                            <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:src="@android:drawable/btn_star_big_on"
-                                app:tint="#FFC107"/>
-
-                            <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:src="@android:drawable/btn_star_big_on"
-                                app:tint="#CCCCCC"/>
-                        </LinearLayout>
-
-                        <TextView
-                            android:id="@+id/tvTotalReviews"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="(1,205)"
-                            android:textSize="14sp"
-                            android:textColor="#999999"
-                            android:layout_marginTop="4dp"/>
-                    </LinearLayout>
-
-                    <!-- Right: Rating Bars -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <!-- 5 stars -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginBottom="4dp">
-
-                            <TextView
-                                android:layout_width="12dp"
-                                android:layout_height="wrap_content"
-                                android:text="5"
-                                android:textSize="12sp"
-                                android:textColor="#666666"/>
-
-                            <ProgressBar
-                                android:layout_width="0dp"
-                                android:layout_height="8dp"
-                                android:layout_weight="1"
-                                android:layout_marginStart="8dp"
-                                style="?android:attr/progressBarStyleHorizontal"
-                                android:progress="90"
-                                android:progressTint="#FF6B35"
-                                android:progressBackgroundTint="#EEEEEE"/>
-                        </LinearLayout>
-
-                        <!-- 4 stars -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginBottom="4dp">
-
-                            <TextView
-                                android:layout_width="12dp"
-                                android:layout_height="wrap_content"
-                                android:text="4"
-                                android:textSize="12sp"
-                                android:textColor="#666666"/>
-
-                            <ProgressBar
-                                android:layout_width="0dp"
-                                android:layout_height="8dp"
-                                android:layout_weight="1"
-                                android:layout_marginStart="8dp"
-                                style="?android:attr/progressBarStyleHorizontal"
-                                android:progress="5"
-                                android:progressTint="#FF6B35"
-                                android:progressBackgroundTint="#EEEEEE"/>
-                        </LinearLayout>
-
-                        <!-- 3 stars -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginBottom="4dp">
-
-                            <TextView
-                                android:layout_width="12dp"
-                                android:layout_height="wrap_content"
-                                android:text="3"
-                                android:textSize="12sp"
-                                android:textColor="#666666"/>
-
-                            <ProgressBar
-                                android:layout_width="0dp"
-                                android:layout_height="8dp"
-                                android:layout_weight="1"
-                                android:layout_marginStart="8dp"
-                                style="?android:attr/progressBarStyleHorizontal"
-                                android:progress="3"
-                                android:progressTint="#FF6B35"
-                                android:progressBackgroundTint="#EEEEEE"/>
-                        </LinearLayout>
-
-                        <!-- 2 stars -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginBottom="4dp">
-
-                            <TextView
-                                android:layout_width="12dp"
-                                android:layout_height="wrap_content"
-                                android:text="2"
-                                android:textSize="12sp"
-                                android:textColor="#666666"/>
-
-                            <ProgressBar
-                                android:layout_width="0dp"
-                                android:layout_height="8dp"
-                                android:layout_weight="1"
-                                android:layout_marginStart="8dp"
-                                style="?android:attr/progressBarStyleHorizontal"
-                                android:progress="1"
-                                android:progressTint="#FF6B35"
-                                android:progressBackgroundTint="#EEEEEE"/>
-                        </LinearLayout>
-
-                        <!-- 1 star -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical">
-
-                            <TextView
-                                android:layout_width="12dp"
-                                android:layout_height="wrap_content"
-                                android:text="1"
-                                android:textSize="12sp"
-                                android:textColor="#666666"/>
-
-                            <ProgressBar
-                                android:layout_width="0dp"
-                                android:layout_height="8dp"
-                                android:layout_weight="1"
-                                android:layout_marginStart="8dp"
-                                style="?android:attr/progressBarStyleHorizontal"
-                                android:progress="1"
-                                android:progressTint="#FF6B35"
-                                android:progressBackgroundTint="#EEEEEE"/>
-                        </LinearLayout>
-                    </LinearLayout>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- Filter Chips -->
+            <!-- FILTER (nếu muốn giữ) -->
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/chipGroupFilter"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:singleSelection="false">
+                android:layout_height="wrap_content"/>
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipAll"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="All"
-                    android:checked="true"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"/>
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipPositive"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Positive"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"/>
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipNegative"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Negative"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"/>
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip5Star"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="5 ⭐"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"/>
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip4Star"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="4 ⭐"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"/>
-            </com.google.android.material.chip.ChipGroup>
-
-            <!-- Reviews RecyclerView -->
+            <!-- ⭐ RECYCLERVIEW DUY NHẤT -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvReviews"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"/>
 
         </LinearLayout>
     </ScrollView>
+
 </LinearLayout>

@@ -1,6 +1,6 @@
 package com.dinerestaurant.app.model;
-
-public class CategoryProductItem {
+import java.io.Serializable;
+public class CategoryProductItem implements  Serializable {
 
     private int itemId;
     private String imagePath;

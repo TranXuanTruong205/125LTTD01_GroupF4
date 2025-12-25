@@ -1,373 +1,312 @@
 package com.dinerestaurant.app.ui.cart;
 
-import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.dinerestaurant.app.R;
+import com.dinerestaurant.app.data.remote.api.ApiClient;
+import com.dinerestaurant.app.data.remote.dto.ApplyPromotionRequest;
+import com.dinerestaurant.app.data.remote.dto.ApplyPromotionResponse;
+import com.dinerestaurant.app.model.Cart;
+import com.dinerestaurant.app.model.CartItem;
+import com.dinerestaurant.app.model.UserAddress;
 
-import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class CartFragment extends Fragment {
 
-    // Header
-    private ImageButton btnBack;
-    private TextView tvTitle;
+    // ===== Views =====
+    private RecyclerView rvCartItems;
+    private CartAdapter adapter;
 
-    // Food Items - Card 1 (Chicken Burger)
-    private TextView tvFoodName1, tvOriginalPrice1, tvDiscountPrice1, tvQuantity1;
-    private ImageButton btnEdit1, btnDelete1, btnMinus1, btnPlus1;
+    private TextView tvSubtotalValue;
+    private TextView tvDiscountValue;
+    private TextView tvTotalValue;
+    private Button btnConfirm;
+    private Button btnCancel;
 
-    // Food Items - Card 2 (Ramen Noodles)
-    private TextView tvFoodName2, tvOriginalPrice2, tvDiscountPrice2, tvQuantity2;
-    private ImageButton btnEdit2, btnDelete2, btnMinus2, btnPlus2;
+    private TextView tvAddressTitle, tvAddressDetail;
 
-    // Food Items - Card 3 (Cherry Tomato Salad)
-    private TextView tvFoodName3, tvDiscountPrice3, tvQuantity3;
-    private ImageButton btnEdit3, btnDelete3, btnMinus3, btnPlus3;
+    // ===== State =====
+    private Integer cartId;
+    private Long appliedPromotionId = null;
+    private double discountAmount = 0;
 
-    // Delivery, Payment, Promotions
-    private TextView tvAddress, tvCash, tvPromotions;
-    private ImageButton btnEditAddress, btnEditPayment, btnEditPromotions;
-
-    // Price Summary
-    private TextView tvSubtotalValue, tvDeliveryValue, tvDiscountValue, tvTotalValue, tvTotalBottom;
-
-    // Bottom Buttons
-    private Button btnTotalPrice, btnPlaceOrder;
-
-    // Data variables
-    private int quantity1 = 1, quantity2 = 1, quantity3 = 1;
-    private double price1 = 6.00, price2 = 15.00, price3 = 8.00;
-    private double originalPrice1 = 10.00, originalPrice2 = 10.00;
-    private double deliveryFee = 0.0;
-    private double discount = 0.0;
-    private String selectedAddress = "Select Your Location";
-    private String selectedPayment = "Select Payment Method";
-
-    private DecimalFormat df = new DecimalFormat("#.00");
-
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_cart, container, false);
-
-        initViews(view);
-
-        return view;
+    public View onCreateView(
+            LayoutInflater inflater,
+            ViewGroup container,
+            Bundle savedInstanceState
+    ) {
+        return inflater.inflate(R.layout.fragment_cart, container, false);
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(
+            @NonNull View view,
+            @Nullable Bundle savedInstanceState
+    ) {
         super.onViewCreated(view, savedInstanceState);
 
+        initViews(view);
+        setupRecyclerView();
         setupListeners();
-        observeResults();
-        updatePrices();
+
+        loadCartData();
+        loadDefaultAddress();
+
+        // Nhận promotion từ PromotionsFragment
+        getParentFragmentManager().setFragmentResultListener(
+                "promotion_result",
+                getViewLifecycleOwner(),
+                (key, bundle) -> {
+                    appliedPromotionId = bundle.getLong("promotionId");
+                    applyPromotionPreview();
+                }
+        );
     }
 
+    // =====================================================
+    // INIT
+    // =====================================================
     private void initViews(View view) {
-        // Header
-        btnBack = view.findViewById(R.id.imageButton3);
-        tvTitle = view.findViewById(R.id.textView2);
+        rvCartItems = view.findViewById(R.id.rvCartItems);
 
-        // Card 1 - Chicken Burger
-        tvFoodName1 = view.findViewById(R.id.tv_order_id2);
-        tvOriginalPrice1 = view.findViewById(R.id.tv_price2);
-        tvDiscountPrice1 = view.findViewById(R.id.tv_price8);
-        tvQuantity1 = view.findViewById(R.id.textView6);
-        btnEdit1 = view.findViewById(R.id.imageButton2);
-        btnDelete1 = view.findViewById(R.id.imageButton5);
-        btnMinus1 = view.findViewById(R.id.imageButton15);
-        btnPlus1 = view.findViewById(R.id.imageButton16);
-
-        // Card 2 - Ramen Noodles
-        tvFoodName2 = view.findViewById(R.id.tv_order_id6);
-        tvOriginalPrice2 = view.findViewById(R.id.tv_price4);
-        tvDiscountPrice2 = view.findViewById(R.id.tv_price5);
-        tvQuantity2 = view.findViewById(R.id.textView19);
-        btnEdit2 = view.findViewById(R.id.imageButton6);
-        btnDelete2 = view.findViewById(R.id.imageButton7);
-        btnMinus2 = view.findViewById(R.id.imageButton18);
-        btnPlus2 = view.findViewById(R.id.imageButton20);
-
-        // Card 3 - Cherry Tomato Salad
-        tvFoodName3 = view.findViewById(R.id.tv_order_id7);
-        tvDiscountPrice3 = view.findViewById(R.id.tv_price9);
-        tvQuantity3 = view.findViewById(R.id.textView22);
-        btnEdit3 = view.findViewById(R.id.imageButton8);
-        btnDelete3 = view.findViewById(R.id.imageButton11);
-        btnMinus3 = view.findViewById(R.id.imageButton21);
-        btnPlus3 = view.findViewById(R.id.imageButton23);
-
-        // Delivery, Payment, Promotions
-        tvAddress = view.findViewById(R.id.tv_address);
-        tvCash = view.findViewById(R.id.tv_cash);
-        btnEditAddress = view.findViewById(R.id.imageButton12);
-        btnEditPayment = view.findViewById(R.id.imageButton13);
-        btnEditPromotions = view.findViewById(R.id.imageButton14);
-
-        // Price Summary
         tvSubtotalValue = view.findViewById(R.id.tv_subtotal_value);
-        tvDeliveryValue = view.findViewById(R.id.tv_delivery_value);
         tvDiscountValue = view.findViewById(R.id.tv_discount_value);
         tvTotalValue = view.findViewById(R.id.textView5);
 
-        // Bottom
-        btnTotalPrice = view.findViewById(R.id.btn_cancel);
-        btnPlaceOrder = view.findViewById(R.id.btn_confirm);
+        btnConfirm = view.findViewById(R.id.btn_confirm);
+        btnCancel = view.findViewById(R.id.btn_cancel);
+
+        tvAddressTitle = view.findViewById(R.id.tv_address_id2);
+        tvAddressDetail = view.findViewById(R.id.tv_address);
+
+        ImageButton btnBack = view.findViewById(R.id.btnBack);
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> requireActivity().onBackPressed());
+        }
+    }
+
+    private void setupRecyclerView() {
+        adapter = new CartAdapter(
+                new ArrayList<>(),
+                requireContext().getAssets(),
+                new CartAdapter.OnCartAction() {
+                    @Override
+                    public void onIncrease(int cartItemId, int qty) {
+                        updateQuantity(cartItemId, qty + 1);
+                    }
+
+                    @Override
+                    public void onDecrease(int cartItemId, int qty) {
+                        if (qty > 1) {
+                            updateQuantity(cartItemId, qty - 1);
+                        } else {
+                            deleteCartItem(cartItemId);
+                        }
+                    }
+
+                    @Override
+                    public void onDelete(int cartItemId) {
+                        deleteCartItem(cartItemId);
+                    }
+
+                    @Override
+                    public void onSelectionChanged() {
+                        calculateAndRenderPrice();
+                    }
+                }
+        );
+
+        rvCartItems.setLayoutManager(new LinearLayoutManager(getContext()));
+        rvCartItems.setAdapter(adapter);
     }
 
     private void setupListeners() {
-        // Back button
-        btnBack.setOnClickListener(v -> {
-            NavController navController = Navigation.findNavController(v);
-            navController.navigateUp();
-        });
+        viewRequire(R.id.llMyLocations)
+                .setOnClickListener(v ->
+                        Navigation.findNavController(v)
+                                .navigate(R.id.action_cartFragment_to_myLocationsFragment));
 
-        // === CARD 1 - Chicken Burger ===
-        btnMinus1.setOnClickListener(v -> {
-            if (quantity1 > 1) {
-                quantity1--;
-                tvQuantity1.setText(String.valueOf(quantity1));
-                updatePrices();
-            }
-        });
+        viewRequire(R.id.llPromotions)
+                .setOnClickListener(v ->
+                        Navigation.findNavController(v)
+                                .navigate(R.id.action_cartFragment_to_promotionsFragment));
 
-        btnPlus1.setOnClickListener(v -> {
-            quantity1++;
-            tvQuantity1.setText(String.valueOf(quantity1));
-            updatePrices();
-        });
+        viewRequire(R.id.llPaymentMethod)
+                .setOnClickListener(v ->
+                        Navigation.findNavController(v)
+                                .navigate(R.id.action_cartFragment_to_paymentFragment));
 
-        btnEdit1.setOnClickListener(v -> {
-            Toast.makeText(requireContext(), "Edit Chicken Burger", Toast.LENGTH_SHORT).show();
-            // TODO: Navigate to edit screen
-        });
+        btnConfirm.setOnClickListener(v ->
+                Toast.makeText(getContext(), "Place order", Toast.LENGTH_SHORT).show()
+        );
+    }
 
-        btnDelete1.setOnClickListener(v -> {
-            showDeleteDialog("Chicken Burger", 1);
-        });
+    // =====================================================
+    // LOAD DATA
+    // =====================================================
+    private void loadCartData() {
+        ApiClient.getCartApi().getCart().enqueue(new Callback<Cart>() {
+            @Override
+            public void onResponse(Call<Cart> call, Response<Cart> response) {
+                if (!response.isSuccessful() || response.body() == null) return;
 
-        // === CARD 2 - Ramen Noodles ===
-        btnMinus2.setOnClickListener(v -> {
-            if (quantity2 > 1) {
-                quantity2--;
-                tvQuantity2.setText(String.valueOf(quantity2));
-                updatePrices();
-            }
-        });
+                Cart cart = response.body();
+                cartId = cart.getCartId();
 
-        btnPlus2.setOnClickListener(v -> {
-            quantity2++;
-            tvQuantity2.setText(String.valueOf(quantity2));
-            updatePrices();
-        });
-
-        btnEdit2.setOnClickListener(v -> {
-            Toast.makeText(requireContext(), "Edit Ramen Noodles", Toast.LENGTH_SHORT).show();
-        });
-
-        btnDelete2.setOnClickListener(v -> {
-            showDeleteDialog("Ramen Noodles", 2);
-        });
-
-        // === CARD 3 - Cherry Tomato Salad ===
-        btnMinus3.setOnClickListener(v -> {
-            if (quantity3 > 1) {
-                quantity3--;
-                tvQuantity3.setText(String.valueOf(quantity3));
-                updatePrices();
-            }
-        });
-
-        btnPlus3.setOnClickListener(v -> {
-            quantity3++;
-            tvQuantity3.setText(String.valueOf(quantity3));
-            updatePrices();
-        });
-
-        btnEdit3.setOnClickListener(v -> {
-            Toast.makeText(requireContext(), "Edit Cherry Tomato Salad", Toast.LENGTH_SHORT).show();
-        });
-
-        btnDelete3.setOnClickListener(v -> {
-            showDeleteDialog("Cherry Tomato Salad", 3);
-        });
-
-        // === DELIVERY ADDRESS ===
-        btnEditAddress.setOnClickListener(v -> {
-            Toast.makeText(requireContext(), "Select delivery address", Toast.LENGTH_SHORT).show();
-            // TODO: Navigate to address selection
-            // Tạm thời set địa chỉ mẫu
-            selectedAddress = "221B Baker Street, London, UK";
-            tvAddress.setText(selectedAddress);
-        });
-
-        // === PAYMENT METHOD - ĐÃ THÊM NAVIGATION ===
-        btnEditPayment.setOnClickListener(v -> {
-            NavController navController = Navigation.findNavController(v);
-            try {
-                // SỬ DỤNG ID ACTION THỰC TẾ TRONG NAV GRAPH CỦA BẠN
-                navController.navigate(R.id.action_cartFragment_to_paymentFragment);
-            } catch (IllegalArgumentException e) {
-                Toast.makeText(requireContext(), "Lỗi: Không tìm thấy action Payment trong Nav Graph.", Toast.LENGTH_LONG).show();
-            }
-        });
-
-        // === PROMOTIONS - ĐÃ THÊM NAVIGATION ===
-        btnEditPromotions.setOnClickListener(v -> {
-            NavController navController = Navigation.findNavController(v);
-            try {
-                // SỬ DỤNG ID ACTION THỰC TẾ TRONG NAV GRAPH CỦA BẠN
-                navController.navigate(R.id.action_cartFragment_to_promotionsFragment);
-            } catch (IllegalArgumentException e) {
-                Toast.makeText(requireContext(), "Lỗi: Không tìm thấy action Promotions trong Nav Graph.", Toast.LENGTH_LONG).show();
-            }
-        });
-
-        // === PLACE ORDER BUTTON ===
-        btnPlaceOrder.setOnClickListener(v -> {
-            if (selectedAddress.equals("Select Your Location")) {
-                Toast.makeText(requireContext(), "Please select delivery address", Toast.LENGTH_SHORT).show();
-                return;
+                adapter.updateData(cart.getCartItems());
+                calculateAndRenderPrice();
             }
 
-            if (selectedPayment.equals("Select Payment Method")) {
-                Toast.makeText(requireContext(), "Please select payment method", Toast.LENGTH_SHORT).show();
-                return;
+            @Override
+            public void onFailure(Call<Cart> call, Throwable t) {
+                Toast.makeText(getContext(), "Load cart failed", Toast.LENGTH_SHORT).show();
             }
-
-            showPlaceOrderDialog();
         });
     }
 
-    private void observeResults() {
-        // Nhận kết quả từ PaymentFragment
-        NavController navController = Navigation.findNavController(requireView());
-        navController.getCurrentBackStackEntry()
-                .getSavedStateHandle()
-                .getLiveData("selected_payment_method", "")
-                .observe(getViewLifecycleOwner(), paymentMethod -> {
-                    if (!paymentMethod.isEmpty()) {
-                        selectedPayment = paymentMethod;
-                        tvCash.setText(paymentMethod);
-                        Toast.makeText(requireContext(),
-                                "Payment method updated: " + paymentMethod,
-                                Toast.LENGTH_SHORT).show();
+    private void loadDefaultAddress() {
+        ApiClient.getUserAddressApi()
+                .getDefaultAddress()
+                .enqueue(new Callback<UserAddress>() {
+                    @Override
+                    public void onResponse(Call<UserAddress> call, Response<UserAddress> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            UserAddress address = response.body();
+                            tvAddressTitle.setText("Delivery to  →  " + address.getLabel());
+                            tvAddressDetail.setText(address.getAddressText());
+                        }
                     }
-                });
 
-        // TODO: Nhận kết quả từ PromotionsFragment
-        navController.getCurrentBackStackEntry()
-                .getSavedStateHandle()
-                .getLiveData("selected_discount", 0.0)
-                .observe(getViewLifecycleOwner(), discountValue -> {
-                    if (discountValue > 0) {
-                        discount = discountValue;
-                        updatePrices();
+                    @Override
+                    public void onFailure(Call<UserAddress> call, Throwable t) {
+                        tvAddressTitle.setText("Delivery to");
+                        tvAddressDetail.setText("Select Your Location");
                     }
                 });
     }
 
-    private void updatePrices() {
-        // Tính subtotal
-        double subtotal = (price1 * quantity1) + (price2 * quantity2) + (price3 * quantity3);
+    // =====================================================
+    // PROMOTION PREVIEW (KHÔNG GHI DB)
+    // =====================================================
+    private void applyPromotionPreview() {
+        if (appliedPromotionId == null || cartId == null) return;
 
-        // Tính total
-        double total = subtotal + deliveryFee - discount;
+        ApplyPromotionRequest request =
+                new ApplyPromotionRequest(cartId, appliedPromotionId.intValue());
 
-        // Update UI
-        tvSubtotalValue.setText("£ " + df.format(subtotal));
+        ApiClient.getPromotionApi()
+                .applyPromotion(request)
+                .enqueue(new Callback<ApplyPromotionResponse>() {
+                    @Override
+                    public void onResponse(
+                            Call<ApplyPromotionResponse> call,
+                            Response<ApplyPromotionResponse> response
+                    ) {
+                        if (!response.isSuccessful() || response.body() == null) return;
 
-        if (deliveryFee == 0) {
-            tvDeliveryValue.setText("FREE");
-            tvDeliveryValue.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_green_dark));
-        } else {
-            tvDeliveryValue.setText("£ " + df.format(deliveryFee));
-            tvDeliveryValue.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.black));
+                        discountAmount =
+                                response.body().getDiscountAmount().doubleValue();
+
+                        calculateAndRenderPrice();
+                    }
+
+                    @Override
+                    public void onFailure(Call<ApplyPromotionResponse> call, Throwable t) {
+                        Toast.makeText(getContext(), "Apply promotion failed", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    // =====================================================
+    // PRICE RENDER
+    // =====================================================
+    private void calculateAndRenderPrice() {
+        double subtotal = 0;
+
+        for (CartItem item : adapter.getItems()) {
+            if (item.isSelected()) {
+                subtotal += item.getMenuItem().getPrice() * item.getQuantity();
+            }
         }
 
-        if (discount > 0) {
-            tvDiscountValue.setText("- £ " + df.format(discount));
-            tvDiscountValue.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_red_dark));
+        // Subtotal
+        tvSubtotalValue.setText(String.format("£ %.2f", subtotal));
+
+        // Discount
+        if (discountAmount > 0) {
+            tvDiscountValue.setText(String.format("- £ %.2f", discountAmount));
         } else {
             tvDiscountValue.setText("__");
         }
 
-        tvTotalValue.setText("£ " + df.format(total));
-        btnTotalPrice.setText("£ " + df.format(total));
+        // Total
+        double total = Math.max(0, subtotal - discountAmount);
+        tvTotalValue.setText(String.format("£ %.2f", total));
+
+        // Bottom bar price
+        btnCancel.setText(String.format("£ %.2f", total));
     }
 
-    private void showDeleteDialog(String itemName, int itemNumber) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("Remove Item")
-                .setMessage("Are you sure you want to remove " + itemName + " from cart?")
-                .setPositiveButton("Remove", (dialog, which) -> {
-                    // Xóa item
-                    switch (itemNumber) {
-                        case 1:
-                            quantity1 = 0;
-                            price1 = 0;
-                            // Ẩn card hoặc remove khỏi UI
-                            Toast.makeText(requireContext(), itemName + " removed", Toast.LENGTH_SHORT).show();
-                            break;
-                        case 2:
-                            quantity2 = 0;
-                            price2 = 0;
-                            Toast.makeText(requireContext(), itemName + " removed", Toast.LENGTH_SHORT).show();
-                            break;
-                        case 3:
-                            quantity3 = 0;
-                            price3 = 0;
-                            Toast.makeText(requireContext(), itemName + " removed", Toast.LENGTH_SHORT).show();
-                            break;
-                    }
-                    updatePrices();
-                })
-                .setNegativeButton("Cancel", (dialog, which) -> {
-                    dialog.dismiss();
-                })
-                .show();
+    // =====================================================
+    // CART ACTIONS
+    // =====================================================
+    private void updateQuantity(int cartItemId, int qty) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("cartItemId", cartItemId);
+        body.put("quantity", qty);
+
+        ApiClient.getCartApi().updateQuantity(body).enqueue(new Callback<Cart>() {
+            @Override
+            public void onResponse(Call<Cart> call, Response<Cart> response) {
+                loadCartData();
+            }
+
+            @Override
+            public void onFailure(Call<Cart> call, Throwable t) {
+                Toast.makeText(getContext(), "Update failed", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    private void showPlaceOrderDialog() {
-        double total = (price1 * quantity1) + (price2 * quantity2) + (price3 * quantity3)
-                + deliveryFee - discount;
+    private void deleteCartItem(int cartItemId) {
+        ApiClient.getCartApi().removeItem(cartItemId).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                loadCartData();
+            }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("Confirm Order")
-                .setMessage("Total: £" + df.format(total) + "\n\n" +
-                        "Delivery to: " + selectedAddress + "\n" +
-                        "Payment: " + selectedPayment + "\n\n" +
-                        "Place this order?")
-                .setPositiveButton("Confirm", (dialog, which) -> {
-                    // Xử lý đặt hàng
-                    Toast.makeText(requireContext(),
-                            "Order placed successfully!",
-                            Toast.LENGTH_LONG).show();
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(getContext(), "Delete failed", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
-                    // Navigate to OrderDetailFragment hoặc Order Success screen
-                    NavController navController = Navigation.findNavController(requireView());
-                    // navController.navigate(R.id.action_cartFragment_to_orderDetailFragment);
-                })
-                .setNegativeButton("Cancel", (dialog, which) -> {
-                    dialog.dismiss();
-                })
-                .show();
+    // Helper
+    private View viewRequire(int id) {
+        return requireView().findViewById(id);
     }
 }

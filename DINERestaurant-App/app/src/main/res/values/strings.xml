@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">DINERestaurant-App</string>
+    <string name="google_client_id">615743832088-21nddtig3ms6imcj1ko2s59p81n81ajp.apps.googleusercontent.com</string>
+
 </resources>

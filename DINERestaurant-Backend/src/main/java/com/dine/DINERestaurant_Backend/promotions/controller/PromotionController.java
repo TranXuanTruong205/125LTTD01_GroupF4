@@ -5,7 +5,6 @@ import com.dine.DINERestaurant_Backend.promotions.DTO.ApplyPromotionRequest;
 import com.dine.DINERestaurant_Backend.promotions.DTO.ApplyPromotionResponse;
 import com.dine.DINERestaurant_Backend.promotions.DTO.PromotionResponse;
 import com.dine.DINERestaurant_Backend.promotions.service.PromotionService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,41 +15,33 @@ import java.util.List;
 public class PromotionController {
 
     private final PromotionService promotionService;
+    private final JwtUtil jwtUtil;
 
-    @Autowired
-    private JwtUtil jwtUtil;
-
-    public PromotionController(PromotionService promotionService) {
+    public PromotionController(PromotionService promotionService, JwtUtil jwtUtil) {
         this.promotionService = promotionService;
+        this.jwtUtil = jwtUtil;
     }
 
     private Long getCurrentUserId(String authHeader) {
-        String token = authHeader.substring(7); // "Bearer xxx"
-        String userId = jwtUtil.extractUserId(token);
-        return Long.valueOf(userId);
+        String token = authHeader.substring(7);
+        return Long.valueOf(jwtUtil.extractUserId(token));
     }
 
-    // ===========================
     // GET /api/promotions
-    // Danh sách khuyến mãi đang còn hiệu lực
-    // ===========================
     @GetMapping
     public ResponseEntity<List<PromotionResponse>> getPromotions() {
-        List<PromotionResponse> promotions = promotionService.getActivePromotions();
-        return ResponseEntity.ok(promotions);
+        return ResponseEntity.ok(promotionService.getActivePromotions());
     }
 
-    // ===========================
     // POST /api/promotions/apply
-    // Áp dụng KM vào đơn
-    // ===========================
     @PostMapping("/apply")
     public ResponseEntity<ApplyPromotionResponse> applyPromotion(
             @RequestHeader("Authorization") String token,
             @RequestBody ApplyPromotionRequest request
     ) {
-        Long currentUserId = getCurrentUserId(token);
-        ApplyPromotionResponse response = promotionService.applyPromotion(currentUserId, request);
-        return ResponseEntity.ok(response);
+        Long userId = getCurrentUserId(token);
+        return ResponseEntity.ok(
+                promotionService.applyPromotion(userId, request)
+        );
     }
 }
