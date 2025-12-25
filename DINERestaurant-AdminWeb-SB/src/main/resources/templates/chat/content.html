@@ -1,0 +1,103 @@
+<div class="card p-0" style="height:70vh">
+
+    <div class="row g-0 h-100">
+
+        <!-- LEFT -->
+        <div class="col-4 border-end" style="overflow-y:auto">
+            <div th:each="c : ${conversations}"
+                 class="p-3 border-bottom item"
+                 th:attr="data-id=${c.conversationId}"
+                 onclick="openChat(this)"
+                 style="cursor:pointer">
+
+                <b th:text="${c.user.fullName}"></b>
+                <div th:text="${c.lastMessage}"
+                     style="font-size:13px;color:#666"></div>
+            </div>
+        </div>
+
+        <!-- RIGHT -->
+        <div class="col-8 d-flex flex-column">
+
+            <div id="messages"
+                 class="flex-grow-1 p-3"
+                 style="overflow-y:auto;background:#fafafa">
+                <p class="text-muted">Chọn cuộc hội thoại</p>
+            </div>
+
+            <div class="border-top p-2 d-flex">
+                <input id="messageInput"
+                       class="form-control me-2"
+                       placeholder="Nhập tin nhắn...">
+                <button class="btn btn-primary"
+                        onclick="sendMessage()">Gửi</button>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const API_BASE = 'http://localhost:8080';
+    const TOKEN = '[[${adminToken}]]';
+    let currentConversationId = null;
+
+    function openChat(el) {
+        document.querySelectorAll('.item').forEach(i => i.classList.remove('bg-light'));
+        el.classList.add('bg-light');
+
+        currentConversationId = el.dataset.id;
+
+        fetch(`${API_BASE}/api/chat/messages/${currentConversationId}`, {
+            headers: { 'Authorization': 'Bearer ' + TOKEN }
+        })
+            .then(res => res.json())
+            .then(data => {
+                const box = document.getElementById('messages');
+                box.innerHTML = '';
+
+                if (!Array.isArray(data)) {
+                    box.innerHTML = '<p>Lỗi tải tin nhắn</p>';
+                    return;
+                }
+
+                data.forEach(m => {
+                    const div = document.createElement('div');
+                    div.className = 'mb-2 text-' + (m.senderRole === 'admin' ? 'end' : 'start');
+
+                    const span = document.createElement('span');
+                    span.className = 'd-inline-block p-2 rounded ' +
+                        (m.senderRole === 'admin'
+                            ? 'bg-primary text-white'
+                            : 'bg-white border');
+
+                    span.innerText = m.content;
+                    div.appendChild(span);
+                    box.appendChild(div);
+                });
+
+                box.scrollTop = box.scrollHeight;
+            });
+    }
+
+    function sendMessage() {
+        const text = messageInput.value.trim();
+        if (!text || !currentConversationId) return;
+
+        fetch(`${API_BASE}/api/chat/send`, {
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json',
+                'Authorization':'Bearer ' + TOKEN
+            },
+            body: JSON.stringify({
+                conversationId: currentConversationId,
+                content: text
+            })
+        }).then(() => {
+            messageInput.value = '';
+            document.querySelector('.item.bg-light')?.click();
+        });
+    }
+</script>

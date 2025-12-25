@@ -1,0 +1,30 @@
+.chat-container {
+    display: flex;
+    height: 80vh;
+}
+
+.chat-sidebar {
+    width: 30%;
+    border-right: 1px solid #ddd;
+}
+
+.chat-main {
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+}
+
+.msg.admin {
+    text-align: right;
+    background: #ff9800;
+    color: white;
+    margin: 5px;
+    padding: 8px;
+}
+
+.msg.user {
+    text-align: left;
+    background: #eee;
+    margin: 5px;
+    padding: 8px;
+}
