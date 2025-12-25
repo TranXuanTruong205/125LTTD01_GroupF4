@@ -53,6 +53,11 @@ public class ReservationActivity extends AppCompatActivity implements TableAdapt
     private TableItem selectedTable;
     private Calendar calendar = Calendar.getInstance();
 
+    // Edit mode
+    private boolean isEditMode = false;
+    private int editReservationId = -1;
+    private int editTableId = -1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +67,102 @@ public class ReservationActivity extends AppCompatActivity implements TableAdapt
         repository = new ReservationRepository(this);
         setupRecyclerView();
         setupListeners();
+        checkEditMode();
+    }
+
+    private void checkEditMode() {
+        Intent intent = getIntent();
+        if (intent != null && "edit".equals(intent.getStringExtra("mode"))) {
+            isEditMode = true;
+            editReservationId = intent.getIntExtra("reservation_id", -1);
+
+            // Đổi text nút thành "Cập nhật"
+            btnBook.setText("Cập nhật đặt bàn");
+
+            // Gọi API để lấy dữ liệu reservation
+            if (editReservationId > 0) {
+                loadReservationData(editReservationId);
+            }
+        }
+    }
+
+    /**
+     * Gọi API để lấy dữ liệu reservation khi sửa
+     */
+    private void loadReservationData(int reservationId) {
+        showLoading(true);
+
+        repository.getReservationById(reservationId).enqueue(new Callback<Map<String, Object>>() {
+            @Override
+            public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
+                showLoading(false);
+
+                if (response.isSuccessful() && response.body() != null) {
+                    Boolean success = (Boolean) response.body().get("success");
+
+                    if (Boolean.TRUE.equals(success)) {
+                        Object data = response.body().get("data");
+                        if (data instanceof Map) {
+                            Map<?, ?> reservation = (Map<?, ?>) data;
+
+                            // Lấy dữ liệu từ API response
+                            String date = (String) reservation.get("reservationDate");
+                            String time = (String) reservation.get("reservationTime");
+                            Object guestCountObj = reservation.get("guestCount");
+                            String note = (String) reservation.get("note");
+                            Object tableIdObj = reservation.get("tableId");
+
+                            // Điền vào form
+                            if (date != null)
+                                edtDate.setText(date);
+                            if (time != null)
+                                edtTime.setText(time);
+                            if (guestCountObj instanceof Number) {
+                                int guestCount = ((Number) guestCountObj).intValue();
+                                edtGuestCount.setText(String.valueOf(guestCount));
+                            }
+                            if (note != null)
+                                edtNote.setText(note);
+
+                            // Lưu table ID cũ
+                            if (tableIdObj instanceof Number) {
+                                editTableId = ((Number) tableIdObj).intValue();
+                            }
+
+                            // Tự động kiểm tra bàn trống
+                            if (date != null && time != null && guestCountObj != null) {
+                                checkTables();
+                            }
+                        }
+                    } else {
+                        String msg = (String) response.body().get("message");
+                        Toast.makeText(ReservationActivity.this,
+                                msg != null ? msg : "Không tìm thấy đặt bàn",
+                                Toast.LENGTH_LONG).show();
+                        // Không tự thoát, để user có thể thử lại
+                    }
+                } else {
+                    // Log lỗi từ server
+                    String errorMsg = "Lỗi tải dữ liệu đặt bàn";
+                    try {
+                        if (response.errorBody() != null) {
+                            errorMsg = response.errorBody().string();
+                        }
+                    } catch (Exception e) {
+                        errorMsg = "Lỗi: " + response.code();
+                    }
+                    Toast.makeText(ReservationActivity.this, errorMsg, Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Map<String, Object>> call, Throwable t) {
+                showLoading(false);
+                Toast.makeText(ReservationActivity.this,
+                        "Lỗi kết nối: " + t.getMessage(),
+                        Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void initViews() {
@@ -291,7 +392,17 @@ public class ReservationActivity extends AppCompatActivity implements TableAdapt
         showLoading(true);
         btnBook.setEnabled(false);
 
-        repository.createReservation(request).enqueue(new Callback<Map<String, Object>>() {
+        // Chọn API dựa trên mode
+        Call<Map<String, Object>> apiCall;
+        if (isEditMode && editReservationId > 0) {
+            // Update reservation
+            apiCall = repository.updateReservation(editReservationId, request);
+        } else {
+            // Create new reservation
+            apiCall = repository.createReservation(request);
+        }
+
+        apiCall.enqueue(new Callback<Map<String, Object>>() {
             @Override
             public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
                 showLoading(false);
@@ -300,22 +411,55 @@ public class ReservationActivity extends AppCompatActivity implements TableAdapt
                     Boolean success = (Boolean) response.body().get("success");
 
                     if (Boolean.TRUE.equals(success)) {
-                        Toast.makeText(ReservationActivity.this,
-                                "🎉 Đặt bàn thành công!",
-                                Toast.LENGTH_LONG).show();
+                        if (isEditMode) {
+                            // Cập nhật thành công
+                            Toast.makeText(ReservationActivity.this,
+                                    "Cập nhật đặt bàn thành công!",
+                                    Toast.LENGTH_SHORT).show();
+                            setResult(RESULT_OK);
+                            finish();
+                        } else {
+                            // Tạo mới thành công - mở màn hình QR
+                            int reservationId = 0;
+                            Object data = response.body().get("data");
+                            if (data instanceof Map) {
+                                Object idObj = ((Map<?, ?>) data).get("reservationId");
+                                if (idObj instanceof Number) {
+                                    reservationId = ((Number) idObj).intValue();
+                                }
+                            }
 
-                        // Đóng màn hình và quay lại
-                        setResult(RESULT_OK);
-                        finish();
+                            Intent intent = new Intent(ReservationActivity.this, ReservationSuccessActivity.class);
+                            intent.putExtra(ReservationSuccessActivity.EXTRA_RESERVATION_ID, reservationId);
+                            intent.putExtra(ReservationSuccessActivity.EXTRA_TABLE_NAME,
+                                    selectedTable.getTableNumber());
+                            intent.putExtra(ReservationSuccessActivity.EXTRA_DATE, edtDate.getText().toString());
+                            intent.putExtra(ReservationSuccessActivity.EXTRA_TIME, edtTime.getText().toString());
+                            intent.putExtra(ReservationSuccessActivity.EXTRA_GUEST_COUNT,
+                                    Integer.parseInt(edtGuestCount.getText().toString()));
+                            startActivity(intent);
+
+                            setResult(RESULT_OK);
+                            finish();
+                        }
                     } else {
                         String msg = (String) response.body().get("message");
                         Toast.makeText(ReservationActivity.this,
-                                msg != null ? msg : "Đặt bàn thất bại",
+                                msg != null ? msg : (isEditMode ? "Cập nhật thất bại" : "Đặt bàn thất bại"),
                                 Toast.LENGTH_LONG).show();
                         btnBook.setEnabled(true);
                     }
                 } else {
-                    Toast.makeText(ReservationActivity.this, "Lỗi đặt bàn", Toast.LENGTH_SHORT).show();
+                    // Log lỗi từ server
+                    String errorMsg = isEditMode ? "Lỗi cập nhật" : "Lỗi đặt bàn";
+                    try {
+                        if (response.errorBody() != null) {
+                            errorMsg = response.errorBody().string();
+                        }
+                    } catch (Exception e) {
+                        errorMsg = "Lỗi: " + response.code();
+                    }
+                    Toast.makeText(ReservationActivity.this, errorMsg, Toast.LENGTH_LONG).show();
                     btnBook.setEnabled(true);
                 }
             }

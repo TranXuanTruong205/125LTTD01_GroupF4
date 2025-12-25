@@ -6,6 +6,7 @@ public class OrderItem {
     private double price;
     private int rating; // 1-5 sao
     private String status; // Active, Completed, Cancelled
+    private String apiStatus; // Trạng thái gốc từ API: Đã đặt, Đã xác nhận, Đang chuẩn bị...
     private int foodImage; // Resource ID cho avatar
     private boolean showStepper; // Có hiển thị stepper không
     private int realOrderId; // ID số thực để gọi API
@@ -74,5 +75,13 @@ public class OrderItem {
 
     public String getFormattedPrice() {
         return String.format("%,.0f₫", price);
+    }
+
+    public String getApiStatus() {
+        return apiStatus;
+    }
+
+    public void setApiStatus(String apiStatus) {
+        this.apiStatus = apiStatus;
     }
 }
