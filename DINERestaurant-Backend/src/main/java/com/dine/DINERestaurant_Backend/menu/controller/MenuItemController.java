@@ -34,16 +34,8 @@ public class MenuItemController {
         }
         return ResponseEntity.notFound().build();
     }
-    // API: POST /api/menu-items (Thêm mới)
-    @PostMapping
-    public ResponseEntity<MenuItem> createMenuItem(@RequestBody MenuItem menuItem) {
-        return ResponseEntity.ok(menuItemService.createMenuItem(menuItem));
-    }
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteMenuItem(@PathVariable Integer id) {
-        menuItemService.deleteMenuItem(id);
-        return ResponseEntity.ok().build();
-    }
+
+
     @GetMapping("/search")
     public ResponseEntity<List<MenuItem>> searchMenuItems(@RequestParam String keyword) {
         // Lưu ý: Cần đảm bảo MenuItemRepository đã có hàm tìm kiếm (xem lại hướng dẫn trước nếu chưa có)
@@ -55,12 +47,5 @@ public class MenuItemController {
         List<com.dine.DINERestaurant_Backend.menu.entity.ItemOption> options = itemOptionService.getOptionsByMenuItem(id);
         return ResponseEntity.ok((List) options);
     }
-    @PutMapping("/{id}")
-    public ResponseEntity<MenuItem> updateMenuItem(@PathVariable Integer id, @RequestBody MenuItem menuItem) {
-        MenuItem updated = menuItemService.updateMenuItem(id, menuItem);
-        if (updated != null) {
-            return ResponseEntity.ok(updated);
-        }
-        return ResponseEntity.notFound().build();
-    }
+
 }

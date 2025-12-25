@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AdminOrderService {
@@ -22,7 +23,7 @@ public class AdminOrderService {
     }
     public List<Order> getOngoingOrders() {
         return orderRepository.findByOrderStatusInOrderByCreatedAtDesc(
-                List.of("Đã đặt", "Đã nhận đơn", "Đang làm món", "Đang giao")
+                List.of("Đã đặt", "Đã xác nhận", "Đang chuẩn bị", "Đang giao")
         );
     }
     // Đơn đã kết thúc: Hoàn thành, Đã hủy
@@ -43,4 +44,8 @@ public class AdminOrderService {
         }
         return null; // Không tìm thấy đơn hàng
     }
+    public Optional<Order> getOrderById(Integer id) {
+        return orderRepository.findById(id);
+    }
+
 }

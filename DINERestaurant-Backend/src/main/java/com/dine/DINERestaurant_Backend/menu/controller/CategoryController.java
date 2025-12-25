@@ -25,24 +25,4 @@ public class CategoryController {
         }
         return ResponseEntity.notFound().build();
     }
-    // API: POST /api/categories
-    @PostMapping
-    public ResponseEntity<Category> createCategory(@RequestBody Category category) {
-        return ResponseEntity.ok(categoryService.createCategory(category));
-    }
-
-    // API: DELETE /api/categories/{id}
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCategory(@PathVariable Integer id) {
-        categoryService.deleteCategory(id);
-        return ResponseEntity.ok().build();
-    }
-    @PutMapping("/{id}")
-    public ResponseEntity<Category> updateCategory(@PathVariable Integer id, @RequestBody Category category) {
-        Category updated = categoryService.updateCategory(id, category);
-        if (updated != null) {
-            return ResponseEntity.ok(updated);
-        }
-        return ResponseEntity.notFound().build();
-    }
 }

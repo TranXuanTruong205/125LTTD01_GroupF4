@@ -1,0 +1,99 @@
+<div class="orders-page">
+
+    <!-- HEADER -->
+    <div class="orders-header">
+        <div>
+            <h4>Order #<span th:text="${order.orderId}"></span></h4>
+
+            <span class="badge-status"
+                  th:class="'status-' + ${order.orderStatusKey}"
+                  th:text="${order.orderStatus}">
+            </span>
+        </div>
+
+        <a href="/admin/orders" class="btn-detail">← Back</a>
+    </div>
+
+    <div class="row g-4">
+
+        <!-- SUMMARY -->
+        <div class="col-md-6">
+            <div class="card p-4">
+                <h6 class="mb-3">Order Summary</h6>
+
+                <div class="summary-row">
+                    <span>Customer</span>
+                    <strong th:text="${order.customerName}"></strong>
+                </div>
+
+                <div class="summary-row">
+                    <span>Phone</span>
+                    <strong th:text="${order.phone}"></strong>
+                </div>
+
+                <div class="summary-row">
+                    <span>Address</span>
+                    <strong th:text="${order.address}"></strong>
+                </div>
+
+                <hr>
+
+                <div class="summary-row total">
+                    <span>Total</span>
+                    <strong th:text="${#numbers.formatDecimal(order.totalAmount,0,'COMMA',0,'POINT')} + ' ₫'"></strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- UPDATE STATUS -->
+        <div class="col-md-6">
+            <div class="card p-4">
+                <h6 class="mb-3">Update Status</h6>
+
+                <form th:action="@{'/admin/orders/' + ${order.orderId} + '/status'}"
+                      method="post">
+
+                    <select name="status" class="form-select mb-3">
+                        <option>Đã đặt</option>
+                        <!-- Thêm trạng thái này -->
+                        <option>Đã xác nhận</option>
+                        <!-- Sửa từ "Đang làm món" thành "Đang chuẩn bị" -->
+                        <option>Đang chuẩn bị</option>
+                        <option>Đang giao</option>
+                        <option>Hoàn thành</option>
+                        <option>Đã hủy</option>
+                    </select>
+
+                    <button class="btn btn-primary">
+                        Update Status
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ITEMS -->
+    <div class="orders-card mt-4">
+        <h6 class="mb-3">Order Items</h6>
+
+        <table class="orders-table">
+            <thead>
+            <tr>
+                <th>Item</th>
+                <th>Qty</th>
+                <th>Price</th>
+                <th>Subtotal</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="i : ${order.items}">
+                <td th:text="${i.productName}"></td>
+                <td th:text="${i.quantity}"></td>
+                <td th:text="${i.price}"></td>
+                <td th:text="${i.subtotal}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
