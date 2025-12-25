@@ -32,5 +32,6 @@ public class Cart {
                 .map(CartItem::getLinePrice) // Sử dụng line price thay vì chỉ price * quantity
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
+
 }
 
