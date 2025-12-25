@@ -37,4 +37,18 @@ public class MenuItemService {
         return menuItemRepository
                 .findByItemNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(keyword, keyword);
     }
+    public MenuItem updateMenuItem(Integer id, MenuItem details) {
+        MenuItem item = getMenuItemById(id);
+        if (item != null) {
+            item.setItemName(details.getItemName());
+            item.setDescription(details.getDescription());
+            item.setPrice(details.getPrice());
+            item.setDiscountPrice(details.getDiscountPrice());
+            item.setImage(details.getImage());
+            item.setCategory(details.getCategory());
+            item.setIsAvailable(details.getIsAvailable());
+            return menuItemRepository.save(item);
+        }
+        return null;
+    }
 }

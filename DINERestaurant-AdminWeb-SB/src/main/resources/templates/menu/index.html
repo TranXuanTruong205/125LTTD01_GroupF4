@@ -1,0 +1,39 @@
+<div class="card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4>Menu Items</h4>
+        <a href="/admin/menu/create" class="btn btn-primary">
+            + Add New Item
+        </a>
+    </div>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Category</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item : ${menuItems}">
+            <td th:text="${item.itemId}"></td>
+            <td>
+                <img th:if="${item.image != null}"
+                     th:src="${'/images/' + item.image}"
+                     style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;">
+            </td>
+            <td th:text="${item.itemName}"></td>
+            <td th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
+            <td th:text="${item.categoryName}"></td>
+            <td>
+                <a th:href="@{'/admin/menu/edit/' + ${item.itemId}}" class="btn btn-sm btn-outline-primary">Edit</a>
+                <a th:href="@{'/admin/menu/delete/' + ${item.itemId}}"
+                   onclick="return confirm('Are you sure?')"
+                   class="btn btn-sm btn-outline-danger">Delete</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
