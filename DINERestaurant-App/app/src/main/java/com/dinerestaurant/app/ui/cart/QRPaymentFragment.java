@@ -203,8 +203,10 @@ public class QRPaymentFragment extends Fragment {
             request.put("cartItemIds", cartItemIds);
         }
 
-        // Payment method
-        request.put("paymentMethod", paymentMethod);
+        // Payment method - map về giá trị database chấp nhận
+        // Database chỉ cho phép: "Tiền mặt" hoặc "Chuyển khoản"
+        String dbPaymentMethod = "Chuyển khoản"; // QR payment luôn là chuyển khoản
+        request.put("paymentMethod", dbPaymentMethod);
 
         // Table ID (nếu có)
         if (session.hasTableReservation()) {
@@ -250,19 +252,28 @@ public class QRPaymentFragment extends Fragment {
                         navigateToSuccess(orderNumber);
                     } else {
                         String msg = (String) response.body().get("message");
-                        Toast.makeText(getContext(), msg != null ? msg : "Đặt hàng thất bại", Toast.LENGTH_SHORT)
+                        Toast.makeText(getContext(), msg != null ? msg : "Đặt hàng thất bại", Toast.LENGTH_LONG)
                                 .show();
                         resetButtons();
                     }
                 } else {
-                    Toast.makeText(getContext(), "Lỗi đặt hàng", Toast.LENGTH_SHORT).show();
+                    // Log lỗi từ server
+                    String errorMsg = "Lỗi đặt hàng";
+                    try {
+                        if (response.errorBody() != null) {
+                            errorMsg = response.errorBody().string();
+                        }
+                    } catch (Exception e) {
+                        errorMsg = "Lỗi: " + response.code();
+                    }
+                    Toast.makeText(getContext(), errorMsg, Toast.LENGTH_LONG).show();
                     resetButtons();
                 }
             }
 
             @Override
             public void onFailure(Call<Map<String, Object>> call, Throwable t) {
-                Toast.makeText(getContext(), "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_LONG).show();
                 resetButtons();
             }
         });

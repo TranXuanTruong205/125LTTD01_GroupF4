@@ -239,11 +239,123 @@ public class MyReservationsActivity extends AppCompatActivity
 
     @Override
     public void onEditClick(ReservationItem reservation, int position) {
-        // Mở ReservationActivity với mode edit - dữ liệu sẽ được load từ API
-        Intent intent = new Intent(this, ReservationActivity.class);
-        intent.putExtra("mode", "edit");
-        intent.putExtra("reservation_id", reservation.getReservationId());
-        startActivity(intent);
+        showEditDialog(reservation, position);
+    }
+
+    /**
+     * Hiển thị dialog sửa đặt bàn
+     */
+    private void showEditDialog(ReservationItem reservation, int position) {
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_edit_reservation, null);
+
+        // Bind views
+        com.google.android.material.textfield.TextInputEditText edtDate = dialogView.findViewById(R.id.edt_edit_date);
+        com.google.android.material.textfield.TextInputEditText edtTime = dialogView.findViewById(R.id.edt_edit_time);
+        com.google.android.material.textfield.TextInputEditText edtGuestCount = dialogView
+                .findViewById(R.id.edt_edit_guest_count);
+        com.google.android.material.textfield.TextInputEditText edtNote = dialogView.findViewById(R.id.edt_edit_note);
+        com.google.android.material.button.MaterialButton btnCancel = dialogView.findViewById(R.id.btn_cancel_edit);
+        com.google.android.material.button.MaterialButton btnSave = dialogView.findViewById(R.id.btn_save_edit);
+
+        // Fill current data
+        edtDate.setText(reservation.getReservationDate());
+        edtTime.setText(reservation.getReservationTime());
+        edtGuestCount.setText(String.valueOf(reservation.getGuestCount()));
+        edtNote.setText(reservation.getNote());
+
+        // Create dialog
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setCancelable(true)
+                .create();
+
+        // Date picker
+        java.util.Calendar calendar = java.util.Calendar.getInstance();
+        edtDate.setOnClickListener(v -> {
+            new android.app.DatePickerDialog(this, (view, year, month, day) -> {
+                String dateStr = String.format(java.util.Locale.US, "%04d-%02d-%02d", year, month + 1, day);
+                edtDate.setText(dateStr);
+            }, calendar.get(java.util.Calendar.YEAR),
+                    calendar.get(java.util.Calendar.MONTH),
+                    calendar.get(java.util.Calendar.DAY_OF_MONTH)).show();
+        });
+
+        // Time picker
+        edtTime.setOnClickListener(v -> {
+            new android.app.TimePickerDialog(this, (view, hour, minute) -> {
+                String timeStr = String.format(java.util.Locale.US, "%02d:%02d", hour, minute);
+                edtTime.setText(timeStr);
+            }, calendar.get(java.util.Calendar.HOUR_OF_DAY),
+                    calendar.get(java.util.Calendar.MINUTE), true).show();
+        });
+
+        // Cancel button
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+
+        // Save button
+        btnSave.setOnClickListener(v -> {
+            String date = edtDate.getText() != null ? edtDate.getText().toString().trim() : "";
+            String time = edtTime.getText() != null ? edtTime.getText().toString().trim() : "";
+            String guestStr = edtGuestCount.getText() != null ? edtGuestCount.getText().toString().trim() : "";
+            String note = edtNote.getText() != null ? edtNote.getText().toString().trim() : "";
+
+            if (date.isEmpty() || time.isEmpty() || guestStr.isEmpty()) {
+                Toast.makeText(this, "Vui lòng điền đầy đủ thông tin", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Build request
+            java.util.Map<String, Object> request = new java.util.HashMap<>();
+            request.put("tableId", reservation.getTableId());
+            request.put("reservationDate", date);
+            request.put("reservationTime", time);
+            request.put("guestCount", Integer.parseInt(guestStr));
+            request.put("note", note);
+
+            // Show loading
+            btnSave.setEnabled(false);
+            btnSave.setText("Đang lưu...");
+
+            // Call API
+            repository.updateReservation(reservation.getReservationId(), request)
+                    .enqueue(new Callback<java.util.Map<String, Object>>() {
+                        @Override
+                        public void onResponse(Call<java.util.Map<String, Object>> call,
+                                Response<java.util.Map<String, Object>> response) {
+                            if (response.isSuccessful() && response.body() != null) {
+                                Boolean success = (Boolean) response.body().get("success");
+                                if (Boolean.TRUE.equals(success)) {
+                                    Toast.makeText(MyReservationsActivity.this,
+                                            "Cập nhật thành công!", Toast.LENGTH_SHORT).show();
+                                    dialog.dismiss();
+                                    loadReservations(); // Refresh list
+                                } else {
+                                    String msg = (String) response.body().get("message");
+                                    Toast.makeText(MyReservationsActivity.this,
+                                            msg != null ? msg : "Cập nhật thất bại",
+                                            Toast.LENGTH_LONG).show();
+                                    btnSave.setEnabled(true);
+                                    btnSave.setText("💾 Lưu");
+                                }
+                            } else {
+                                Toast.makeText(MyReservationsActivity.this,
+                                        "Lỗi cập nhật", Toast.LENGTH_SHORT).show();
+                                btnSave.setEnabled(true);
+                                btnSave.setText("💾 Lưu");
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<java.util.Map<String, Object>> call, Throwable t) {
+                            Toast.makeText(MyReservationsActivity.this,
+                                    "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                            btnSave.setEnabled(true);
+                            btnSave.setText("💾 Lưu");
+                        }
+                    });
+        });
+
+        dialog.show();
     }
 
     private void cancelReservation(ReservationItem reservation, int position) {

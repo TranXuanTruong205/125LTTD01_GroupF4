@@ -190,8 +190,15 @@ public class CartFragment extends Fragment {
             return;
         }
 
+        // Kiểm tra payment method - nếu null/empty thì mặc định là Cash
+        if (selectedPaymentMethod == null || selectedPaymentMethod.isEmpty()) {
+            selectedPaymentMethod = "Cash";
+        }
+
         // Nếu thanh toán bằng Cash -> gọi API checkout rồi chuyển Success
-        if ("Cash".equalsIgnoreCase(selectedPaymentMethod)) {
+        // - "Cash" hoặc "Tiền mặt" đều là tiền mặt
+        if ("Cash".equalsIgnoreCase(selectedPaymentMethod) ||
+                "Tiền mặt".equalsIgnoreCase(selectedPaymentMethod)) {
             callCheckoutApi(false);
         } else {
             // Thanh toán online -> hiển màn hình QR (API được gọi sau khi QR hoàn thành)
@@ -217,8 +224,8 @@ public class CartFragment extends Fragment {
         }
         request.put("cartItemIds", cartItemIds);
 
-        // Payment method
-        request.put("paymentMethod", selectedPaymentMethod);
+        // Payment method - map về giá trị database chấp nhận
+        request.put("paymentMethod", mapPaymentMethodForDb(selectedPaymentMethod));
 
         // Table ID (nếu có)
         if (session.hasTableReservation()) {
@@ -518,5 +525,23 @@ public class CartFragment extends Fragment {
     // Helper
     private View viewRequire(int id) {
         return requireView().findViewById(id);
+    }
+
+    /**
+     * Map payment method từ UI sang giá trị database chấp nhận
+     * Database chỉ cho phép: "Tiền mặt" hoặc "Chuyển khoản"
+     */
+    private String mapPaymentMethodForDb(String uiPaymentMethod) {
+        if (uiPaymentMethod == null || uiPaymentMethod.isEmpty()) {
+            return "Tiền mặt";
+        }
+
+        String lower = uiPaymentMethod.toLowerCase();
+        if (lower.contains("cash") || lower.contains("tiền mặt")) {
+            return "Tiền mặt";
+        } else {
+            // Momo, PayPal, Apple Pay, Google Pay, MasterCard... -> Chuyển khoản
+            return "Chuyển khoản";
+        }
     }
 }

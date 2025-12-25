@@ -138,14 +138,20 @@ public class ReservationActivity extends AppCompatActivity implements TableAdapt
                         String msg = (String) response.body().get("message");
                         Toast.makeText(ReservationActivity.this,
                                 msg != null ? msg : "Không tìm thấy đặt bàn",
-                                Toast.LENGTH_SHORT).show();
-                        finish();
+                                Toast.LENGTH_LONG).show();
+                        // Không tự thoát, để user có thể thử lại
                     }
                 } else {
-                    Toast.makeText(ReservationActivity.this,
-                            "Lỗi tải dữ liệu đặt bàn",
-                            Toast.LENGTH_SHORT).show();
-                    finish();
+                    // Log lỗi từ server
+                    String errorMsg = "Lỗi tải dữ liệu đặt bàn";
+                    try {
+                        if (response.errorBody() != null) {
+                            errorMsg = response.errorBody().string();
+                        }
+                    } catch (Exception e) {
+                        errorMsg = "Lỗi: " + response.code();
+                    }
+                    Toast.makeText(ReservationActivity.this, errorMsg, Toast.LENGTH_LONG).show();
                 }
             }
 
@@ -154,8 +160,7 @@ public class ReservationActivity extends AppCompatActivity implements TableAdapt
                 showLoading(false);
                 Toast.makeText(ReservationActivity.this,
                         "Lỗi kết nối: " + t.getMessage(),
-                        Toast.LENGTH_SHORT).show();
-                finish();
+                        Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -445,9 +450,16 @@ public class ReservationActivity extends AppCompatActivity implements TableAdapt
                         btnBook.setEnabled(true);
                     }
                 } else {
-                    Toast.makeText(ReservationActivity.this,
-                            isEditMode ? "Lỗi cập nhật" : "Lỗi đặt bàn",
-                            Toast.LENGTH_SHORT).show();
+                    // Log lỗi từ server
+                    String errorMsg = isEditMode ? "Lỗi cập nhật" : "Lỗi đặt bàn";
+                    try {
+                        if (response.errorBody() != null) {
+                            errorMsg = response.errorBody().string();
+                        }
+                    } catch (Exception e) {
+                        errorMsg = "Lỗi: " + response.code();
+                    }
+                    Toast.makeText(ReservationActivity.this, errorMsg, Toast.LENGTH_LONG).show();
                     btnBook.setEnabled(true);
                 }
             }
