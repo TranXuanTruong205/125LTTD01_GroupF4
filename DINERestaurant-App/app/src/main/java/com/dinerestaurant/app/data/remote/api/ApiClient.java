@@ -87,4 +87,9 @@ public class ApiClient {
         }
         return orderApi;
     }
+    public static ChatApi getChatApi() {
+        checkInit();
+        return retrofit.create(ChatApi.class);
+    }
+
 }
