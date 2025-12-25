@@ -22,6 +22,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.dinerestaurant.app.R;
+import com.dinerestaurant.app.data.local.TableSessionManager;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.mlkit.vision.barcode.common.Barcode;
@@ -206,18 +207,23 @@ public class ScanQRFragment extends Fragment {
     }
 
     /**
-     * Navigate đến màn hình chọn phương thức order
+     * Navigate đến màn hình chọn phương thức order (My Locations với table_id)
      */
     private void showOrderTypeDialog(String tableId) {
         try {
+            // LƯU TABLE_ID VÀO SESSION - để dùng ở mọi nơi
+            TableSessionManager.getInstance(requireContext())
+                    .saveTableReservation(tableId, "Bàn " + tableId);
+
             NavController navController = Navigation.findNavController(requireView());
 
             Bundle bundle = new Bundle();
             bundle.putString("table_id", tableId);
             bundle.putString("table_name", "Bàn " + tableId);
+            bundle.putBoolean("from_qr_scan", true);
 
-            // Navigate đến QROrderTypeFragment
-            navController.navigate(R.id.action_scanQRFragment_to_qrOrderTypeFragment, bundle);
+            // Navigate đến MyLocationsFragment với table_id
+            navController.navigate(R.id.myLocationsFragment, bundle);
 
         } catch (Exception e) {
             // Fallback: hiển thị dialog nếu không navigate được
