@@ -12,7 +12,6 @@ import java.util.List;
 @Entity
 @Table(name = "cart")
 public class Cart {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cart_id")
@@ -30,7 +29,9 @@ public class Cart {
 
     public void calculateTotal() {
         this.totalAmount = cartItems.stream()
-                .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                .map(CartItem::getLinePrice) // Sử dụng line price thay vì chỉ price * quantity
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
+
 }
+

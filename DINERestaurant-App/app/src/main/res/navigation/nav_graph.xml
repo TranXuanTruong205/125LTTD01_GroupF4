@@ -43,7 +43,18 @@
         android:id="@+id/scanQRFragment"
         android:name="com.dinerestaurant.app.ui.other.ScanQRFragment"
         android:label="Scan QR"
-        tools:layout="@layout/fragment_scan_qr" />
+        tools:layout="@layout/fragment_scan_qr">
+        <action
+            android:id="@+id/action_scanQRFragment_to_qrOrderTypeFragment"
+            app:destination="@id/qrOrderTypeFragment" />
+    </fragment>
+
+    <!-- Fragment chọn phương thức order khi quét QR bàn -->
+    <fragment
+        android:id="@+id/qrOrderTypeFragment"
+        android:name="com.dinerestaurant.app.ui.other.QROrderTypeFragment"
+        android:label="Chọn phương thức"
+        tools:layout="@layout/fragment_qr_order_type" />
 
     <fragment
         android:id="@+id/notificationFragment"
@@ -59,6 +70,9 @@
         <action
             android:id="@+id/action_profileFragment_to_messageFragment"
             app:destination="@id/messageFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_myLocationsFragment"
+            app:destination="@id/myLocationsFragment" />
     </fragment>
 
 
@@ -134,6 +148,9 @@
         <action
             android:id="@+id/action_cartFragment_to_promotionsFragment"
             app:destination="@id/promotionsFragment" />
+        <action
+            android:id="@+id/action_cartFragment_to_myLocationsFragment"
+            app:destination="@id/myLocationsFragment" />
     </fragment>
 
     <!-- ĐÃ SỬA LỖI TYPO 'PromotionsFragement' và class name -->
@@ -169,5 +186,19 @@
         android:name="com.dinerestaurant.app.ui.other.MessageFragment"
         android:label="Messages"
         tools:layout="@layout/fragment_message" />
+
+    <!-- QR Payment -->
+    <fragment
+        android:id="@+id/qrPaymentFragment"
+        android:name="com.dinerestaurant.app.ui.cart.QRPaymentFragment"
+        android:label="Thanh toán QR"
+        tools:layout="@layout/fragment_qr_payment" />
+
+    <!-- Order Success -->
+    <fragment
+        android:id="@+id/orderSuccessFragment"
+        android:name="com.dinerestaurant.app.ui.cart.OrderSuccessFragment"
+        android:label="Đặt hàng thành công"
+        tools:layout="@layout/fragment_order_success" />
 
 </navigation>

@@ -39,7 +39,7 @@ public class CategoryFragment extends Fragment {
         items.add(new CategoryItem("images/categories/ic_donut.png", "Donut"));
         items.add(new CategoryItem("images/categories/ic_salad.png", "Salad"));
         items.add(new CategoryItem("images/categories/ic_noodles.png", "Noodles"));
-        items.add(new CategoryItem("images/categories/ic-Sandwich.png", "Sandwich"));
+        items.add(new CategoryItem("images/categories/ic_Sandwich.png", "Sandwich"));
         items.add(new CategoryItem("images/categories/ic_Pasta.png", "Pasta"));
         items.add(new CategoryItem("images/categories/ic_iceCream.png", "Ice Cream"));
         items.add(new CategoryItem("images/categories/ic_fried-rice.png", "Rice"));
@@ -53,7 +53,7 @@ public class CategoryFragment extends Fragment {
         items.add(new CategoryItem("images/categories/ic_dumpling.png", "Dumpling"));
 
         // Setup adapter với AssetManager
-        adapter = new CategoryAdapter(items, requireContext().getAssets(), item -> {
+        adapter = new CategoryAdapter(items, item -> {
             androidx.navigation.Navigation.findNavController(requireView())
                     .navigate(R.id.action_categoryFragment_to_categoryProductsFragment);
         });

@@ -26,4 +26,14 @@ public class CategoryService {
     public void deleteCategory(Integer id) {
         categoryRepository.deleteById(id);
     }
+    public Category updateCategory(Integer id, Category categoryDetails) {
+        Category category = getCategoryById(id);
+        if (category != null) {
+            category.setCategoryName(categoryDetails.getCategoryName());
+            category.setIcon(categoryDetails.getIcon());
+            category.setDisplayOrder(categoryDetails.getDisplayOrder());
+            return categoryRepository.save(category);
+        }
+        return null;
+    }
 }

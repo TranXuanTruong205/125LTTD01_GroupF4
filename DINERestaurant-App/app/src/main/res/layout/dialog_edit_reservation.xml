@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <!-- Header -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="✏️ Sửa đặt bàn"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#333333"
+        android:layout_marginBottom="20dp" />
+
+    <!-- Ngày -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        app:boxStrokeColor="#FF6B00"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edt_edit_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="📅 Ngày đặt"
+            android:inputType="none"
+            android:focusable="false"
+            android:clickable="true" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Giờ -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        app:boxStrokeColor="#FF6B00"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edt_edit_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="⏰ Giờ đặt"
+            android:inputType="none"
+            android:focusable="false"
+            android:clickable="true" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Số khách -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        app:boxStrokeColor="#FF6B00"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edt_edit_guest_count"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="👥 Số khách"
+            android:inputType="number" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Ghi chú -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        app:boxStrokeColor="#FF6B00"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edt_edit_note"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="📝 Ghi chú"
+            android:inputType="textMultiLine"
+            android:minLines="2" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_cancel_edit"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:text="Hủy"
+            android:textColor="#666666"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            app:strokeColor="#CCCCCC"
+            app:cornerRadius="8dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_save_edit"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:text="💾 Lưu"
+            android:textColor="@android:color/white"
+            app:backgroundTint="#FF6B00"
+            app:cornerRadius="8dp" />
+
+    </LinearLayout>
+
+</LinearLayout>

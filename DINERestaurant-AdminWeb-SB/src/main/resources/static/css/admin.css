@@ -1,0 +1,298 @@
+/* =========================
+   DESIGN TOKENS
+========================= */
+:root {
+    --primary: #FF6B35;
+    --primary-dark: #E85A2A;
+
+    --bg: #F9FAFB;
+    --sidebar: #1F2937;
+    --sidebar-text: #E5E7EB;
+
+    --text: #111827;
+    --muted: #6B7280;
+    --border: #E5E7EB;
+}
+
+/* =========================
+   GLOBAL
+========================= */
+body {
+    background: var(--bg);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: var(--text);
+}
+
+/* =========================
+   SIDEBAR
+========================= */
+.sidebar {
+    width: 220px;
+    min-height: 100vh;
+    background: var(--sidebar);
+    padding: 20px 0;
+}
+
+.sidebar h5 {
+    color: white;
+    font-weight: 700;
+    padding: 0 20px 20px;
+}
+
+.sidebar a {
+    display: block;
+    color: var(--sidebar-text);
+    padding: 10px 20px;
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    transition: all .2s ease;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+    background: rgba(255,255,255,.05);
+    border-left-color: var(--primary);
+    color: white;
+}
+
+/* =========================
+   MAIN CONTENT
+========================= */
+.main {
+    padding: 24px;
+}
+
+/* =========================
+   CARD
+========================= */
+.card {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    box-shadow: 0 10px 30px rgba(17,24,39,.06);
+}
+
+/* =========================
+   TABLE
+========================= */
+.table {
+    margin-bottom: 0;
+}
+
+.table th {
+    background: #F3F4F6;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.table td {
+    vertical-align: middle;
+    font-size: 14px;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+.btn-primary {
+    background: var(--primary);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+}
+
+/* =========================
+   ORDERS PAGE
+========================= */
+.orders-page {
+    padding: 24px;
+}
+
+.orders-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.orders-tabs a {
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 14px;
+    text-decoration: none;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    margin-right: 6px;
+    transition: all .2s ease;
+}
+
+.orders-tabs a:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.orders-tabs a.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.orders-card {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 10px 30px rgba(17,24,39,.06);
+}
+
+/* =========================
+   ORDERS TABLE (CUSTOM)
+========================= */
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.orders-table th {
+    text-align: left;
+    font-size: 13px;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+}
+
+.orders-table td {
+    padding: 12px 0;
+    border-bottom: 1px solid #F1F5F9;
+}
+
+/* =========================
+   LINKS
+========================= */
+.order-link {
+    font-weight: 600;
+    color: var(--primary);
+    text-decoration: none;
+}
+
+.order-link:hover {
+    text-decoration: underline;
+}
+
+/* =========================
+   STATUS BADGES
+========================= */
+.status-badge span {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* Đã đặt */
+.status-dadat {
+    background: rgba(255,107,53,.12);
+    color: var(--primary-dark);
+}
+
+/* Đang làm */
+.status-danglam {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+/* Đang giao */
+.status-danggiao {
+    background: #DBEAFE;
+    color: #1D4ED8;
+}
+
+/* Hoàn thành */
+.status-hoanthanh {
+    background: #DCFCE7;
+    color: #166534;
+}
+
+/* Đã huỷ */
+.status-huy {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+/* Fallback */
+.status-default {
+    background: #E5E7EB;
+    color: #374151;
+}
+
+/* =========================
+   ACTION BUTTONS
+========================= */
+.btn-detail {
+    padding: 6px 12px;
+    border-radius: 8px;
+    background: #F1F5F9;
+    color: #334155;
+    font-size: 13px;
+    text-decoration: none;
+    transition: all .2s ease;
+}
+
+.btn-detail:hover {
+    background: #E2E8F0;
+}
+
+/* =========================
+   ORDER DETAIL
+========================= */
+.order-timeline {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+    position: relative;
+}
+
+.order-timeline li {
+    display: flex;
+    gap: 12px;
+    position: relative;
+    padding-bottom: 20px;
+}
+
+.order-timeline li span {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #CBD5E1;
+    margin-top: 4px;
+}
+
+.order-timeline li.done span {
+    background: var(--primary);
+}
+
+.order-timeline li::before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 14px;
+    height: 100%;
+    width: 2px;
+    background: #E5E7EB;
+}
+
+.order-timeline li:last-child::before {
+    display: none;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.summary-row.total {
+    font-size: 16px;
+}

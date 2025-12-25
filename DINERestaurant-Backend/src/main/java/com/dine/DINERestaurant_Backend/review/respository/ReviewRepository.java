@@ -1,13 +1,13 @@
 package com.dine.DINERestaurant_Backend.review.respository;
+import com.dine.DINERestaurant_Backend.user.repository.UserRepository;
+
 
 import com.dine.DINERestaurant_Backend.review.DTO.ReviewResponse;
 import com.dine.DINERestaurant_Backend.review.entity.Review;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
 import java.util.List;
-
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     // Lấy review theo món

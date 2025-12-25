@@ -4,22 +4,20 @@ import java.math.BigDecimal;
 
 public class ApplyPromotionResponse {
 
-    // CHANGED: Integer cho khớp DB
-    private Integer orderId;
+    private Integer cartId;
     private Integer promotionId;
-
     private String promotionTitle;
     private Integer discountPercent;
     private BigDecimal originalTotal;
     private BigDecimal discountAmount;
     private BigDecimal finalTotal;
 
-    public Integer getOrderId() {
-        return orderId;
+    public Integer getCartId() {
+        return cartId;
     }
 
-    public void setOrderId(Integer orderId) {
-        this.orderId = orderId;
+    public void setCartId(Integer cartId) {
+        this.cartId = cartId;
     }
 
     public Integer getPromotionId() {
