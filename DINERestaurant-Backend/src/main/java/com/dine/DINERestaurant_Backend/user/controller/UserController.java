@@ -5,7 +5,10 @@ import com.dine.DINERestaurant_Backend.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.dine.DINERestaurant_Backend.auth.jwt.JwtUtil;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.Optional;
@@ -95,6 +98,58 @@ public class UserController {
         userService.updateUser(user);
 
         return Map.of("message", "Cập nhật hồ sơ thành công!");
+    }
+
+    @PostMapping("/avatar")
+    public Object uploadAvatar(
+            @RequestHeader("Authorization") String authHeader,
+            @RequestParam("file") MultipartFile file
+    ) throws IOException {
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Map.of("error", "Missing token");
+        }
+
+        String token = authHeader.substring(7);
+        if (!jwtUtil.isTokenValid(token)) {
+            return Map.of("error", "Invalid token");
+        }
+
+        String userId = jwtUtil.extractUserId(token);
+        User user = userService.getUserById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // ===== Validate file =====
+        if (file.isEmpty()) {
+            return Map.of("error", "File is empty");
+        }
+
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            return Map.of("error", "File must be image");
+        }
+
+        // ===== Save file =====
+        String fileName = "avatar_" + userId + "_" + System.currentTimeMillis() + ".jpg";
+
+        String uploadDir = "D:/uploads/diner/avatars/";
+        File dir = new File(uploadDir);
+        if (!dir.exists()) dir.mkdirs();
+
+        File dest = new File(uploadDir + fileName);
+        file.transferTo(dest);
+
+        // ===== Public URL =====
+        String avatarUrl = "http://10.0.2.2:8080/uploads/avatars/" + fileName;
+
+        // ===== Save to DB =====
+        user.setProfilePicture(avatarUrl);
+        userService.updateUser(user);
+
+        return Map.of(
+                "avatarUrl", avatarUrl,
+                "message", "Upload avatar success"
+        );
     }
 
 }

@@ -8,6 +8,7 @@ public class OrderItem {
     private String status; // Active, Completed, Cancelled
     private int foodImage; // Resource ID cho avatar
     private boolean showStepper; // Có hiển thị stepper không
+    private int realOrderId; // ID số thực để gọi API
 
     public OrderItem(String orderId, String foodName, double price, int rating, String status, int foodImage) {
         this.orderId = orderId;
@@ -20,7 +21,8 @@ public class OrderItem {
     }
 
     // Constructor với showStepper
-    public OrderItem(String orderId, String foodName, double price, int rating, String status, int foodImage, boolean showStepper) {
+    public OrderItem(String orderId, String foodName, double price, int rating, String status, int foodImage,
+            boolean showStepper) {
         this.orderId = orderId;
         this.foodName = foodName;
         this.price = price;
@@ -62,7 +64,15 @@ public class OrderItem {
         this.showStepper = showStepper;
     }
 
+    public int getRealOrderId() {
+        return realOrderId;
+    }
+
+    public void setRealOrderId(int realOrderId) {
+        this.realOrderId = realOrderId;
+    }
+
     public String getFormattedPrice() {
-        return "£ " + String.format("%.2f", price);
+        return String.format("%,.0f₫", price);
     }
 }

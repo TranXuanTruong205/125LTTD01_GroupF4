@@ -27,7 +27,7 @@
             android:orientation="horizontal">
 
             <ImageButton
-                android:id="@+id/imageButton3"
+                android:id="@+id/btnBack"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_gravity="center"
@@ -73,6 +73,7 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/tv_status_badge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/status_badge"
@@ -80,7 +81,7 @@
                 android:paddingTop="6dp"
                 android:paddingEnd="12dp"
                 android:paddingBottom="6dp"
-                android:text="Active"
+                android:text="Đang xử lý"
                 android:textColor="#FF6B35"
                 android:textSize="12sp"
                 android:textStyle="bold" />
@@ -737,7 +738,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@drawable/rounded_bg"
-            android:text="Cancel Order"
+            android:text="Hủy đơn"
             android:textColor="#FF6B35" />
 
         <Space
@@ -750,7 +751,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@drawable/order_confirm_color"
-            android:text="Confirm"
+            android:text="Theo dõi"
             android:textColor="#FFFFFF" />
     </LinearLayout>
 
