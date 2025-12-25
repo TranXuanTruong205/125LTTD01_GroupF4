@@ -10,6 +10,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,13 +21,22 @@ import androidx.navigation.Navigation;
 import com.bumptech.glide.Glide;
 import com.dinerestaurant.app.R;
 import com.dinerestaurant.app.data.local.TableSessionManager;
+import com.dinerestaurant.app.data.remote.api.ApiClient;
 
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Fragment hiển thị QR thanh toán VietQR
- * Sau 5-8s tự động chuyển sang màn hình thành công
+ * Sau 8s tự động gọi API checkout rồi chuyển sang màn hình thành công
  */
 public class QRPaymentFragment extends Fragment {
 
@@ -35,6 +45,7 @@ public class QRPaymentFragment extends Fragment {
     public static final String ARG_PAYMENT_METHOD = "payment_method";
     public static final String ARG_ORDER_TYPE = "order_type";
     public static final String ARG_TABLE_ID = "table_id";
+    public static final String ARG_CART_ITEM_IDS = "cart_item_ids";
 
     // VietQR URL template
     private static final String VIETQR_URL = "https://img.vietqr.io/image/mb-0842192393-compact2.png?amount=%d&addInfo=DINERESTAURANT&accountName=PHAM%%20LE%%20THIEU%%20QUANG";
@@ -49,8 +60,9 @@ public class QRPaymentFragment extends Fragment {
     // State
     private long amount;
     private String paymentMethod;
+    private ArrayList<Integer> cartItemIds;
     private CountDownTimer countDownTimer;
-    private int countdown = 6; // 6 seconds
+    private int countdown = 8; // 8 seconds
 
     @Nullable
     @Override
@@ -67,6 +79,7 @@ public class QRPaymentFragment extends Fragment {
         if (getArguments() != null) {
             amount = getArguments().getLong(ARG_AMOUNT, 0);
             paymentMethod = getArguments().getString(ARG_PAYMENT_METHOD, "Momo e-wallet");
+            cartItemIds = getArguments().getIntegerArrayList(ARG_CART_ITEM_IDS);
         }
 
         initViews(view);
@@ -114,7 +127,7 @@ public class QRPaymentFragment extends Fragment {
 
         btnConfirmPayment.setOnClickListener(v -> {
             cancelCountdown();
-            navigateToSuccess();
+            callCheckoutApi();
         });
     }
 
@@ -163,8 +176,8 @@ public class QRPaymentFragment extends Fragment {
 
             @Override
             public void onFinish() {
-                tvTimer.setText("Đang xử lý...");
-                navigateToSuccess();
+                tvTimer.setText("Đang xử lý đơn hàng...");
+                callCheckoutApi();
             }
         };
         countDownTimer.start();
@@ -176,16 +189,96 @@ public class QRPaymentFragment extends Fragment {
         }
     }
 
-    private void navigateToSuccess() {
-        try {
-            // Clear table session sau khi đặt hàng thành công
-            TableSessionManager session = TableSessionManager.getInstance(requireContext());
+    /**
+     * Gọi API checkout để tạo đơn hàng
+     */
+    private void callCheckoutApi() {
+        TableSessionManager session = TableSessionManager.getInstance(requireContext());
 
+        // Build request body
+        Map<String, Object> request = new HashMap<>();
+
+        // Cart item IDs
+        if (cartItemIds != null && !cartItemIds.isEmpty()) {
+            request.put("cartItemIds", cartItemIds);
+        }
+
+        // Order type
+        String orderType = session.getOrderType();
+        if ("dine_in".equals(orderType)) {
+            request.put("orderType", "Tại chỗ");
+        } else if ("takeaway".equals(orderType)) {
+            request.put("orderType", "Mang về");
+        } else {
+            request.put("orderType", "Giao hàng");
+        }
+
+        // Table ID (nếu có)
+        if (session.hasTableReservation()) {
+            try {
+                request.put("tableId", Integer.parseInt(session.getTableId()));
+            } catch (NumberFormatException e) {
+                // ignore
+            }
+        }
+
+        // Address ID (nếu delivery)
+        if ("delivery".equals(orderType) && session.getAddressId() > 0) {
+            request.put("addressId", session.getAddressId());
+        }
+
+        // Payment method
+        request.put("paymentMethod", paymentMethod);
+
+        // Disable buttons
+        btnConfirmPayment.setEnabled(false);
+        btnConfirmPayment.setText("Đang xử lý...");
+        btnCancel.setEnabled(false);
+
+        // Call API
+        ApiClient.getOrderApi().checkout(request).enqueue(new Callback<Map<String, Object>>() {
+            @Override
+            public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Boolean success = (Boolean) response.body().get("success");
+                    if (Boolean.TRUE.equals(success)) {
+                        String orderNumber = (String) response.body().get("orderNumber");
+                        navigateToSuccess(orderNumber);
+                    } else {
+                        String msg = (String) response.body().get("message");
+                        Toast.makeText(getContext(), msg != null ? msg : "Đặt hàng thất bại", Toast.LENGTH_SHORT)
+                                .show();
+                        resetButtons();
+                    }
+                } else {
+                    Toast.makeText(getContext(), "Lỗi đặt hàng", Toast.LENGTH_SHORT).show();
+                    resetButtons();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Map<String, Object>> call, Throwable t) {
+                Toast.makeText(getContext(), "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                resetButtons();
+            }
+        });
+    }
+
+    private void resetButtons() {
+        btnConfirmPayment.setEnabled(true);
+        btnConfirmPayment.setText("Tôi đã thanh toán");
+        btnCancel.setEnabled(true);
+    }
+
+    private void navigateToSuccess(String orderNumber) {
+        try {
+            TableSessionManager session = TableSessionManager.getInstance(requireContext());
             NavController navController = Navigation.findNavController(requireView());
 
             Bundle bundle = new Bundle();
             bundle.putLong(ARG_AMOUNT, amount);
             bundle.putString(ARG_PAYMENT_METHOD, paymentMethod);
+            bundle.putString("order_number", orderNumber);
 
             // Lấy order type từ session
             if (session.hasOrderSelection()) {

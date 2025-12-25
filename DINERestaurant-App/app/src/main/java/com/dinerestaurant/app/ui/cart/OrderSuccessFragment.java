@@ -63,10 +63,17 @@ public class OrderSuccessFragment extends Fragment {
             orderType = getArguments().getString(ARG_ORDER_TYPE, "");
             tableId = getArguments().getString(ARG_TABLE_ID, "");
             displayAddress = getArguments().getString(ARG_DISPLAY_ADDRESS, "");
-        }
 
-        // Generate order ID
-        orderId = generateOrderId();
+            // Lấy order number từ API (nếu có)
+            String orderNumber = getArguments().getString("order_number");
+            if (orderNumber != null && !orderNumber.isEmpty()) {
+                orderId = orderNumber;
+            } else {
+                orderId = generateOrderId();
+            }
+        } else {
+            orderId = generateOrderId();
+        }
 
         initViews(view);
         displayOrderInfo();
@@ -86,7 +93,7 @@ public class OrderSuccessFragment extends Fragment {
             try {
                 NavController navController = Navigation.findNavController(v);
                 // Navigate to orders tab
-                navController.navigate(R.id.ordersFragment);
+                navController.navigate(R.id.orderFragment);
             } catch (Exception e) {
                 e.printStackTrace();
             }

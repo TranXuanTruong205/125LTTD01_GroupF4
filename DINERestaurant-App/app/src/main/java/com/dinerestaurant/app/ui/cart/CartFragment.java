@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -189,13 +190,94 @@ public class CartFragment extends Fragment {
             return;
         }
 
-        // Nếu thanh toán bằng Cash -> chuyển thẳng đến Success
+        // Nếu thanh toán bằng Cash -> gọi API checkout rồi chuyển Success
         if ("Cash".equalsIgnoreCase(selectedPaymentMethod)) {
-            navigateToOrderSuccess();
+            callCheckoutApi(false);
         } else {
-            // Thanh toán online -> hiển màn hình QR
+            // Thanh toán online -> hiển màn hình QR (API được gọi sau khi QR hoàn thành)
             navigateToQRPayment();
         }
+    }
+
+    /**
+     * Gọi API checkout để tạo đơn hàng
+     */
+    private void callCheckoutApi(boolean fromQRPayment) {
+        TableSessionManager session = TableSessionManager.getInstance(requireContext());
+
+        // Build request body
+        Map<String, Object> request = new HashMap<>();
+
+        // Lấy danh sách cart item IDs được chọn
+        java.util.List<Integer> cartItemIds = new java.util.ArrayList<>();
+        for (CartItem item : adapter.getItems()) {
+            if (item.isSelected()) {
+                cartItemIds.add(item.getCartItemId());
+            }
+        }
+        request.put("cartItemIds", cartItemIds);
+
+        // Order type
+        String orderType = session.getOrderType();
+        if ("dine_in".equals(orderType)) {
+            request.put("orderType", "Tại chỗ");
+        } else if ("takeaway".equals(orderType)) {
+            request.put("orderType", "Mang về");
+        } else {
+            request.put("orderType", "Giao hàng");
+        }
+
+        // Table ID (nếu có)
+        if (session.hasTableReservation()) {
+            try {
+                request.put("tableId", Integer.parseInt(session.getTableId()));
+            } catch (NumberFormatException e) {
+                // ignore
+            }
+        }
+
+        // Address ID (nếu delivery)
+        if ("delivery".equals(orderType) && session.getAddressId() > 0) {
+            request.put("addressId", session.getAddressId());
+        }
+
+        // Payment method
+        request.put("paymentMethod", selectedPaymentMethod);
+
+        // Show loading
+        btnConfirm.setEnabled(false);
+        btnConfirm.setText("Đang xử lý...");
+
+        // Call API
+        ApiClient.getOrderApi().checkout(request).enqueue(new Callback<Map<String, Object>>() {
+            @Override
+            public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
+                btnConfirm.setEnabled(true);
+                btnConfirm.setText("Place Order");
+
+                if (response.isSuccessful() && response.body() != null) {
+                    Boolean success = (Boolean) response.body().get("success");
+                    if (Boolean.TRUE.equals(success)) {
+                        // Lấy order number từ response
+                        String orderNumber = (String) response.body().get("orderNumber");
+                        navigateToOrderSuccess(orderNumber);
+                    } else {
+                        String msg = (String) response.body().get("message");
+                        Toast.makeText(getContext(), msg != null ? msg : "Đặt hàng thất bại", Toast.LENGTH_SHORT)
+                                .show();
+                    }
+                } else {
+                    Toast.makeText(getContext(), "Lỗi đặt hàng", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Map<String, Object>> call, Throwable t) {
+                btnConfirm.setEnabled(true);
+                btnConfirm.setText("Place Order");
+                Toast.makeText(getContext(), "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void navigateToQRPayment() {
@@ -206,13 +288,22 @@ public class CartFragment extends Fragment {
             bundle.putLong(QRPaymentFragment.ARG_AMOUNT, (long) totalAmount);
             bundle.putString(QRPaymentFragment.ARG_PAYMENT_METHOD, selectedPaymentMethod);
 
+            // Truyền cart item IDs để QRPaymentFragment gọi checkout sau
+            java.util.ArrayList<Integer> cartItemIds = new java.util.ArrayList<>();
+            for (CartItem item : adapter.getItems()) {
+                if (item.isSelected()) {
+                    cartItemIds.add(item.getCartItemId());
+                }
+            }
+            bundle.putIntegerArrayList("cart_item_ids", cartItemIds);
+
             navController.navigate(R.id.qrPaymentFragment, bundle);
         } catch (Exception e) {
             Toast.makeText(getContext(), "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void navigateToOrderSuccess() {
+    private void navigateToOrderSuccess(String orderNumber) {
         try {
             TableSessionManager session = TableSessionManager.getInstance(requireContext());
             NavController navController = Navigation.findNavController(requireView());
@@ -220,6 +311,7 @@ public class CartFragment extends Fragment {
             Bundle bundle = new Bundle();
             bundle.putLong(OrderSuccessFragment.ARG_AMOUNT, (long) totalAmount);
             bundle.putString(OrderSuccessFragment.ARG_PAYMENT_METHOD, selectedPaymentMethod);
+            bundle.putString("order_number", orderNumber);
 
             if (session.hasOrderSelection()) {
                 bundle.putString(OrderSuccessFragment.ARG_ORDER_TYPE, session.getOrderType());
