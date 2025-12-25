@@ -52,6 +52,8 @@ public class CartFragment extends Fragment {
     private Integer cartId;
     private Long appliedPromotionId = null;
     private double discountAmount = 0;
+    private String selectedPaymentMethod = "Cash"; // Default
+    private double totalAmount = 0;
 
     @Override
     public View onCreateView(
@@ -82,6 +84,20 @@ public class CartFragment extends Fragment {
                 (key, bundle) -> {
                     appliedPromotionId = bundle.getLong("promotionId");
                     applyPromotionPreview();
+                });
+
+        // Nhận payment method từ PaymentFragment
+        NavController navController = Navigation.findNavController(view);
+        navController.getCurrentBackStackEntry()
+                .getSavedStateHandle()
+                .getLiveData("selected_payment_method", "Cash")
+                .observe(getViewLifecycleOwner(), method -> {
+                    selectedPaymentMethod = (String) method;
+                    // Update UI nếu cần
+                    TextView tvPayment = view.findViewById(R.id.tvPaymentMethod);
+                    if (tvPayment != null) {
+                        tvPayment.setText(selectedPaymentMethod);
+                    }
                 });
     }
 
@@ -154,7 +170,75 @@ public class CartFragment extends Fragment {
                 .setOnClickListener(v -> Navigation.findNavController(v)
                         .navigate(R.id.action_cartFragment_to_paymentFragment));
 
-        btnConfirm.setOnClickListener(v -> Toast.makeText(getContext(), "Place order", Toast.LENGTH_SHORT).show());
+        btnConfirm.setOnClickListener(v -> placeOrder());
+    }
+
+    /**
+     * Xử lý đặt hàng
+     */
+    private void placeOrder() {
+        if (adapter.getItems().isEmpty()) {
+            Toast.makeText(getContext(), "Giỏ hàng trống", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Kiểm tra đã chọn địa chỉ chưa
+        TableSessionManager session = TableSessionManager.getInstance(requireContext());
+        if (!session.hasOrderSelection()) {
+            Toast.makeText(getContext(), "Vui lòng chọn phương thức nhận hàng", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Nếu thanh toán bằng Cash -> chuyển thẳng đến Success
+        if ("Cash".equalsIgnoreCase(selectedPaymentMethod)) {
+            navigateToOrderSuccess();
+        } else {
+            // Thanh toán online -> hiển màn hình QR
+            navigateToQRPayment();
+        }
+    }
+
+    private void navigateToQRPayment() {
+        try {
+            NavController navController = Navigation.findNavController(requireView());
+
+            Bundle bundle = new Bundle();
+            bundle.putLong(QRPaymentFragment.ARG_AMOUNT, (long) totalAmount);
+            bundle.putString(QRPaymentFragment.ARG_PAYMENT_METHOD, selectedPaymentMethod);
+
+            navController.navigate(R.id.qrPaymentFragment, bundle);
+        } catch (Exception e) {
+            Toast.makeText(getContext(), "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void navigateToOrderSuccess() {
+        try {
+            TableSessionManager session = TableSessionManager.getInstance(requireContext());
+            NavController navController = Navigation.findNavController(requireView());
+
+            Bundle bundle = new Bundle();
+            bundle.putLong(OrderSuccessFragment.ARG_AMOUNT, (long) totalAmount);
+            bundle.putString(OrderSuccessFragment.ARG_PAYMENT_METHOD, selectedPaymentMethod);
+
+            if (session.hasOrderSelection()) {
+                bundle.putString(OrderSuccessFragment.ARG_ORDER_TYPE, session.getOrderType());
+                bundle.putString("display_address", session.getDisplayAddress());
+            }
+
+            if (session.hasTableReservation()) {
+                bundle.putString(OrderSuccessFragment.ARG_TABLE_ID, session.getTableId());
+            }
+
+            navController.navigate(R.id.orderSuccessFragment, bundle);
+
+            // Clear session sau khi đặt hàng
+            session.clearOrderSelection();
+            session.clearTableReservation();
+
+        } catch (Exception e) {
+            Toast.makeText(getContext(), "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 
     // =====================================================
@@ -292,6 +376,9 @@ public class CartFragment extends Fragment {
         // Total
         double total = Math.max(0, subtotal - discountAmount);
         tvTotalValue.setText(String.format("£ %.2f", total));
+
+        // Lưu total để dùng khi place order
+        this.totalAmount = total;
 
         // Bottom bar price
         btnCancel.setText(String.format("£ %.2f", total));
