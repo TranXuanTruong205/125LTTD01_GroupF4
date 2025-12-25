@@ -87,4 +87,7 @@ public class ApiClient {
         }
         return orderApi;
     }
+    public static ReviewApi getReviewApi() {
+        return retrofit.create(ReviewApi.class);
+    }
 }
