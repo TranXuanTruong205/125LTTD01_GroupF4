@@ -9,6 +9,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ApiClient {
 
     private static Retrofit retrofit;
+    private static ReservationApi reservationApi;
+
     private static final String BASE_URL = "http://10.0.2.2:8080/";
 
     public static void init(Context context) {
@@ -56,19 +58,33 @@ public class ApiClient {
         return retrofit.create(PromotionApi.class);
     }
 
-        public static Retrofit getClient() {
-            if (retrofit == null) {
-                retrofit = new Retrofit.Builder()
-                        .baseUrl(BASE_URL)
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .build();
-            }
-            return retrofit;
+    public static Retrofit getClient() {
+        if (retrofit == null) {
+            retrofit = new Retrofit.Builder()
+                    .baseUrl(BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+        }
+        return retrofit;
 
     }
     public static UserAddressApi getUserAddressApi() {
         checkInit();
         return retrofit.create(UserAddressApi.class);
     }
+    public static ReservationApi getReservationApi() {
+        if (reservationApi == null) {
+            reservationApi = retrofit.create(ReservationApi.class);
+        }
+        return reservationApi;
+    }
 
+    private static OrderApi orderApi;
+
+    public static OrderApi getOrderApi() {
+        if (orderApi == null) {
+            orderApi = retrofit.create(OrderApi.class);
+        }
+        return orderApi;
+    }
 }

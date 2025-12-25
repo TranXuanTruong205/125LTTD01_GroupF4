@@ -144,6 +144,7 @@ public class SignUpActivity extends AppCompatActivity {
         String email = edtEmail.getText().toString().trim();
         String fullname = edtFullName.getText().toString().trim();
 
+        // Vì bạn dùng (+84), người dùng CHỈ nhập 9 số còn lại.
         boolean validPhone = phone.length() == 9;
         boolean validEmail = !email.isEmpty();
         boolean validName = !fullname.isEmpty();

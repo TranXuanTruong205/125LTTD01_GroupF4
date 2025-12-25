@@ -22,13 +22,20 @@ public class AuthInterceptor implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
         Request original = chain.request();
 
+        // Nếu request đã có Authorization header thì không thêm nữa
+        if (original.header("Authorization") != null) {
+            return chain.proceed(original);
+        }
+
         String token = tokenManager.getToken();
-        if (token == null) {
+
+        if (token == null || token.isEmpty()) {
+            // Không có token -> gửi request như bình thường
             return chain.proceed(original);
         }
 
         Request newRequest = original.newBuilder()
-                .addHeader("Authorization", "Bearer " + token)
+                .header("Authorization", "Bearer " + token)
                 .build();
 
         return chain.proceed(newRequest);
