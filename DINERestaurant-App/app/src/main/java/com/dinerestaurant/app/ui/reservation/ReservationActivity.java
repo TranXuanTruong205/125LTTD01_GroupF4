@@ -300,11 +300,27 @@ public class ReservationActivity extends AppCompatActivity implements TableAdapt
                     Boolean success = (Boolean) response.body().get("success");
 
                     if (Boolean.TRUE.equals(success)) {
-                        Toast.makeText(ReservationActivity.this,
-                                "🎉 Đặt bàn thành công!",
-                                Toast.LENGTH_LONG).show();
+                        // Lấy reservation_id từ response
+                        int reservationId = 0;
+                        Object data = response.body().get("data");
+                        if (data instanceof Map) {
+                            Object idObj = ((Map<?, ?>) data).get("reservationId");
+                            if (idObj instanceof Number) {
+                                reservationId = ((Number) idObj).intValue();
+                            }
+                        }
 
-                        // Đóng màn hình và quay lại
+                        // Mở màn hình hiển thị QR code
+                        Intent intent = new Intent(ReservationActivity.this, ReservationSuccessActivity.class);
+                        intent.putExtra(ReservationSuccessActivity.EXTRA_RESERVATION_ID, reservationId);
+                        intent.putExtra(ReservationSuccessActivity.EXTRA_TABLE_NAME, selectedTable.getTableNumber());
+                        intent.putExtra(ReservationSuccessActivity.EXTRA_DATE, edtDate.getText().toString());
+                        intent.putExtra(ReservationSuccessActivity.EXTRA_TIME, edtTime.getText().toString());
+                        intent.putExtra(ReservationSuccessActivity.EXTRA_GUEST_COUNT,
+                                Integer.parseInt(edtGuestCount.getText().toString()));
+                        startActivity(intent);
+
+                        // Đóng màn hình đặt bàn
                         setResult(RESULT_OK);
                         finish();
                     } else {
