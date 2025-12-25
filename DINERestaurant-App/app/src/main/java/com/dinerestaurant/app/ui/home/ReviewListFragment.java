@@ -3,6 +3,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
 import com.dinerestaurant.app.ui.home.ReviewApiAdapter;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -23,8 +25,10 @@ import retrofit2.Response;
 
 public class ReviewListFragment extends Fragment {
 
-    private RecyclerView rvReviews;
 
+    private RecyclerView rvReviews;
+    private TextView tvAverageRating;
+    private TextView tvTotalReviews;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -34,6 +38,8 @@ public class ReviewListFragment extends Fragment {
 
         // 1. Ánh xạ RecyclerView
         rvReviews = view.findViewById(R.id.rvReviews);
+        tvAverageRating = view.findViewById(R.id.tvAverageRating);
+        tvTotalReviews = view.findViewById(R.id.tvTotalReviews);
         rvReviews.setLayoutManager(new LinearLayoutManager(getContext()));
 
         // 2. Nhận itemId từ ProductDetail
@@ -53,15 +59,35 @@ public class ReviewListFragment extends Fragment {
 
         api.getReviewsByItem(itemId).enqueue(new Callback<List<ReviewResponse>>() {
             @Override
+
             public void onResponse(Call<List<ReviewResponse>> call,
                                    Response<List<ReviewResponse>> response) {
 
                 if (response.isSuccessful() && response.body() != null) {
-                    rvReviews.setAdapter(
-                            new ReviewApiAdapter(response.body())
-                    );
+
+                    List<ReviewResponse> reviews = response.body();
+
+                    // 1️⃣ Gắn RecyclerView
+                    rvReviews.setAdapter(new ReviewApiAdapter(reviews));
+
+                    // 2️⃣ TÍNH TRUNG BÌNH SAO
+                    int totalReviews = reviews.size();
+                    float sumRating = 0;
+
+                    for (ReviewResponse r : reviews) {
+                        sumRating += r.rating;
+                    }
+
+                    float avgRating = totalReviews > 0
+                            ? sumRating / totalReviews
+                            : 0;
+
+                    // 3️⃣ HIỂN THỊ LÊN UI
+                    tvAverageRating.setText(String.format("%.1f", avgRating));
+                    tvTotalReviews.setText("(" + totalReviews + ")");
                 }
             }
+
 
             @Override
             public void onFailure(Call<List<ReviewResponse>> call, Throwable t) {
