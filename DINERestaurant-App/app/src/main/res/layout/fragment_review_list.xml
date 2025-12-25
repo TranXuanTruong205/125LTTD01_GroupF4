@@ -6,39 +6,28 @@
     android:orientation="vertical"
     android:background="#F5F5F5">
 
-    <!-- Header -->
+    <!-- ===== HEADER ===== -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:id="@+id/ivBack"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:padding="10dp"
-            android:src="@drawable/ic_arrow_back"
-            android:background="@drawable/bg_circle_white"/>
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
         <TextView
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Reviews"
             android:textSize="20sp"
             android:textStyle="bold"
             android:gravity="center"/>
-
-        <View
-            android:layout_width="40dp"
-            android:layout_height="40dp"/>
     </LinearLayout>
 
-    <!-- Scroll content -->
+    <!-- ===== CONTENT ===== -->
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:fillViewport="true">
 
         <LinearLayout
@@ -47,35 +36,153 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Rating summary -->
-            <TextView
-                android:id="@+id/tvAverageRating"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0.0"
-                android:textSize="32sp"
-                android:textStyle="bold"/>
-
-            <TextView
-                android:id="@+id/tvTotalReviews"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="(0)"/>
-
-            <!-- FILTER (nếu muốn giữ) -->
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/chipGroupFilter"
+            <!-- ===== TỔNG ĐÁNH GIÁ ===== -->
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="12dp"
+                android:background="#FFFFFF">
 
-            <!-- ⭐ RECYCLERVIEW DUY NHẤT -->
+                <!-- BÊN TRÁI -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/tvAverageRating"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0.0"
+                        android:textSize="36sp"
+                        android:textStyle="bold"/>
+
+                    <RatingBar
+                        android:id="@+id/ratingBarAvg"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:numStars="5"
+                        android:stepSize="0.5"
+                        android:isIndicator="true"/>
+
+                    <TextView
+                        android:id="@+id/tvTotalReviews"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="(0)"
+                        android:textColor="#777777"/>
+                </LinearLayout>
+
+                <!-- BÊN PHẢI -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginStart="16dp">
+
+                    <!-- 5 SAO -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <TextView android:text="5" android:layout_height="wrap_content" android:layout_width="16dp"/>
+
+                        <ProgressBar
+                            android:id="@+id/pb5"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="0dp"
+                            android:layout_height="8dp"
+                            android:layout_weight="1"
+                            android:max="100"/>
+                    </LinearLayout>
+
+                    <!-- 4 SAO -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <TextView android:text="4" android:layout_height="wrap_content" android:layout_width="16dp"/>
+
+                        <ProgressBar
+                            android:id="@+id/pb4"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="0dp"
+                            android:layout_height="8dp"
+                            android:layout_weight="1"
+                            android:max="100"/>
+                    </LinearLayout>
+
+                    <!-- 3 SAO -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <TextView android:text="3" android:layout_height="wrap_content" android:layout_width="16dp"/>
+
+                        <ProgressBar
+                            android:id="@+id/pb3"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="0dp"
+                            android:layout_height="8dp"
+                            android:layout_weight="1"
+                            android:max="100"/>
+                    </LinearLayout>
+
+                    <!-- 2 SAO -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <TextView android:text="2" android:layout_height="wrap_content" android:layout_width="16dp"/>
+
+                        <ProgressBar
+                            android:id="@+id/pb2"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="0dp"
+                            android:layout_height="8dp"
+                            android:layout_weight="1"
+                            android:max="100"/>
+                    </LinearLayout>
+
+                    <!-- 1 SAO -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <TextView android:text="1" android:layout_height="wrap_content" android:layout_width="16dp"/>
+
+                        <ProgressBar
+                            android:id="@+id/pb1"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="0dp"
+                            android:layout_height="8dp"
+                            android:layout_weight="1"
+                            android:max="100"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ===== LIST REVIEW ===== -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvReviews"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
                 android:nestedScrollingEnabled="false"/>
-
         </LinearLayout>
     </ScrollView>
-
 </LinearLayout>

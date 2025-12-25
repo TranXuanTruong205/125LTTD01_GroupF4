@@ -46,13 +46,12 @@ public class ReviewApiAdapter extends RecyclerView.Adapter<ReviewApiAdapter.View
                 holder.ivStar3, holder.ivStar4, holder.ivStar5
         };
 
-        for (int i = 1; i < stars.length; i++) {
+        for (int i = 0; i < stars.length; i++) {
             stars[i].setColorFilter(
                     i < r.rating ? 0xFFFFC107 : 0xFFCCCCCC
             );
         }
     }
-
     @Override
     public int getItemCount() {
         return reviews.size();
