@@ -6,6 +6,7 @@ import com.dine.DINERestaurant_Backend.review.DTO.ReviewResponse;
 import com.dine.DINERestaurant_Backend.review.DTO.UpdateReviewRequest;
 import com.dine.DINERestaurant_Backend.review.entity.Review;
 import com.dine.DINERestaurant_Backend.review.respository.ReviewRepository;
+import com.dine.DINERestaurant_Backend.user.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,11 +19,15 @@ import java.util.stream.Collectors;
 @Transactional
 public class ReviewService {
 
+    private final UserService userService;
     private final ReviewRepository reviewRepository;
 
-    public ReviewService(ReviewRepository reviewRepository) {
+    public ReviewService(ReviewRepository reviewRepository,
+                         UserService userService) {
         this.reviewRepository = reviewRepository;
+        this.userService = userService;
     }
+
 
     // Viết review
     public ReviewResponse createReview(Long currentUserId, CreateReviewRequest request) {
@@ -122,6 +127,10 @@ public class ReviewService {
         dto.setComment(review.getComment());
         dto.setVerifiedPurchase(Boolean.TRUE.equals(review.getVerifiedPurchase()));
         dto.setCreatedAt(review.getCreatedAt());
+
+        userService.getUserById(String.valueOf(review.getUserId()))
+                .ifPresent(user -> dto.setUserName(user.getFullName()));
+
         return dto;
     }
 }

@@ -7,6 +7,7 @@ public class ReviewResponse {
     private Long id;
     private Long userId;
     private Long itemId;
+    private String userName;
     private Long orderId;
     private Integer rating;
     private String comment;
@@ -22,6 +23,13 @@ public class ReviewResponse {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public Long getUserId() {
