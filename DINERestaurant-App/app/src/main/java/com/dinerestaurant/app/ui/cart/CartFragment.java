@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dinerestaurant.app.R;
+import com.dinerestaurant.app.data.local.TableSessionManager;
 import com.dinerestaurant.app.data.remote.api.ApiClient;
 import com.dinerestaurant.app.data.remote.dto.ApplyPromotionRequest;
 import com.dinerestaurant.app.data.remote.dto.ApplyPromotionResponse;
@@ -56,16 +57,14 @@ public class CartFragment extends Fragment {
     public View onCreateView(
             LayoutInflater inflater,
             ViewGroup container,
-            Bundle savedInstanceState
-    ) {
+            Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_cart, container, false);
     }
 
     @Override
     public void onViewCreated(
             @NonNull View view,
-            @Nullable Bundle savedInstanceState
-    ) {
+            @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         initViews(view);
@@ -73,7 +72,8 @@ public class CartFragment extends Fragment {
         setupListeners();
 
         loadCartData();
-        loadDefaultAddress();
+        loadLocationFromSession(); // Đọc từ session trước
+        loadDefaultAddress(); // Fallback nếu không có session
 
         // Nhận promotion từ PromotionsFragment
         getParentFragmentManager().setFragmentResultListener(
@@ -82,8 +82,7 @@ public class CartFragment extends Fragment {
                 (key, bundle) -> {
                     appliedPromotionId = bundle.getLong("promotionId");
                     applyPromotionPreview();
-                }
-        );
+                });
     }
 
     // =====================================================
@@ -136,8 +135,7 @@ public class CartFragment extends Fragment {
                     public void onSelectionChanged() {
                         calculateAndRenderPrice();
                     }
-                }
-        );
+                });
 
         rvCartItems.setLayoutManager(new LinearLayoutManager(getContext()));
         rvCartItems.setAdapter(adapter);
@@ -145,23 +143,18 @@ public class CartFragment extends Fragment {
 
     private void setupListeners() {
         viewRequire(R.id.llMyLocations)
-                .setOnClickListener(v ->
-                        Navigation.findNavController(v)
-                                .navigate(R.id.action_cartFragment_to_myLocationsFragment));
+                .setOnClickListener(v -> Navigation.findNavController(v)
+                        .navigate(R.id.action_cartFragment_to_myLocationsFragment));
 
         viewRequire(R.id.llPromotions)
-                .setOnClickListener(v ->
-                        Navigation.findNavController(v)
-                                .navigate(R.id.action_cartFragment_to_promotionsFragment));
+                .setOnClickListener(v -> Navigation.findNavController(v)
+                        .navigate(R.id.action_cartFragment_to_promotionsFragment));
 
         viewRequire(R.id.llPaymentMethod)
-                .setOnClickListener(v ->
-                        Navigation.findNavController(v)
-                                .navigate(R.id.action_cartFragment_to_paymentFragment));
+                .setOnClickListener(v -> Navigation.findNavController(v)
+                        .navigate(R.id.action_cartFragment_to_paymentFragment));
 
-        btnConfirm.setOnClickListener(v ->
-                Toast.makeText(getContext(), "Place order", Toast.LENGTH_SHORT).show()
-        );
+        btnConfirm.setOnClickListener(v -> Toast.makeText(getContext(), "Place order", Toast.LENGTH_SHORT).show());
     }
 
     // =====================================================
@@ -171,7 +164,8 @@ public class CartFragment extends Fragment {
         ApiClient.getCartApi().getCart().enqueue(new Callback<Cart>() {
             @Override
             public void onResponse(Call<Cart> call, Response<Cart> response) {
-                if (!response.isSuccessful() || response.body() == null) return;
+                if (!response.isSuccessful() || response.body() == null)
+                    return;
 
                 Cart cart = response.body();
                 cartId = cart.getCartId();
@@ -187,7 +181,41 @@ public class CartFragment extends Fragment {
         });
     }
 
+    /**
+     * Đọc location đã chọn từ session (MyLocations)
+     */
+    private void loadLocationFromSession() {
+        TableSessionManager session = TableSessionManager.getInstance(requireContext());
+
+        if (session.hasOrderSelection()) {
+            String orderType = session.getOrderType();
+            String displayAddress = session.getDisplayAddress();
+
+            // Hiển thị theo loại order
+            switch (orderType) {
+                case "dine_in":
+                    tvAddressTitle.setText("Ăn tại quán");
+                    tvAddressDetail.setText(displayAddress);
+                    break;
+                case "takeaway":
+                    tvAddressTitle.setText("Mang về");
+                    tvAddressDetail.setText(displayAddress);
+                    break;
+                case "delivery":
+                    tvAddressTitle.setText("Giao tận nơi");
+                    tvAddressDetail.setText(displayAddress);
+                    break;
+            }
+        }
+    }
+
     private void loadDefaultAddress() {
+        // Nếu đã có selection từ session thì không cần load default
+        TableSessionManager session = TableSessionManager.getInstance(requireContext());
+        if (session.hasOrderSelection()) {
+            return;
+        }
+
         ApiClient.getUserAddressApi()
                 .getDefaultAddress()
                 .enqueue(new Callback<UserAddress>() {
@@ -195,15 +223,15 @@ public class CartFragment extends Fragment {
                     public void onResponse(Call<UserAddress> call, Response<UserAddress> response) {
                         if (response.isSuccessful() && response.body() != null) {
                             UserAddress address = response.body();
-                            tvAddressTitle.setText("Delivery to  →  " + address.getLabel());
+                            tvAddressTitle.setText("Giao tận nơi → " + address.getLabel());
                             tvAddressDetail.setText(address.getAddressText());
                         }
                     }
 
                     @Override
                     public void onFailure(Call<UserAddress> call, Throwable t) {
-                        tvAddressTitle.setText("Delivery to");
-                        tvAddressDetail.setText("Select Your Location");
+                        tvAddressTitle.setText("Chọn địa chỉ");
+                        tvAddressDetail.setText("Nhấn để chọn phương thức nhận hàng");
                     }
                 });
     }
@@ -212,10 +240,10 @@ public class CartFragment extends Fragment {
     // PROMOTION PREVIEW (KHÔNG GHI DB)
     // =====================================================
     private void applyPromotionPreview() {
-        if (appliedPromotionId == null || cartId == null) return;
+        if (appliedPromotionId == null || cartId == null)
+            return;
 
-        ApplyPromotionRequest request =
-                new ApplyPromotionRequest(cartId, appliedPromotionId.intValue());
+        ApplyPromotionRequest request = new ApplyPromotionRequest(cartId, appliedPromotionId.intValue());
 
         ApiClient.getPromotionApi()
                 .applyPromotion(request)
@@ -223,12 +251,11 @@ public class CartFragment extends Fragment {
                     @Override
                     public void onResponse(
                             Call<ApplyPromotionResponse> call,
-                            Response<ApplyPromotionResponse> response
-                    ) {
-                        if (!response.isSuccessful() || response.body() == null) return;
+                            Response<ApplyPromotionResponse> response) {
+                        if (!response.isSuccessful() || response.body() == null)
+                            return;
 
-                        discountAmount =
-                                response.body().getDiscountAmount().doubleValue();
+                        discountAmount = response.body().getDiscountAmount().doubleValue();
 
                         calculateAndRenderPrice();
                     }

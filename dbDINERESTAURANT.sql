@@ -114,7 +114,8 @@ CREATE TABLE restaurant_tables (
     table_id INT PRIMARY KEY IDENTITY(1,1),
     table_number NVARCHAR(10) NOT NULL UNIQUE,
     capacity INT NOT NULL,
-    status NVARCHAR(20) CHECK (status IN (N'Trống', N'Đang sử dụng', N'Đã đặt')) DEFAULT N'Trống'
+    status NVARCHAR(20) CHECK (status IN (N'Trống', N'Đang sử dụng', N'Đã đặt')) DEFAULT N'Trống',
+    qr_code NVARCHAR(100) -- Mã QR của bàn, format: TABLE:{table_id}
 );
 GO
 
@@ -131,6 +132,7 @@ CREATE TABLE reservations (
     guest_count INT NOT NULL,
     note NVARCHAR(MAX),
     status NVARCHAR(20) CHECK (status IN (N'Chờ xác nhận', N'Đã xác nhận', N'Đã hủy', N'Hoàn thành')) DEFAULT N'Chờ xác nhận',
+    qr_code NVARCHAR(100), -- Mã QR của đặt bàn, format: RESERVATION:{reservation_id}
     created_at DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (table_id) REFERENCES restaurant_tables(table_id)
@@ -279,6 +281,22 @@ CREATE INDEX idx_reviews_item ON reviews(item_id);
 GO
 
 -- ============================================
+-- TRIGGER TỰ ĐỘNG TẠO QR CODE CHO RESERVATION
+-- ============================================
+
+CREATE TRIGGER trg_GenerateReservationQR
+ON reservations
+AFTER INSERT
+AS
+BEGIN
+    UPDATE reservations
+    SET qr_code = 'RESERVATION:' + CAST(reservation_id AS NVARCHAR(10))
+    WHERE reservation_id IN (SELECT reservation_id FROM inserted)
+    AND qr_code IS NULL;
+END;
+GO
+
+-- ============================================
 -- THÊM DỮ LIỆU MẪU (SAMPLE DATA)
 -- ============================================
 
@@ -361,15 +379,15 @@ INSERT INTO item_options (item_id, option_name, extra_price) VALUES
 GO
 
 -- 5. Thêm bàn
-INSERT INTO restaurant_tables (table_number, capacity, status) VALUES
-(N'Table 01', 4, N'Trống'),
-(N'Table 02', 2, N'Trống'),
-(N'Table 03', 6, N'Đang sử dụng'),
-(N'Table 04', 4, N'Đã đặt'),
-(N'Table 05', 4, N'Trống'),
-(N'Table 06', 8, N'Trống'),
-(N'Table 07', 2, N'Trống'),
-(N'Table 08', 4, N'Trống');
+INSERT INTO restaurant_tables (table_number, capacity, status, qr_code) VALUES
+(N'Table 01', 4, N'Trống', N'TABLE:1'),
+(N'Table 02', 2, N'Trống', N'TABLE:2'),
+(N'Table 03', 6, N'Đang sử dụng', N'TABLE:3'),
+(N'Table 04', 4, N'Đã đặt', N'TABLE:4'),
+(N'Table 05', 4, N'Trống', N'TABLE:5'),
+(N'Table 06', 8, N'Trống', N'TABLE:6'),
+(N'Table 07', 2, N'Trống', N'TABLE:7'),
+(N'Table 08', 4, N'Trống', N'TABLE:8');
 GO
 
 -- 6. Thêm đặt bàn mẫu

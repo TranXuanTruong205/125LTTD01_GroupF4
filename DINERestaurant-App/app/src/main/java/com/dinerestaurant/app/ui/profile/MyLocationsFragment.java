@@ -308,10 +308,16 @@ public class MyLocationsFragment extends Fragment {
                 break;
         }
 
-        // Gửi result về fragment trước
+        // LƯU VÀO SESSION - để Cart đọc được
+        TableSessionManager session = TableSessionManager.getInstance(requireContext());
+        String displayAddress = result.getString("display_address");
+        int addressId = result.getInt("address_id", -1);
+        session.saveOrderSelection(selectedOrderType, displayAddress, addressId);
+
+        // Gửi result về fragment trước (nếu cần)
         getParentFragmentManager().setFragmentResult("location_result", result);
 
-        Toast.makeText(getContext(), "Đã chọn: " + result.getString("display_address"), Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Đã chọn: " + displayAddress, Toast.LENGTH_SHORT).show();
         requireActivity().getSupportFragmentManager().popBackStack();
     }
 
