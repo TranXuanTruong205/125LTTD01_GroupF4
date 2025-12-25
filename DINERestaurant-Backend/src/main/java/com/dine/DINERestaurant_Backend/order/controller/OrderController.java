@@ -23,50 +23,50 @@ public class OrderController {
     @Autowired private OrderService orderService;
     @Autowired private CartService cartService; // ← THÊM DÒNG NÀY!!!
 
-        private Integer extractUserIdFromToken(String authHeader) {
-            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-                throw new RuntimeException("Token không hợp lệ");
-            }
-            String token = authHeader.substring(7);
-            String userIdStr = jwtUtil.extractUserId(token);
-            return Integer.parseInt(userIdStr);
+    private Integer extractUserIdFromToken(String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new RuntimeException("Token không hợp lệ");
         }
+        String token = authHeader.substring(7);
+        String userIdStr = jwtUtil.extractUserId(token);
+        return Integer.parseInt(userIdStr);
+    }
 
-        // ==================== API MỚI: CHECKOUT TỪ GIỎ HÀNG ====================
-        @PostMapping("/checkout")
-        public ResponseEntity<Map<String, Object>> checkoutFromCart(
-                @RequestBody Map<String, Object> request,
-                @RequestHeader("Authorization") String authHeader) {
+    // ==================== API MỚI: CHECKOUT TỪ GIỎ HÀNG ====================
+    @PostMapping("/checkout")
+    public ResponseEntity<Map<String, Object>> checkoutFromCart(
+            @RequestBody Map<String, Object> request,
+            @RequestHeader("Authorization") String authHeader) {
 
-            Map<String, Object> response = new HashMap<>();
-            try {
-                Integer userId = extractUserIdFromToken(authHeader);
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Integer userId = extractUserIdFromToken(authHeader);
 
-                String orderType = (String) request.get("orderType");
-                Integer tableId = request.get("tableId") != null ? (Integer) request.get("tableId") : null;
-                Integer addressId = request.get("addressId") != null ? (Integer) request.get("addressId") : null;
-                String paymentMethod = (String) request.get("paymentMethod");
-                String note = request.get("note") != null ? (String) request.get("note") : null;
+            // Lấy danh sách ID các món người dùng đã tích chọn từ Android gửi lên
+            List<Integer> cartItemIds = (List<Integer>) request.get("cartItemIds");
 
-                // GỌI SERVICE MỚI: Tạo đơn từ giỏ hàng
-                Order order = orderService.createOrderFromCart(userId, orderType, tableId, addressId, paymentMethod, note);
+            String orderType = (String) request.get("orderType");
+            Integer tableId = request.get("tableId") != null ? (Integer) request.get("tableId") : null;
+            Integer addressId = request.get("addressId") != null ? (Integer) request.get("addressId") : null;
+            String paymentMethod = (String) request.get("paymentMethod");
+            String note = request.get("note") != null ? (String) request.get("note") : null;
 
-                // XÓA GIỎ HÀNG SAU KHI ĐẶT THÀNH CÔNG
-                cartService.clearCart(userId);
+            // Gọi Service với tham số cartItemIds mới
+            Order order = orderService.createOrderFromCart(userId, orderType, tableId, addressId, paymentMethod, note, cartItemIds);
 
-                response.put("success", true);
-                response.put("message", "Đặt hàng thành công từ giỏ hàng!");
-                response.put("data", order);
-                response.put("orderNumber", orderService.generateOrderNumber(order.getOrderId()));
+            response.put("success", true);
+            response.put("message", "Đặt hàng thành công!");
+            response.put("data", order);
+            response.put("orderNumber", orderService.generateOrderNumber(order.getOrderId()));
 
-                return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
-            } catch (Exception e) {
-                response.put("success", false);
-                response.put("message", e.getMessage());
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-            }
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
+    }
     // ==================== ĐẶT ĐƠN HÀNG (3 loại) ====================
 
     @PostMapping("/onsite")
@@ -168,12 +168,12 @@ public class OrderController {
                 response.put("success", false);
                 response.put("message", "Đơn hàng không tồn tại");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-           } }
+            } }
         catch(Exception e){
-                response.put("success", false);
-                response.put("message", "Token hết hạn hoặc không hợp lệ: " + e.getMessage());
-                return ResponseEntity.status(401).body(response);
-            }
+            response.put("success", false);
+            response.put("message", "Token hết hạn hoặc không hợp lệ: " + e.getMessage());
+            return ResponseEntity.status(401).body(response);
+        }
     }
 
     @GetMapping("{id}/status")
