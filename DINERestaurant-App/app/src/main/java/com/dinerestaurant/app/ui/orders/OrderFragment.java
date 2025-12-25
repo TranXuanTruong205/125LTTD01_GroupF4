@@ -169,9 +169,10 @@ public class OrderFragment extends Fragment implements OrderAdapter.OnOrderClick
 
         // Order status -> map to Active/Completed/Cancelled
         String status = "Active";
+        String apiStatus = "Đã đặt"; // Mặc định
         Object statusObj = map.get("orderStatus");
         if (statusObj != null) {
-            String apiStatus = statusObj.toString();
+            apiStatus = statusObj.toString();
             status = mapStatusToDisplay(apiStatus);
         }
 
@@ -189,6 +190,9 @@ public class OrderFragment extends Fragment implements OrderAdapter.OnOrderClick
             item.setRealOrderId(((Number) orderIdObj).intValue());
         }
 
+        // Lưu apiStatus gốc để cập nhật màu stepper
+        item.setApiStatus(apiStatus);
+
         return item;
     }
 
@@ -198,6 +202,7 @@ public class OrderFragment extends Fragment implements OrderAdapter.OnOrderClick
 
         switch (apiStatus) {
             case "Đã đặt":
+            case "Đã xác nhận":
             case "Đang chuẩn bị":
             case "Đang giao":
                 return "Active";
