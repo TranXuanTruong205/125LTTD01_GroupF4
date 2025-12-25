@@ -237,6 +237,15 @@ public class MyReservationsActivity extends AppCompatActivity
                 .show();
     }
 
+    @Override
+    public void onEditClick(ReservationItem reservation, int position) {
+        // Mở ReservationActivity với mode edit - dữ liệu sẽ được load từ API
+        Intent intent = new Intent(this, ReservationActivity.class);
+        intent.putExtra("mode", "edit");
+        intent.putExtra("reservation_id", reservation.getReservationId());
+        startActivity(intent);
+    }
+
     private void cancelReservation(ReservationItem reservation, int position) {
         progressBar.setVisibility(View.VISIBLE);
 

@@ -190,7 +190,7 @@ public class QRPaymentFragment extends Fragment {
     }
 
     /**
-     * Gọi API checkout để tạo đơn hàng
+     * Gọi API để tạo đơn hàng theo loại order type
      */
     private void callCheckoutApi() {
         TableSessionManager session = TableSessionManager.getInstance(requireContext());
@@ -203,15 +203,8 @@ public class QRPaymentFragment extends Fragment {
             request.put("cartItemIds", cartItemIds);
         }
 
-        // Order type
-        String orderType = session.getOrderType();
-        if ("dine_in".equals(orderType)) {
-            request.put("orderType", "Tại chỗ");
-        } else if ("takeaway".equals(orderType)) {
-            request.put("orderType", "Mang về");
-        } else {
-            request.put("orderType", "Giao hàng");
-        }
+        // Payment method
+        request.put("paymentMethod", paymentMethod);
 
         // Table ID (nếu có)
         if (session.hasTableReservation()) {
@@ -223,20 +216,31 @@ public class QRPaymentFragment extends Fragment {
         }
 
         // Address ID (nếu delivery)
+        String orderType = session.getOrderType();
         if ("delivery".equals(orderType) && session.getAddressId() > 0) {
             request.put("addressId", session.getAddressId());
         }
-
-        // Payment method
-        request.put("paymentMethod", paymentMethod);
 
         // Disable buttons
         btnConfirmPayment.setEnabled(false);
         btnConfirmPayment.setText("Đang xử lý...");
         btnCancel.setEnabled(false);
 
+        // Chọn API endpoint theo order type
+        Call<Map<String, Object>> apiCall;
+        if ("dine_in".equals(orderType)) {
+            // Ăn tại bàn -> /api/orders/onsite
+            apiCall = ApiClient.getOrderApi().createOnsiteOrder(request);
+        } else if ("takeaway".equals(orderType)) {
+            // Mang về -> /api/orders/pickup
+            apiCall = ApiClient.getOrderApi().createPickupOrder(request);
+        } else {
+            // Giao hàng -> /api/orders/delivery
+            apiCall = ApiClient.getOrderApi().createDeliveryOrder(request);
+        }
+
         // Call API
-        ApiClient.getOrderApi().checkout(request).enqueue(new Callback<Map<String, Object>>() {
+        apiCall.enqueue(new Callback<Map<String, Object>>() {
             @Override
             public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
                 if (response.isSuccessful() && response.body() != null) {
