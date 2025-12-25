@@ -53,7 +53,7 @@ public class CategoryFragment extends Fragment {
         items.add(new CategoryItem("images/categories/ic_dumpling.png", "Dumpling"));
 
         // Setup adapter với AssetManager
-        adapter = new CategoryAdapter(items, requireContext().getAssets(), item -> {
+        adapter = new CategoryAdapter(items, item -> {
             androidx.navigation.Navigation.findNavController(requireView())
                     .navigate(R.id.action_categoryFragment_to_categoryProductsFragment);
         });
