@@ -9,4 +9,8 @@ public class Cart {
 
     public List<CartItem> getCartItems() { return cartItems; }
     public double getTotalAmount() { return totalAmount; }
+
+    public int getCartId() {
+        return cartId;
+    }
 }

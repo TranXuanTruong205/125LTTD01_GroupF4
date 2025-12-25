@@ -66,5 +66,9 @@ public class ApiClient {
             return retrofit;
 
     }
+    public static UserAddressApi getUserAddressApi() {
+        checkInit();
+        return retrofit.create(UserAddressApi.class);
+    }
 
 }

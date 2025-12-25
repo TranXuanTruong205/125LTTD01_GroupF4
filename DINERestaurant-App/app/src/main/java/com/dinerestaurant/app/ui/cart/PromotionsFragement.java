@@ -103,13 +103,41 @@ public class PromotionsFragement extends Fragment {
                 ).show()
         );
 
-        btnApply.setOnClickListener(v ->
+        btnApply.setOnClickListener(v -> {
+
+            if (promotionAdapter == null) {
                 Toast.makeText(
                         requireContext(),
-                        "Cart not implemented yet",
+                        "No promotion available",
                         Toast.LENGTH_SHORT
-                ).show()
-        );
+                ).show();
+                return;
+            }
+
+            PromotionResponse selected =
+                    promotionAdapter.getSelectedPromotion();
+
+            if (selected == null) {
+                Toast.makeText(
+                        requireContext(),
+                        "Please select a promotion",
+                        Toast.LENGTH_SHORT
+                ).show();
+                return;
+            }
+
+            // Trả promotion về CartFragment
+            Bundle result = new Bundle();
+            result.putLong("promotionId", selected.getId());
+            result.putString("promotionName", selected.getTitle());
+
+            getParentFragmentManager()
+                    .setFragmentResult("promotion_result", result);
+
+            // Quay lại Cart
+            Navigation.findNavController(requireView()).navigateUp();
+        });
+
 
         // ================== CALL API ==================
         loadPromotions();

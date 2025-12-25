@@ -137,6 +137,9 @@
         <action
             android:id="@+id/action_cartFragment_to_promotionsFragment"
             app:destination="@id/promotionsFragment" />
+        <action
+            android:id="@+id/action_cartFragment_to_myLocationsFragment"
+            app:destination="@id/myLocationsFragment" />
     </fragment>
 
     <!-- ĐÃ SỬA LỖI TYPO 'PromotionsFragement' và class name -->

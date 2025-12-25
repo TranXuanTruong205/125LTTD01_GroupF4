@@ -18,6 +18,7 @@ public class PromotionAdapter
         extends RecyclerView.Adapter<PromotionAdapter.ViewHolder> {
 
     private final List<PromotionResponse> promotions;
+    private int selectedPosition = -1;
 
     public PromotionAdapter(List<PromotionResponse> promotions) {
         this.promotions = promotions;
@@ -41,7 +42,33 @@ public class PromotionAdapter
 
         holder.tvTitle.setText(promo.getTitle());
         holder.tvDescription.setText(promo.getDescription());
+        holder.itemView.setOnClickListener(v -> {
+            selectedPosition = holder.getAdapterPosition();
+            notifyDataSetChanged();
+        });
+        holder.itemView.setSelected(position == selectedPosition);
+        boolean isSelected = position == selectedPosition;
+
+        holder.cbSelect.setChecked(isSelected);
+
+        holder.itemView.setOnClickListener(v -> {
+            selectedPosition = holder.getAdapterPosition();
+            notifyDataSetChanged();
+        });
+
+        holder.cbSelect.setOnClickListener(v -> {
+            selectedPosition = holder.getAdapterPosition();
+            notifyDataSetChanged();
+        });
+
     }
+    public PromotionResponse getSelectedPromotion() {
+        if (selectedPosition < 0 || selectedPosition >= promotions.size()) {
+            return null;
+        }
+        return promotions.get(selectedPosition);
+    }
+
 
     @Override
     public int getItemCount() {
