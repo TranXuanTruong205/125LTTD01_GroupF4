@@ -20,7 +20,17 @@ public class AdminCategoryApiService {
         this.restTemplate = restTemplate;
         this.baseUrl = baseUrl;
     }
+    public List<Map<String, Object>> getAllCategories() {
+        // Gọi API public để lấy danh sách category
+        String url = "http://localhost:8080/api/categories";
 
+        return restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<Map<String, Object>>>() {}
+        ).getBody();
+    }
     public List<Map<String, Object>> getAll() {
         String url = baseUrl + "/api/admin/categories";
         return restTemplate.exchange(

@@ -1,0 +1,23 @@
+<div class="card p-4" style="max-width: 600px; margin: 0 auto;">
+    <h4 class="mb-4">Category Form</h4>
+
+    <form action="/admin/categories/save" method="post">
+        <!-- Input Hidden để chứa ID (nếu đang sửa) -->
+        <input type="hidden" name="categoryId" th:value="${category.categoryId}">
+        <div class="mb-3">
+            <label>Category Name</label>
+            <input type="text" name="categoryName" class="form-control" th:value="${category.categoryName}" required>
+        </div>
+        <div class="mb-3">
+            <label>Icon URL (Optional)</label>
+            <input type="text" name="icon" class="form-control" th:value="${category.icon}">
+        </div>
+
+        <div class="mb-3">
+            <label>Display Order</label>
+            <input type="number" name="displayOrder" class="form-control" th:value="${category.displayOrder}">
+        </div>
+        <button type="submit" class="btn btn-primary">Save Category</button>
+        <a href="/admin/categories" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
