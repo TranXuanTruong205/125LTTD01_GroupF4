@@ -92,4 +92,7 @@ public class ApiClient {
         return retrofit.create(ChatApi.class);
     }
 
+    public static ReviewApi getReviewApi() {
+        return retrofit.create(ReviewApi.class);
+    }
 }

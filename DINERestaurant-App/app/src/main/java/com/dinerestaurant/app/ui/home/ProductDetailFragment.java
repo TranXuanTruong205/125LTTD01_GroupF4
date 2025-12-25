@@ -85,10 +85,13 @@ public class ProductDetailFragment extends Fragment {
         // Xem Review
         if (btnSeeAllReviews != null) {
             btnSeeAllReviews.setOnClickListener(v -> {
-                try {
-                    Navigation.findNavController(view).navigate(R.id.action_productDetailFragment_to_reviewListFragment);
-                } catch (Exception e) { e.printStackTrace(); }
+                Bundle bundle = new Bundle();
+                bundle.putInt("itemId", currentMenuItem.getItemId());
+
+                Navigation.findNavController(view)
+                        .navigate(R.id.action_productDetailFragment_to_reviewListFragment, bundle);
             });
+
         }
 
         // Quay lại
