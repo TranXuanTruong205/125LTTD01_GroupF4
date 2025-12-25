@@ -86,7 +86,6 @@ public class HomeFragment extends Fragment {
 
         categoryAdapter = new CategoryAdapter(
                 categoryItems,
-                requireContext().getAssets(),
                 item -> {
                     if ("More".equals(item.getName())) {
                         Navigation.findNavController(requireView())
@@ -119,7 +118,10 @@ public class HomeFragment extends Fragment {
                 List<CategoryItem> list = new ArrayList<>();
 
                 for (CategoryDto dto : response.body()) {
-                    String iconPath = getIconPathForCategory(dto.getCategoryName());
+                    // SỬ DỤNG TRỰC TIẾP ICON TỪ API (Database)
+                    // Không dùng hàm getIconPathForCategory nữa để tránh lỗi sai tên
+                    String iconPath = dto.getIcon(); 
+                    
                     list.add(new CategoryItem(
                             dto.getCategoryId(),
                             dto.getCategoryName(),
