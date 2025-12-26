@@ -1,121 +1,119 @@
 package com.dinerestaurant.app.ui.home;
-
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView; // Đã import đúng ImageView
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
+import com.bumptech.glide.Glide; // Load ảnh
 import com.dinerestaurant.app.R;
 import com.dinerestaurant.app.data.remote.api.ApiClient;
 import com.dinerestaurant.app.data.remote.api.ApiService;
 import com.dinerestaurant.app.data.remote.dto.MenuItemDto;
 import com.dinerestaurant.app.model.CategoryProductItem;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
 public class CategoryProductsFragment extends Fragment {
-
     private RecyclerView rvCategoryProducts;
     private CategoryProductAdapter adapter;
-    private TextView tvCategoryName, tvCategoryIcon;
-
+    private TextView tvCategoryName;
+    private ImageView ivCategoryIcon; // Dùng ImageView
     private ApiService apiService;
     private int categoryId;
     private String categoryName;
-
+    private String categoryIconPath;
     public CategoryProductsFragment() {
     }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_category_products, container, false);
-
-        // Setup views
+        // Ánh xạ views
         tvCategoryName = view.findViewById(R.id.tvCategoryName);
-        tvCategoryIcon = view.findViewById(R.id.tvCategoryIcon);
+        ivCategoryIcon = view.findViewById(R.id.tvCategoryIcon); // ID vẫn là tvCategoryIcon nhưng kiểu là ImageView
         rvCategoryProducts = view.findViewById(R.id.rvCategoryProducts);
-
         rvCategoryProducts.setLayoutManager(new GridLayoutManager(getContext(), 2));
-
-        // Lấy arguments truyền từ HomeFragment
+        // Nhận dữ liệu
         if (getArguments() != null) {
             categoryId = getArguments().getInt("categoryId", -1);
             categoryName = getArguments().getString("categoryName", "Category");
+            categoryIconPath = getArguments().getString("categoryIcon"); // Nhận đường dẫn ảnh
         } else {
             categoryId = -1;
             categoryName = "Category";
         }
-
         tvCategoryName.setText(categoryName);
+        // --- HIỂN THỊ ICON ---
+        if (categoryIconPath != null && ivCategoryIcon != null) {
+            Object imageSource = categoryIconPath;
+            // Nếu không phải URL online -> thêm prefix load từ assets
+            if (!categoryIconPath.startsWith("http")) {
+                imageSource = "file:///android_asset/" + categoryIconPath;
+            }
 
+            Glide.with(this)
+                    .load(imageSource)
+                    .override(100, 100) // Resize nhẹ cho mượt
+                    .error(android.R.drawable.ic_menu_gallery) // Ảnh lỗi
+                    .into(ivCategoryIcon);
+        } else if (ivCategoryIcon != null) {
+            // Nếu không có path -> hiện icon mặc định
+            ivCategoryIcon.setImageResource(android.R.drawable.ic_menu_gallery);
+        }
+        // ---------------------
         apiService = ApiClient.getApiService();
-
-        // Gọi API lấy sản phẩm theo Category
         loadProducts(view);
 
         view.findViewById(R.id.ivBack).setOnClickListener(v -> requireActivity().onBackPressed());
-
         return view;
     }
-
     private void loadProducts(View rootView) {
         if (categoryId == -1) {
-            Toast.makeText(getContext(), "Category not found", Toast.LENGTH_SHORT).show();
             return;
         }
-
         apiService.getMenuItemsByCategory(categoryId)
                 .enqueue(new Callback<List<MenuItemDto>>() {
                     @Override
                     public void onResponse(Call<List<MenuItemDto>> call,
                                            Response<List<MenuItemDto>> response) {
                         if (!response.isSuccessful() || response.body() == null) {
-                            Toast.makeText(getContext(), "Failed to load products", Toast.LENGTH_SHORT).show();
                             return;
                         }
-
                         List<CategoryProductItem> items = new ArrayList<>();
-
                         for (MenuItemDto dto : response.body()) {
-                            String imagePath = mapMenuImage(dto, categoryName);
-
-                            double price = dto.getPrice();
-                            Double discount = dto.getDiscountPrice();
-
+                            // Lấy ảnh từ DB
+                            String imagePath = dto.getImage();
+                            if (imagePath == null || imagePath.isEmpty()) {
+                                imagePath = "images/categories/ic_more.png";
+                            }
                             items.add(new CategoryProductItem(
                                     dto.getItemId(),
                                     imagePath,
                                     dto.getItemName(),
                                     dto.getDescription(),
                                     dto.getRating() != null ? dto.getRating() : 0.0,
-                                    price,
-                                    discount
+                                    dto.getPrice(),
+                                    dto.getDiscountPrice()
                             ));
-
                         }
-
+                        // Code này y chang, chỉ đảm bảo adapter đã fix Glide
                         adapter = new CategoryProductAdapter(
                                 items,
                                 requireContext().getAssets(),
                                 item -> {
                                     try {
                                         Bundle bundle = new Bundle();
-                                        bundle.putSerializable("menu_item", item); // Đóng gói món ăn với key "menu_item"
+                                        bundle.putSerializable("menu_item", item);
                                         Navigation.findNavController(rootView)
-                                                .navigate(R.id.action_categoryProductsFragment_to_productDetailFragment, bundle); // Gửi đi
+                                                .navigate(R.id.action_categoryProductsFragment_to_productDetailFragment, bundle);
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                     }
@@ -123,58 +121,9 @@ public class CategoryProductsFragment extends Fragment {
                         );
                         rvCategoryProducts.setAdapter(adapter);
                     }
-
                     @Override
                     public void onFailure(Call<List<MenuItemDto>> call, Throwable t) {
-                        Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
-
-    private String mapMenuImage(MenuItemDto dto, String categoryName) {
-
-        if (categoryName == null) {
-            return "images/special_offers/Image Burger.png"; // fallback
-        }
-
-        String lowerCat = categoryName.toLowerCase();
-
-        if (lowerCat.contains("burger")) {
-            return "images/burger_list/Image Burger.png";
-        }
-        if (lowerCat.contains("pizza")) {
-            return "images/pizza_list/Image Pizza.png";
-        }
-        if (lowerCat.contains("taco")) {
-            return "images/taco_list/Image Taco.png";
-        }
-        if (lowerCat.contains("burrito")) {
-            return "images/burrito_list/Image Burrito.png";
-        }
-        if (lowerCat.contains("noodles") || lowerCat.contains("pho")) {
-            return "images/noodles_list/Image Noodles.png";
-        }
-        if (lowerCat.contains("sandwich")) {
-            return "images/sandwich_list/Image Sandwich.png";
-        }
-        if (lowerCat.contains("drink") || lowerCat.contains("nước") || lowerCat.contains("tea")) {
-            return "images/drink_list/Image Drink.png";
-        }
-        if (lowerCat.contains("donut")) {
-            return "images/donut_list/Image Donut.png";
-        }
-        if (lowerCat.contains("salad")) {
-            return "images/salad_list/Image Salad.png";
-        }
-        if (lowerCat.contains("pasta")) {
-            return "images/pasta_list/Image Pasta.png";
-        }
-        if (lowerCat.contains("ice cream") || lowerCat.contains("icecream") || lowerCat.contains("kem")) {
-            return "images/icecream_list/Image IceCream.png";
-        }
-
-        // Mặc định: nếu không match category nào
-        return "images/special_offers/Image Burger.png";
-    }
-
 }

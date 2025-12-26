@@ -56,7 +56,8 @@ public class ProductDetailFragment extends Fragment {
         ImageView imgFood = view.findViewById(R.id.imgFood);
         TextView tvName = view.findViewById(R.id.tvFoodName);
         TextView tvDescription = view.findViewById(R.id.tvDescription);
-
+        TextView tvOriginalPrice = view.findViewById(R.id.tvProductOriginalPrice);
+        TextView tvDiscountPrice = view.findViewById(R.id.tvProductDiscountPrice);
         TextView btnSeeAllReviews = view.findViewById(R.id.btnSeeAllReview);
         View btnBack = view.findViewById(R.id.btnBack);
         TextView tvQuantity = view.findViewById(R.id.tvQuantity);
@@ -72,6 +73,31 @@ public class ProductDetailFragment extends Fragment {
         if (currentMenuItem != null) {
             if (tvName != null) tvName.setText(currentMenuItem.getName());
             if (tvDescription != null) tvDescription.setText(currentMenuItem.getDescription());
+            if (tvOriginalPrice != null && tvDiscountPrice != null) {
+                double price = currentMenuItem.getPrice();
+                Double discountPrice = currentMenuItem.getDiscountPrice();
+                if (discountPrice != null && discountPrice > 0) {
+                    tvOriginalPrice.setText(String.format("%,.0fđ", price));
+                    tvOriginalPrice.setPaintFlags(tvOriginalPrice.getPaintFlags() | android.graphics.Paint.STRIKE_THRU_TEXT_FLAG); // Gạch ngang
+                    tvDiscountPrice.setText(String.format(" %,.0fđ", discountPrice));
+                } else {
+                    tvOriginalPrice.setVisibility(View.GONE);
+                    tvDiscountPrice.setText(String.format("%,.0fđ", price));
+                }
+            }
+            // --- LOAD ẢNH TỪ ASSETS ---
+            if (imgFood != null && currentMenuItem.getImagePath() != null) {
+                try {
+                    java.io.InputStream is = requireContext().getAssets().open(currentMenuItem.getImagePath());
+                    android.graphics.Bitmap bitmap = android.graphics.BitmapFactory.decodeStream(is);
+                    imgFood.setImageBitmap(bitmap);
+                    is.close();
+                } catch (java.io.IOException e) {
+                    e.printStackTrace();
+                    imgFood.setImageResource(R.drawable.ic_launcher_background); // Ảnh default nếu lỗi
+                }
+            }
+            // --------------------------
 
             // Cập nhật giá ban đầu lên nút Add
             updateTotalPrice();
@@ -141,7 +167,7 @@ public class ProductDetailFragment extends Fragment {
 
             @Override
             public void onFailure(Call<List<ItemOption>> call, Throwable t) {
-                // Có thể log lỗi hoặc bỏ qua nếu không muốn hiện Toast
+                // Có thể log lỗi
             }
         });
     }
@@ -163,7 +189,7 @@ public class ProductDetailFragment extends Fragment {
 
         double total = (basePrice + optionsPrice) * quantity;
 
-        // Format tiền tệ đơn giản (bạn có thể dùng NumberFormat nếu muốn đẹp hơn)
+        // Format tiền tệ đơn giản
         btnAddToBasket.setText(String.format("Add to Basket - %.0fđ", total));
     }
 
