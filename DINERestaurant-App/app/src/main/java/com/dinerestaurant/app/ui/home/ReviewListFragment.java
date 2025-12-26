@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -30,6 +31,7 @@ public class ReviewListFragment extends Fragment {
     private RatingBar ratingBarAvg;
     private ProgressBar pb5, pb4, pb3, pb2, pb1;
     private RecyclerView rvReviews;
+    private ImageView ivBack;
 
     @Nullable
     @Override
@@ -39,6 +41,14 @@ public class ReviewListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_review_list, container, false);
 
         // ===== ÁNH XẠ =====
+        ivBack = view.findViewById(R.id.ivBack);
+
+        ivBack.setOnClickListener(v -> {
+            if (getActivity() != null) {
+                getActivity().onBackPressed();
+            }
+        });
+
         tvAvgRating = view.findViewById(R.id.tvAverageRating);
         tvTotalReviews = view.findViewById(R.id.tvTotalReviews);
         ratingBarAvg = view.findViewById(R.id.ratingBarAvg);
