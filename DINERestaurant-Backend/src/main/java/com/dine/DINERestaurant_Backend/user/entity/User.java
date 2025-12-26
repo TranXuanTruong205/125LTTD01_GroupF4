@@ -2,6 +2,8 @@ package com.dine.DINERestaurant_Backend.user.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.Nationalized;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -15,28 +17,36 @@ public class User {
     @Column(name = "user_id")
     private Integer userId;                 // ID người dùng
 
+    // ===== UNICODE SAFE =====
+    @Nationalized
     @Column(name = "phone_number", nullable = false, unique = true, length = 15)
     private String phoneNumber;             // Số điện thoại
 
-    @Column(name = "email")
+    @Nationalized
+    @Column(name = "email", length = 100)
     private String email;                   // Email
 
-    @Column(name = "full_name")
+    @Nationalized
+    @Column(name = "full_name", length = 100)
     private String fullName;                // Họ và tên
 
-    @Column(name = "gender")
+    @Nationalized
+    @Column(name = "gender", length = 10)
     private String gender;                  // Giới tính: Nam / Nữ / Khác
 
-    @Column(name = "address")
+    @Nationalized
+    @Column(name = "address", columnDefinition = "NVARCHAR(MAX)")
     private String address;                 // Địa chỉ
 
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;          // Ngày sinh
 
-    @Column(name = "profile_picture")
+    @Nationalized
+    @Column(name = "profile_picture", length = 255)
     private String profilePicture;          // Ảnh đại diện
 
-    @Column(name = "role")
+    @Nationalized
+    @Column(name = "role", length = 20)
     private String role = "customer";       // Vai trò: customer / admin
 
     @Column(name = "is_active")

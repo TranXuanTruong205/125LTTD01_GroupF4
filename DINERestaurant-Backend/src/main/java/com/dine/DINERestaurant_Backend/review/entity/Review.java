@@ -1,6 +1,8 @@
 package com.dine.DINERestaurant_Backend.review.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Nationalized;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -24,7 +26,9 @@ public class Review {
     @Column(name = "rating", nullable = false)
     private Integer rating;
 
-    @Column(name = "comment")
+    // ===== UNICODE SAFE =====
+    @Nationalized
+    @Column(name = "comment", columnDefinition = "NVARCHAR(MAX)")
     private String comment;
 
     @Column(name = "is_verified_purchase")

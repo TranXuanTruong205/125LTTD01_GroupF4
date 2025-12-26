@@ -2,6 +2,7 @@ package com.dine.DINERestaurant_Backend.user.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.Nationalized;
 
 @Data
 @Entity
@@ -17,9 +18,13 @@ public class UserAddress {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    // ===== UNICODE SAFE =====
+    @Nationalized
+    @Column(name = "label", length = 50, nullable = false)
     private String label;
 
-    @Column(name = "address_text", nullable = false)
+    @Nationalized
+    @Column(name = "address_text", nullable = false, columnDefinition = "NVARCHAR(MAX)")
     private String addressText;
 
     private Double latitude;

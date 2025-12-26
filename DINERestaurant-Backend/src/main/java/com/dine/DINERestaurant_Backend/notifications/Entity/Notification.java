@@ -1,6 +1,7 @@
 package com.dine.DINERestaurant_Backend.notifications.Entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Nationalized;
 import java.time.LocalDateTime;
 
 @Entity
@@ -15,13 +16,16 @@ public class Notification {
     @Column(name = "user_id")
     private Long userId; // có thể null (thông báo chung)
 
-    @Column(name = "title", nullable = false)
+    @Nationalized
+    @Column(name = "title", nullable = false, length = 200)
     private String title;
 
-    @Column(name = "message", nullable = false)
+    @Nationalized
+    @Column(name = "message", nullable = false, columnDefinition = "NVARCHAR(MAX)")
     private String message;
 
-    @Column(name = "type", nullable = false)
+    @Nationalized
+    @Column(name = "type", nullable = false, length = 20)
     private String type; // 'Đơn hàng', 'Khuyến mãi', 'Đặt bàn', 'Hệ thống'
 
     @Column(name = "is_read")
