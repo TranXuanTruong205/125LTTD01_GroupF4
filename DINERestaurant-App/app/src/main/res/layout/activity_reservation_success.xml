@@ -253,7 +253,7 @@
         android:layout_height="55dp"
         android:layout_alignParentBottom="true"
         android:layout_margin="24dp"
-        android:background="@drawable/bg_btn_signin"
+        app:backgroundTint="#FF6347"
         android:text="Hoàn tất"
         android:textColor="@color/white"
         android:textSize="18sp" />

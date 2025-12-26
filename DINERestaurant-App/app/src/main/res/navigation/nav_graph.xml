@@ -73,6 +73,9 @@
         <action
             android:id="@+id/action_profileFragment_to_myLocationsFragment"
             app:destination="@id/myLocationsFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_orderFragment"
+            app:destination="@id/orderFragment" />
     </fragment>
 
 

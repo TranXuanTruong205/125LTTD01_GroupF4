@@ -101,16 +101,17 @@
             android:paddingTop="10dp"
             android:paddingBottom="20dp">
 
+            <!-- ===== CARD DELIVERY ===== -->
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvCartItems"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:nestedScrollingEnabled="false"
-                tools:listitem="@layout/item_cart_product"
-                tools:itemCount="2" />
+                tools:itemCount="2"
+                tools:listitem="@layout/item_cart_product" />
 
-            <!-- ===== CARD DELIVERY ===== -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

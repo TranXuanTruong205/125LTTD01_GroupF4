@@ -115,18 +115,18 @@
                         app:boxCornerRadiusTopStart="12dp"
                         app:boxCornerRadiusTopEnd="12dp"
                         app:boxCornerRadiusBottomStart="12dp"
-                        app:boxCornerRadiusBottomEnd="12dp"
-                        app:startIconDrawable="@drawable/ic_calendar"
-                        app:startIconTint="#FF6B00">
+                        app:boxCornerRadiusBottomEnd="12dp">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/edt_date"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="Chọn ngày"
-                            android:focusable="false"
                             android:clickable="true"
-                            android:background="@android:color/transparent" />
+                            android:focusable="false"
+                            android:hint="Chọn ngày"
+                            android:drawableStart="@drawable/ic_calendar"
+                            android:drawableTint="#1D0C0C"
+                            android:drawablePadding="12dp" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <!-- Chọn giờ -->
@@ -138,21 +138,20 @@
                         app:boxCornerRadiusTopStart="12dp"
                         app:boxCornerRadiusTopEnd="12dp"
                         app:boxCornerRadiusBottomStart="12dp"
-                        app:boxCornerRadiusBottomEnd="12dp"
-                        app:startIconDrawable="@drawable/ic_time"
-                        app:startIconTint="#FF6B00">
+                        app:boxCornerRadiusBottomEnd="12dp">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/edt_time"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="Chọn giờ"
+                            android:drawableStart="@drawable/ic_time"
+                            android:drawableTint="#1D0C0C"
+                            android:drawablePadding="12dp"
                             android:focusable="false"
-                            android:clickable="true"
-                            android:background="@android:color/transparent" />
+                            android:clickable="true" />
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <!-- Số khách -->
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -161,17 +160,17 @@
                         app:boxCornerRadiusTopStart="12dp"
                         app:boxCornerRadiusTopEnd="12dp"
                         app:boxCornerRadiusBottomStart="12dp"
-                        app:boxCornerRadiusBottomEnd="12dp"
-                        app:startIconDrawable="@drawable/ic_guest"
-                        app:startIconTint="#FF6B00">
+                        app:boxCornerRadiusBottomEnd="12dp">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/edt_guest_count"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="Số khách"
-                            android:inputType="number"
-                            android:background="@android:color/transparent" />
+                            android:drawableStart="@drawable/ic_guest"
+                            android:drawableTint="#1D0C0C"
+                            android:drawablePadding="12dp"
+                            android:inputType="number" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <!-- Nút kiểm tra bàn trống -->
@@ -183,7 +182,7 @@
                         android:textColor="@android:color/white"
                         android:textSize="16sp"
                         android:textStyle="bold"
-                        app:backgroundTint="#FF6B00"
+                        app:backgroundTint="#FF6347"
                         app:cornerRadius="12dp"
                         app:elevation="4dp" />
 

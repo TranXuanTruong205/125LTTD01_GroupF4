@@ -120,7 +120,7 @@
         android:layout_margin="16dp"
         android:text="Đặt bàn mới"
         android:textColor="@android:color/white"
-        app:backgroundTint="#FF6B00"
+        app:backgroundTint="#FF7F5C"
         app:icon="@drawable/ic_add"
         app:iconTint="@android:color/white" />
 

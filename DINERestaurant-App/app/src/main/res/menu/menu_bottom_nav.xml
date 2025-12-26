@@ -6,11 +6,6 @@
         android:title="Home"/>
 
     <item
-        android:id="@+id/orderFragment"
-        android:icon="@drawable/ic_order"
-        android:title="Orders"/>
-
-    <item
         android:id="@+id/scanQRFragment"
         android:icon="@drawable/ic_scanqr"
         android:title="Scan"/>

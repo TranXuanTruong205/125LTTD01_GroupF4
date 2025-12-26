@@ -24,18 +24,21 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+
 public class NotificationFragement extends Fragment {
 
     private RecyclerView recyclerView;
-    private ImageButton btnMarkAllRead;
+    private ImageButton btnMarkAllRead, btnBackHeader;
     private NotificationAdapter adapter;
     private ApiNotification api;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
-                             @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_notification, container, false);
 
@@ -43,11 +46,15 @@ public class NotificationFragement extends Fragment {
         btnMarkAllRead = view.findViewById(R.id.btnMarkAllRead);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new NotificationAdapter(item ->
-                markNotificationRead(item.getNotificationId())
-        );
+        adapter = new NotificationAdapter(item -> markNotificationRead(item.getNotificationId()));
         recyclerView.setAdapter(adapter);
-
+        ImageButton btnBackHeader = view.findViewById(R.id.btnBackHeader);
+        if (btnBackHeader != null) {
+            btnBackHeader.setOnClickListener(v -> {
+                NavController navController = Navigation.findNavController(v);
+                navController.popBackStack(R.id.homeFragment, false);
+            });
+        }
         // 🔥 BẮT BUỘC init ApiClient
         ApiClient.init(requireContext());
         api = ApiClient.getNotificationApi();
@@ -63,7 +70,7 @@ public class NotificationFragement extends Fragment {
         api.getNotifications().enqueue(new Callback<List<NotificationItem>>() {
             @Override
             public void onResponse(Call<List<NotificationItem>> call,
-                                   Response<List<NotificationItem>> response) {
+                    Response<List<NotificationItem>> response) {
 
                 if (response.isSuccessful() && response.body() != null) {
                     adapter.setItems(response.body());
@@ -91,7 +98,8 @@ public class NotificationFragement extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) { }
+            public void onFailure(Call<Void> call, Throwable t) {
+            }
         });
     }
 
@@ -103,8 +111,8 @@ public class NotificationFragement extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) { }
+            public void onFailure(Call<Void> call, Throwable t) {
+            }
         });
     }
 }
-

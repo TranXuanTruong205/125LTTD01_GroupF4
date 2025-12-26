@@ -69,11 +69,18 @@ public class SignUpActivity extends AppCompatActivity {
         btnRegister.setBackgroundResource(R.drawable.bg_btn_signin);
 
         TextWatcher watcher = new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
                 validateInputs();
             }
-            @Override public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
         };
 
         edtPhone.addTextChangedListener(watcher);
@@ -81,10 +88,16 @@ public class SignUpActivity extends AppCompatActivity {
         edtFullName.addTextChangedListener(watcher);
 
         btnRegister.setOnClickListener(v -> registerRequest());
+
+        // Click "Sign In" để quay lại màn Login
+        findViewById(R.id.tvSignIn).setOnClickListener(v -> {
+            startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
+            finish();
+        });
     }
 
     // =====================================================================
-    //                      STEP 1: REQUEST REGISTER (SEND OTP)
+    // STEP 1: REQUEST REGISTER (SEND OTP)
     // =====================================================================
     private void registerRequest() {
 
@@ -110,7 +123,7 @@ public class SignUpActivity extends AppCompatActivity {
                         if (res.containsKey("error")) {
                             String errorMsg = res.get("error").toString();
                             Toast.makeText(SignUpActivity.this, errorMsg, Toast.LENGTH_LONG).show();
-                            return;   // không chuyển màn
+                            return; // không chuyển màn
                         }
 
                         // 2) Không có lỗi → đăng ký thành công
@@ -129,15 +142,14 @@ public class SignUpActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(Call<Map<String, Object>> call, Throwable t) {
-                        Toast.makeText(SignUpActivity.this, "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SignUpActivity.this, "Network error: " + t.getMessage(), Toast.LENGTH_SHORT)
+                                .show();
                     }
                 });
     }
 
-
-
     // =====================================================================
-    //               Validate inputs + chuyển màu nút REGISTER
+    // Validate inputs + chuyển màu nút REGISTER
     // =====================================================================
     private void validateInputs() {
         String phone = edtPhone.getText().toString().trim();
