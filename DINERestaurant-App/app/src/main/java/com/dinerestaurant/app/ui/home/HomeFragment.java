@@ -1,5 +1,4 @@
 package com.dinerestaurant.app.ui.home;
-
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -8,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
-
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -16,23 +14,18 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
-
 import com.dinerestaurant.app.R;
 import com.dinerestaurant.app.model.CategoryItem;
 import com.dinerestaurant.app.model.SpecialOfferItem;
 import com.dinerestaurant.app.data.remote.api.ApiClient;
 import com.dinerestaurant.app.data.remote.api.ApiService;
 import com.dinerestaurant.app.data.remote.dto.CategoryDto;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
 public class HomeFragment extends Fragment {
-
     private ViewPager2 viewPagerBanner;
     private LinearLayout layoutIndicator;
     private RecyclerView rvCategories;
@@ -41,20 +34,15 @@ public class HomeFragment extends Fragment {
     private SpecialOfferAdapter specialOfferAdapter;
     private ImageView btnCart;
     private ImageView btnChat;
-
     private ApiService apiService;
     private List<CategoryItem> categoryItems = new ArrayList<>();
-
     public HomeFragment() {
         // Required empty public constructor
     }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-
         // Ánh xạ view
         viewPagerBanner = view.findViewById(R.id.viewPagerBanner);
         layoutIndicator = view.findViewById(R.id.layoutIndicator);
@@ -62,28 +50,21 @@ public class HomeFragment extends Fragment {
         rvSpecialOffers = view.findViewById(R.id.rvSpecialOffers);
         btnCart = view.findViewById(R.id.ivCart);
         btnChat = view.findViewById(R.id.ivChat);
-
         apiService = ApiClient.getApiService();
-
         // Categories
         setupCategoriesRecycler();
         loadCategories();
-
         // Banner + special offers
         setupBanner();
         setupSpecialOffers(view);
-
         // Button
         setupCartButton(view);
         setupChatButton(view);
-
         return view;
     }
-
     // ========================= CATEGORIES =========================
     private void setupCategoriesRecycler() {
         rvCategories.setLayoutManager(new GridLayoutManager(getContext(), 4));
-
         categoryAdapter = new CategoryAdapter(
                 categoryItems,
                 requireContext().getAssets(),
@@ -95,16 +76,15 @@ public class HomeFragment extends Fragment {
                         Bundle args = new Bundle();
                         args.putInt("categoryId", item.getId());
                         args.putString("categoryName", item.getName());
-
+                        // QUAN TRỌNG: Truyền đường dẫn icon sang màn hình sau
+                        args.putString("categoryIcon", item.getImagePath());
                         Navigation.findNavController(requireView())
                                 .navigate(R.id.action_homeFragment_to_categoryProductsFragment, args);
                     }
                 }
         );
-
         rvCategories.setAdapter(categoryAdapter);
     }
-
     private void loadCategories() {
         apiService.getCategories().enqueue(new Callback<List<CategoryDto>>() {
             @Override
@@ -115,28 +95,32 @@ public class HomeFragment extends Fragment {
                             Toast.LENGTH_SHORT).show();
                     return;
                 }
-
                 List<CategoryItem> list = new ArrayList<>();
-
-                for (CategoryDto dto : response.body()) {
-                    String iconPath = getIconPathForCategory(dto.getCategoryName());
+                List<CategoryDto> fullList = response.body();
+                // LOGIC GIỚI HẠN: Chỉ lấy tối đa 7 items đầu tiên
+                int limit = 7;
+                int count = 0;
+                for (CategoryDto dto : fullList) {
+                    if (count >= limit) break; // Đủ 7 item thì dừng lại
+                    String iconPath = dto.getIcon();
+                    if (iconPath == null || iconPath.isEmpty()) {
+                        iconPath = "images/categories/ic_more.png";
+                    }
                     list.add(new CategoryItem(
                             dto.getCategoryId(),
                             dto.getCategoryName(),
                             iconPath
                     ));
+                    count++;
                 }
-
-                // Thêm item "More"
+                // Luôn cập nhật item thứ 8 là "More"
                 list.add(new CategoryItem(
                         -1,
                         "More",
                         "images/categories/ic_more.png"
                 ));
-
                 categoryAdapter.setItems(list);
             }
-
             @Override
             public void onFailure(Call<List<CategoryDto>> call, Throwable t) {
                 Toast.makeText(getContext(), "Error: " + t.getMessage(),
@@ -144,51 +128,14 @@ public class HomeFragment extends Fragment {
             }
         });
     }
-
-    private String getIconPathForCategory(String name) {
-        if (name == null) return "images/categories/ic_more.png";
-
-        String lower = name.toLowerCase();
-
-        switch (lower) {
-            case "burger":
-                return "images/categories/ic_burger.png";
-            case "taco":
-                return "images/categories/ic_taco.png";
-            case "burrito":
-                return "images/categories/ic_burrito.png";
-            case "drink":
-                return "images/categories/ic_drink.png";
-            case "pizza":
-                return "images/categories/ic_pizza.png";
-            case "donut":
-                return "images/categories/ic_donut.png";
-            case "salad":
-                return "images/categories/ic_salad.png";
-            case "noodles":
-                return "images/categories/ic_noodles.png";
-            case "sandwich":
-                return "images/categories/ic_Sandwich.png";
-            case "pasta":
-                return "images/categories/ic_Pasta.png";
-            case "ice cream":
-            case "icecream":
-                return "images/categories/ic_iceCream.png";
-            default:
-                return "images/categories/ic_more.png";
-        }
-    }
-
     // ========================= BANNER =========================
     private void setupBanner() {
         List<String> bannerList = new ArrayList<>();
         bannerList.add("images/home_banner/Banner.png");
         bannerList.add("images/home_banner/Banner 2.png");
         bannerList.add("images/home_banner/Banner 3.png");
-
         BannerAdapter bannerAdapter = new BannerAdapter(getContext(), bannerList);
         viewPagerBanner.setAdapter(bannerAdapter);
-
         viewPagerBanner.registerOnPageChangeCallback(
                 new ViewPager2.OnPageChangeCallback() {
                     @Override
@@ -198,13 +145,11 @@ public class HomeFragment extends Fragment {
                     }
                 });
     }
-
     // ========================= SPECIAL OFFERS =========================
     private void setupSpecialOffers(View view) {
         rvSpecialOffers.setLayoutManager(
                 new LinearLayoutManager(getContext(),
                         LinearLayoutManager.HORIZONTAL, false));
-
         List<SpecialOfferItem> offers = new ArrayList<>();
         offers.add(new SpecialOfferItem("images/special_offers/Image Burger.png",
                 "Chicken Burger", 4.9, 10.00, 6.00));
@@ -214,7 +159,6 @@ public class HomeFragment extends Fragment {
                 "Ramen Noodles", 4.9, 22.00, 15.00));
         offers.add(new SpecialOfferItem("images/special_offers/Image Pho Noodles.png",
                 "Pho Noodles", 4.9, 24.00, 20.00));
-
         specialOfferAdapter = new SpecialOfferAdapter(
                 offers,
                 requireContext().getAssets(),
@@ -227,7 +171,6 @@ public class HomeFragment extends Fragment {
                     }
                 });
         rvSpecialOffers.setAdapter(specialOfferAdapter);
-
         View viewAllBtn = view.findViewById(R.id.tvViewAll);
         if (viewAllBtn != null) {
             viewAllBtn.setOnClickListener(v -> {
@@ -240,7 +183,6 @@ public class HomeFragment extends Fragment {
             });
         }
     }
-
     // ========================= BUTTONS =========================
     private void setupCartButton(View view) {
         if (btnCart != null) {
@@ -254,7 +196,6 @@ public class HomeFragment extends Fragment {
             });
         }
     }
-
     private void setupChatButton(View view) {
         if (btnChat != null) {
             btnChat.setOnClickListener(v -> {
@@ -270,18 +211,14 @@ public class HomeFragment extends Fragment {
             });
         }
     }
-
     // ========================= INDICATOR =========================
     private void updateIndicators(int position) {
         if (layoutIndicator == null) return;
-
         for (int i = 0; i < layoutIndicator.getChildCount(); i++) {
             View dot = layoutIndicator.getChildAt(i);
             if (dot == null) continue;
-
             LinearLayout.LayoutParams params =
                     (LinearLayout.LayoutParams) dot.getLayoutParams();
-
             if (i == position) {
                 dot.setBackgroundColor(Color.parseColor("#FF6B35"));
                 params.width = dpToPx(24);
@@ -292,7 +229,6 @@ public class HomeFragment extends Fragment {
             dot.setLayoutParams(params);
         }
     }
-
     private int dpToPx(int dp) {
         return (int) (dp * getResources().getDisplayMetrics().density);
     }
