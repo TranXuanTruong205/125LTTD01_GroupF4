@@ -148,7 +148,7 @@ public class VerificationActivity extends AppCompatActivity {
                                 // Lưu token
                                 String token = body.get("token").toString();
                                 new TokenManager(VerificationActivity.this).saveToken(token);
-
+                                StaticData.isRegisterFlow = false;
                                 goToMain();
                             }
 
