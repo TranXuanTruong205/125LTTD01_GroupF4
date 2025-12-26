@@ -67,6 +67,7 @@ public class ProfileFragment extends Fragment {
 
         LinearLayout llMyLocations = view.findViewById(R.id.llMyLocations);
         LinearLayout llLiked = view.findViewById(R.id.llLiked);
+        LinearLayout llOrders = view.findViewById(R.id.llOrders);
 
         // Init API
         userApi = ApiClient.getUserApi();
@@ -88,6 +89,10 @@ public class ProfileFragment extends Fragment {
                 .navigate(R.id.action_profileFragment_to_myLocationsFragment));
 
         llLiked.setOnClickListener(v -> replaceFragment(new LikedFragment()));
+
+        // Orders click
+        llOrders.setOnClickListener(v -> Navigation.findNavController(v)
+                .navigate(R.id.action_profileFragment_to_orderFragment));
 
         return view;
     }

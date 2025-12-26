@@ -25,16 +25,15 @@ public class MainActivity extends AppCompatActivity {
     private NavController nav;
     private LinearLayout bottomNavBar;
 
-    ImageView homeIcon, orderIcon, scanIcon, reservationIcon, notifyIcon, profileIcon;
-    TextView homeLabel, orderLabel, scanLabel, reservationLabel, notifyLabel, profileLabel;
-    FrameLayout homeIconContainer, orderIconContainer, scanIconContainer, reservationIconContainer, notifyIconContainer,
+    ImageView homeIcon, scanIcon, reservationIcon, notifyIcon, profileIcon;
+    TextView homeLabel, scanLabel, reservationLabel, notifyLabel, profileLabel;
+    FrameLayout homeIconContainer, scanIconContainer, reservationIconContainer, notifyIconContainer,
             profileIconContainer;
-    LinearLayout tabHome, tabOrder, tabScan, tabReservation, tabNotify, tabProfile;
+    LinearLayout tabHome, tabScan, tabReservation, tabNotify, tabProfile;
 
     // Danh sách các Fragment ID sẽ hiển thị Bottom Bar
     private final Set<Integer> mainNavFragments = new HashSet<>(Arrays.asList(
             R.id.homeFragment,
-            R.id.orderFragment,
             R.id.scanQRFragment,
             R.id.notificationFragment,
             R.id.profileFragment));
@@ -74,8 +73,6 @@ public class MainActivity extends AppCompatActivity {
     private void selectInitialTab(int destinationId) {
         if (destinationId == R.id.homeFragment)
             selectTab(tabHome);
-        else if (destinationId == R.id.orderFragment)
-            selectTab(tabOrder);
         else if (destinationId == R.id.scanQRFragment)
             selectTab(tabScan);
         else if (destinationId == R.id.notificationFragment)
@@ -88,28 +85,24 @@ public class MainActivity extends AppCompatActivity {
         bottomNavBar = findViewById(R.id.customBottomBar);
 
         tabHome = findViewById(R.id.tabHome);
-        tabOrder = findViewById(R.id.tabOrder);
         tabScan = findViewById(R.id.tabScan);
         tabReservation = findViewById(R.id.tabReservation);
         tabNotify = findViewById(R.id.tabNotify);
         tabProfile = findViewById(R.id.tabProfile);
 
         homeIconContainer = findViewById(R.id.homeIconContainer);
-        orderIconContainer = findViewById(R.id.orderIconContainer);
         scanIconContainer = findViewById(R.id.scanIconContainer);
         reservationIconContainer = findViewById(R.id.reservationIconContainer);
         notifyIconContainer = findViewById(R.id.notifyIconContainer);
         profileIconContainer = findViewById(R.id.profileIconContainer);
 
         homeLabel = findViewById(R.id.homeLabel);
-        orderLabel = findViewById(R.id.orderLabel);
         scanLabel = findViewById(R.id.scanLabel);
         reservationLabel = findViewById(R.id.reservationLabel);
         notifyLabel = findViewById(R.id.notifyLabel);
         profileLabel = findViewById(R.id.profileLabel);
 
         homeIcon = findViewById(R.id.homeIcon);
-        orderIcon = findViewById(R.id.orderIcon);
         scanIcon = findViewById(R.id.scanIcon);
         reservationIcon = findViewById(R.id.reservationIcon);
         notifyIcon = findViewById(R.id.notifyIcon);
@@ -131,8 +124,6 @@ public class MainActivity extends AppCompatActivity {
         // Dựa vào ID của màn hình đang hiển thị, chọn Tab tương ứng
         if (destinationId == R.id.homeFragment) {
             selectTab(tabHome);
-        } else if (destinationId == R.id.orderFragment) {
-            selectTab(tabOrder);
         } else if (destinationId == R.id.scanQRFragment) {
             selectTab(tabScan);
         } else if (destinationId == R.id.notificationFragment) {
@@ -147,12 +138,6 @@ public class MainActivity extends AppCompatActivity {
             clearSubScreensBackStack();
             selectTab(tabHome);
             nav.navigate(R.id.homeFragment);
-        });
-
-        tabOrder.setOnClickListener(v -> {
-            clearSubScreensBackStack();
-            selectTab(tabOrder);
-            nav.navigate(R.id.orderFragment);
         });
 
         tabScan.setOnClickListener(v -> {
@@ -184,7 +169,6 @@ public class MainActivity extends AppCompatActivity {
         // Reset màu icon về xám
         int inactiveColor = ContextCompat.getColor(this, R.color.icon_inactive);
         homeIcon.setImageTintList(ContextCompat.getColorStateList(this, R.color.icon_inactive));
-        orderIcon.setImageTintList(ContextCompat.getColorStateList(this, R.color.icon_inactive));
         scanIcon.setImageTintList(ContextCompat.getColorStateList(this, R.color.icon_inactive));
         reservationIcon.setImageTintList(ContextCompat.getColorStateList(this, R.color.icon_inactive));
         notifyIcon.setImageTintList(ContextCompat.getColorStateList(this, R.color.icon_inactive));
@@ -192,14 +176,12 @@ public class MainActivity extends AppCompatActivity {
 
         // Reset background
         homeIconContainer.setBackground(null);
-        orderIconContainer.setBackground(null);
         scanIconContainer.setBackground(null);
         notifyIconContainer.setBackground(null);
         profileIconContainer.setBackground(null);
         reservationIconContainer.setBackground(null);
         // ẨN TEXT
         homeLabel.setVisibility(View.GONE);
-        orderLabel.setVisibility(View.GONE);
         scanLabel.setVisibility(View.GONE);
         reservationLabel.setVisibility(View.GONE);
         notifyLabel.setVisibility(View.GONE);
@@ -210,8 +192,6 @@ public class MainActivity extends AppCompatActivity {
         // Kích hoạt tab được chọn
         if (selected == tabHome)
             activateTab(homeIconContainer, homeIcon, homeLabel);
-        else if (selected == tabOrder)
-            activateTab(orderIconContainer, orderIcon, orderLabel);
         else if (selected == tabScan)
             activateTab(scanIconContainer, scanIcon, scanLabel);
         else if (selected == tabReservation)
@@ -225,7 +205,6 @@ public class MainActivity extends AppCompatActivity {
     private void resetIconPosition() {
         int defaultMargin = dpToPx(12);
         setMargin(homeIconContainer, defaultMargin);
-        setMargin(orderIconContainer, defaultMargin);
         setMargin(scanIconContainer, defaultMargin);
         setMargin(reservationIconContainer, defaultMargin);
         setMargin(notifyIconContainer, defaultMargin);
