@@ -65,10 +65,10 @@
 
                 <ImageView
                     android:id="@+id/ivStar1"
-                    android:layout_width="18dp"
-                    android:layout_height="18dp"
+                    android:layout_width="19dp"
+                    android:layout_height="match_parent"
                     android:src="@android:drawable/btn_star_big_on"
-                    app:tint="#FFC107"/>
+                    app:tint="#FFC107" />
 
                 <ImageView
                     android:id="@+id/ivStar2"
