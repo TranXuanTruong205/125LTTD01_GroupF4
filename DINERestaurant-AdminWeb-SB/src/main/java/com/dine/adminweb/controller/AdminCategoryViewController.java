@@ -23,8 +23,12 @@ public class AdminCategoryViewController {
     public String createForm(Model model) {
         model.addAttribute("pageTitle", "New Category");
         model.addAttribute("content", "categories/form");
-        // Dùng Map để hứng dữ liệu thay vì tạo DTO riêng cho tiết kiệm thời gian
-        model.addAttribute("category", new java.util.HashMap<String, Object>());
+        Map<String, Object> newCat = new java.util.HashMap<>();
+        newCat.put("categoryId", null);
+        newCat.put("categoryName", "");
+        newCat.put("icon", "");
+        newCat.put("displayOrder", 0);
+        model.addAttribute("category", newCat);
         return "layout/main";
     }
     @PostMapping("/save")

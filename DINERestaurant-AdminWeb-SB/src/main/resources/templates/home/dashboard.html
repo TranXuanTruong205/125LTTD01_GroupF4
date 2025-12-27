@@ -1,0 +1,86 @@
+<div class="container-fluid">
+    <!-- 1. CÁC THẺ THỐNG KÊ (Giữ nguyên) -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card p-3 text-white bg-primary shadow-sm">
+                <h5>Total Revenue</h5>
+                <h2 th:text="${stats.totalRevenue} + ' đ'">0 đ</h2>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-3 text-white bg-success shadow-sm">
+                <h5>Total Orders</h5>
+                <h2 th:text="${stats.totalOrders}">0</h2>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-3 text-white bg-warning shadow-sm">
+                <h5>Total Customers</h5>
+                <h2 th:text="${stats.totalCustomers}">0</h2>
+            </div>
+        </div>
+    </div>
+    <!-- 2. HAI BẢNG RA GIỮA MÀN HÌNH -->
+    <div class="row g-4">
+
+        <!-- Bảng Đơn Hàng Mới -->
+        <div class="col-md-8">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Recent Orders</h6>
+                    <a href="/admin/orders" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Customer</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="o : ${stats.recentOrders}">
+                            <td>#<span th:text="${o.orderId}"></span></td>
+                            <!-- Lưu ý: truy cập vào map dùng .key hoặc ['key'] -->
+                            <td th:text="${o.user != null ? o.user.fullName : 'Guest'}"></td>
+                            <td th:text="${o.totalAmount}"></td>
+                            <td>
+                                <span class="badge bg-info text-dark" th:text="${o.orderStatus}"></span>
+                            </td>
+                            <td>
+                                <span th:text="${#strings.substring(o.createdAt, 8, 10)} + '/' + ${#strings.substring(o.createdAt, 5, 7)} + ' ' + ${#strings.substring(o.createdAt, 11, 16)}"></span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- Bảng Khách Hàng Mới -->
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white py-3">
+                    <h6 class="m-0 font-weight-bold text-success">New Customers</h6>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center"
+                            th:each="u : ${stats.recentCustomers}">
+                            <div>
+                                <strong th:text="${u.fullName}"></strong>
+                                <br>
+                                <small class="text-muted" th:text="${u.phoneNumber}"></small>
+                            </div>
+                            <span class="badge bg-light text-dark"
+                                  th:text="${#strings.substring(u.createdAt, 8, 10)} + '/' + ${#strings.substring(u.createdAt, 5, 7)}">
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

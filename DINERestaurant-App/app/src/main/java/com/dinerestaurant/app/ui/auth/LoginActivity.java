@@ -156,7 +156,9 @@ public class LoginActivity extends AppCompatActivity {
                 loginGoogleToBackend(idToken);
 
             } catch (ApiException e) {
-                Toast.makeText(this, "Google login failed", Toast.LENGTH_SHORT).show();
+                // Hien thi ma loi cu the de debug
+                Toast.makeText(this, "Google login failed: " + e.getStatusCode(), Toast.LENGTH_LONG).show();
+                e.printStackTrace();
             }
         }
     }

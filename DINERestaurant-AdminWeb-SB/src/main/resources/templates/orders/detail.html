@@ -54,14 +54,17 @@
                       method="post">
 
                     <select name="status" class="form-select mb-3">
-                        <option>Đã đặt</option>
-                        <!-- Thêm trạng thái này -->
-                        <option>Đã xác nhận</option>
-                        <!-- Sửa từ "Đang làm món" thành "Đang chuẩn bị" -->
-                        <option>Đang chuẩn bị</option>
-                        <option>Đang giao</option>
-                        <option>Hoàn thành</option>
-                        <option>Đã hủy</option>
+                        <option th:selected="${order.orderStatus == 'Đã đặt'}">Đã đặt</option>
+
+                        <option th:selected="${order.orderStatus == 'Đã xác nhận'}">Đã xác nhận</option>
+
+                        <option th:selected="${order.orderStatus == 'Đang chuẩn bị'}">Đang chuẩn bị</option>
+
+                        <option th:selected="${order.orderStatus == 'Đang giao'}">Đang giao</option>
+
+                        <option th:selected="${order.orderStatus == 'Hoàn thành'}">Hoàn thành</option>
+
+                        <option th:selected="${order.orderStatus == 'Đã hủy'}">Đã hủy</option>
                     </select>
 
                     <button class="btn btn-primary">
